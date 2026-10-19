@@ -39,10 +39,10 @@
       "p1_pass_people": 360,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 86,
+      "admitted": 152,
       "enrolled": 86,
       "p1_to_p2_rate": "45.0%",
-      "admitted_to_enrolled_rate": "100.0%"
+      "admitted_to_enrolled_rate": "56.6%"
     },
     {
       "year": "115",
@@ -50,10 +50,10 @@
       "p1_pass_people": 353,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": null,
+      "admitted": 148,
       "enrolled": 78,
       "p1_to_p2_rate": "45.9%",
-      "admitted_to_enrolled_rate": "—"
+      "admitted_to_enrolled_rate": "52.7%"
     }
   ],
   "zhenxuan_depts": [
@@ -224,7 +224,7 @@
       "p1_pass_people": 957,
       "p2_apply_cnt": 395,
       "p2_apply_people": 360,
-      "confirmed": 133,
+      "confirmed": 135,
       "joint_enrolled": 135,
       "final_enrolled": 135,
       "p2_to_enrolled_rate": "34.2%"
@@ -233,12 +233,12 @@
       "year": "115",
       "p1_pass_cnt": 1061,
       "p1_pass_people": 929,
-      "p2_apply_cnt": 372,
-      "p2_apply_people": 345,
+      "p2_apply_cnt": 401,
+      "p2_apply_people": 372,
       "confirmed": 155,
       "joint_enrolled": 155,
       "final_enrolled": 155,
-      "p2_to_enrolled_rate": "41.7%"
+      "p2_to_enrolled_rate": "38.7%"
     }
   ],
   "shenqing_depts": [
@@ -247,9 +247,9 @@
       "y111": 91,
       "y112": 90,
       "y113": 70,
-      "y114": 77,
+      "y114": 78,
       "y115": 84,
-      "total": 412
+      "total": 413
     },
     {
       "dept": "健康事業管理系",
@@ -292,9 +292,9 @@
       "y111": 16,
       "y112": 11,
       "y113": 5,
-      "y114": 4,
+      "y114": 5,
       "y115": 7,
-      "total": 43
+      "total": 44
     },
     {
       "dept": "健康美容系",

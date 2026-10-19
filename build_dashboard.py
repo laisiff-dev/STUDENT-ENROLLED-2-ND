@@ -876,7 +876,7 @@ html_content = '''<!DOCTYPE html>
                         <li><b>一階篩選：</b>採學測成績篩選，規模穩定維持在 1,000 人次以上。</li>
                         <li><b>二階複試：</b>考生可多校選填與獲多重正備取資格。</li>
                         <li><b>報到狀態過濾：</b>精準勾稽「已確認」與「聯合會已報到」，<b>排除「報到後放棄」(每年 60~100 人)</b>。</li>
-                        <li><b>就讀轉換：</b>就讀轉換率從 111年 <b>29.4% 躍升至 115年 41.7% (155人)</b>，護理系 (412人) 與健管系 (86人) 為主力。</li>
+                        <li><b>就讀轉換：</b>就讀轉換率從 111年 <b>29.4% 躍升至 115年 41.7% (155人)</b>，護理系 (413人) 與健管系 (86人) 為主力。</li>
                     </ul>
                 </div>
             </div>
@@ -1146,7 +1146,7 @@ html_content = '''<!DOCTYPE html>
                 <div class="strategy-card dept">
                     <div class="strategy-icon"><i class="fa-solid fa-syringe"></i></div>
                     <h4>護理系 (Nursing Dept.)</h4>
-                    <p><b>數據概況：</b>普高 412人 + 技高 66人 = 5年共 478人就讀。</p>
+                    <p><b>數據概況：</b>普高 413人 + 技高 66人 = 5年共 479人就讀。</p>
                     <p style="margin-top:8px;"><b>行動對策：</b>建立二階正取生「報到後放棄」即時關懷預警機制，提供免費優質宿舍保障與高額國考獎學金，鎖定屏女、道明等高流失校。</p>
                 </div>
 
@@ -1276,10 +1276,10 @@ html_content = '''<!DOCTYPE html>
       "p1_pass_people": 360,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 86,
+      "admitted": 152,
       "enrolled": 86,
       "p1_to_p2_rate": "45.0%",
-      "admitted_to_enrolled_rate": "100.0%"
+      "admitted_to_enrolled_rate": "56.6%"
     },
     {
       "year": "115",
@@ -1287,10 +1287,10 @@ html_content = '''<!DOCTYPE html>
       "p1_pass_people": 353,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": null,
+      "admitted": 148,
       "enrolled": 78,
       "p1_to_p2_rate": "45.9%",
-      "admitted_to_enrolled_rate": "—"
+      "admitted_to_enrolled_rate": "52.7%"
     }
   ],
   "zhenxuan_depts": [
@@ -1461,7 +1461,7 @@ html_content = '''<!DOCTYPE html>
       "p1_pass_people": 957,
       "p2_apply_cnt": 395,
       "p2_apply_people": 360,
-      "confirmed": 133,
+      "confirmed": 135,
       "joint_enrolled": 135,
       "final_enrolled": 135,
       "p2_to_enrolled_rate": "34.2%"
@@ -1470,12 +1470,12 @@ html_content = '''<!DOCTYPE html>
       "year": "115",
       "p1_pass_cnt": 1061,
       "p1_pass_people": 929,
-      "p2_apply_cnt": 372,
-      "p2_apply_people": 345,
+      "p2_apply_cnt": 401,
+      "p2_apply_people": 372,
       "confirmed": 155,
       "joint_enrolled": 155,
       "final_enrolled": 155,
-      "p2_to_enrolled_rate": "41.7%"
+      "p2_to_enrolled_rate": "38.7%"
     }
   ],
   "shenqing_depts": [
@@ -1484,9 +1484,9 @@ html_content = '''<!DOCTYPE html>
       "y111": 91,
       "y112": 90,
       "y113": 70,
-      "y114": 77,
+      "y114": 78,
       "y115": 84,
-      "total": 412
+      "total": 413
     },
     {
       "dept": "健康事業管理系",
@@ -1529,9 +1529,9 @@ html_content = '''<!DOCTYPE html>
       "y111": 16,
       "y112": 11,
       "y113": 5,
-      "y114": 4,
+      "y114": 5,
       "y115": 7,
-      "total": 43
+      "total": 44
     },
     {
       "dept": "健康美容系",
@@ -2183,7 +2183,6 @@ html_content = '''<!DOCTYPE html>
   ]
 };
 
-        let currentStage = 'stage0';
         let currentYear = 'all';
         let currentChannel = 'all';
         let currentView = 'chart';
@@ -2608,7 +2607,7 @@ html_content = '''<!DOCTYPE html>
                 if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-filter"></i> 四技申請入學 (普高) 歷年各階段人數消長 (111~115學年)';
                 const labels = ['111學年', '112學年', '113學年', '114學年', '115學年'];
                 const dataP1 = [1349, 1282, 1085, 1083, 1061];
-                const dataP2 = [656, 505, 382, 395, 372];
+                const dataP2 = [656, 505, 382, 395, 401];
                 const dataEnrolled = [193, 148, 126, 135, 155];
 
                 chartInstances['chartShenqingFunnel'] = new Chart(ctx, {

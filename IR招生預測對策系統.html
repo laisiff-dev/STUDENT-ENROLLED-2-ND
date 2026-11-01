@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>輔英科技大學 — IR 分層招生預測與對策系統 (116學年度推估)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1120;--bg2:#111827;--card:#162032;--card2:#1e2d42;--border:rgba(99,179,237,0.18);--border2:rgba(99,179,237,0.08);--accent:#38bdf8;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Noto Sans TC','Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:14px}
+    ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#38bdf8;border-radius:3px}
+
+    /* HEADER */
+    .hdr{background:linear-gradient(135deg,#0f2447,#1a3a6e,#0c1e3c);border-bottom:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .hdr-left{display:flex;align-items:center;gap:14px}
+    .hdr-ico{width:46px;height:46px;background:linear-gradient(135deg,#38bdf8,#818cf8);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .hdr h1{font-size:19px;font-weight:900;color:#fff;line-height:1.3}
+    .hdr p{color:#93c5fd;font-size:12px;margin-top:2px}
+    .htags{display:flex;gap:8px;flex-wrap:wrap}
+    .htag{padding:5px 12px;border-radius:18px;font-size:11px;font-weight:700;border:1px solid}
+    .htag.b{background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.3);color:#38bdf8}
+    .htag.p{background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.3);color:#818cf8}
+    .htag.g{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.3);color:#34d399}
+    .htag.o{background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.3);color:#fb923c}
+
+    /* NAV */
+    .nav{display:flex;gap:6px;padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border2);overflow-x:auto}
+    .nav-btn{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+    .nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .nav-btn.active{background:linear-gradient(135deg,rgba(56,189,248,.2),rgba(129,140,248,.15));border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px rgba(56,189,248,.2)}
+
+    /* PAGE */
+    .page{display:none;padding:22px;animation:fi .25s ease}
+    .page.active{display:block}
+    @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    /* SECTION TITLE */
+    .st{font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border2)}
+    .ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+    .ico-b{background:rgba(56,189,248,.15);color:#38bdf8}
+    .ico-g{background:rgba(52,211,153,.15);color:#34d399}
+    .ico-p{background:rgba(129,140,248,.15);color:#818cf8}
+    .ico-o{background:rgba(251,146,60,.15);color:#fb923c}
+    .ico-pk{background:rgba(244,114,182,.15);color:#f472b6}
+
+    /* GRIDS */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:18px}
+    .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+    .fw{margin-bottom:18px}
+    @media(max-width:1100px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+    @media(max-width:720px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+    .card-t{font-size:13px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:7px;margin-bottom:12px}
+
+    /* KPI */
+    .kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:border-color .2s}
+    .kpi:hover{border-color:var(--accent)}
+    .kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+    .kpi.kb::after{background:linear-gradient(90deg,#38bdf8,#818cf8)}
+    .kpi.kg::after{background:linear-gradient(90deg,#34d399,#059669)}
+    .kpi.ko::after{background:linear-gradient(90deg,#fb923c,#f59e0b)}
+    .kpi.kpk::after{background:linear-gradient(90deg,#f472b6,#ec4899)}
+    .kpi.kr::after{background:linear-gradient(90deg,#f87171,#dc2626)}
+    .kpi-l{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    .kpi-v{font-size:26px;font-weight:900;line-height:1.1;margin-bottom:3px}
+    .kpi-s{font-size:11px;color:var(--text2)}
+    .badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-top:5px}
+    .bu{background:rgba(52,211,153,.15);color:#34d399}.bd{background:rgba(248,113,113,.15);color:#f87171}.bn{background:rgba(148,163,184,.15);color:#94a3b8}.bw{background:rgba(251,191,36,.15);color:#fbbf24}.bb{background:rgba(56,189,248,.15);color:#38bdf8}.bp{background:rgba(129,140,248,.15);color:#818cf8}
+
+    /* TABLE */
+    .tw{overflow-x:auto;max-height:600px;overflow-y:auto}
+    .tbl{width:100%;border-collapse:collapse;font-size:12px}
+    .tbl th{background:rgba(56,189,248,.08);color:#93c5fd;font-weight:700;padding:9px 12px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:2}
+    .tbl th.tl{text-align:left}
+    .tbl td{padding:8px 12px;border-bottom:1px solid var(--border2);text-align:center;vertical-align:middle}
+    .tbl td.tl{text-align:left}
+    .tbl tr:hover td{background:rgba(56,189,248,.04)}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl .sect-hdr td{background:rgba(129,140,248,.08);color:#818cf8;font-weight:700;font-size:11px;text-transform:uppercase}
+    .tbl .total-row td{background:rgba(56,189,248,.05);font-weight:700;border-top:2px solid rgba(56,189,248,.2)}
+    .gr{color:#34d399;font-weight:700}.rd{color:#f87171;font-weight:700}.yw{color:#fbbf24;font-weight:700}.bl{color:#38bdf8;font-weight:700}.pk{color:#f472b6;font-weight:700}
+
+    /* CHART */
+    .ch{position:relative;height:300px}
+    .ch-md{position:relative;height:360px}
+    .ch-lg{position:relative;height:420px}
+
+    /* NOTICE */
+    .notice{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.18);border-radius:9px;padding:10px 14px;font-size:12px;color:#93c5fd;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
+    .notice.warn{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:#fbbf24}
+    .notice.danger{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.22);color:#f87171}
+
+    /* COLLEGE LABEL */
+    .clg-header{background:linear-gradient(90deg,rgba(56,189,248,.12),transparent);border-left:3px solid #38bdf8;padding:6px 14px;font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:8px;border-radius:0 6px 6px 0}
+    .clg-header.green{background:linear-gradient(90deg,rgba(52,211,153,.12),transparent);border-left-color:#34d399;color:#34d399}
+
+    /* PRED HIGHLIGHT */
+    .pred116{background:rgba(244,114,182,.12);color:#f472b6;font-weight:900;border:1px solid rgba(244,114,182,.3);border-radius:5px;padding:2px 8px;font-size:12px}
+    .pred116-range{color:#94a3b8;font-size:11px}
+
+    /* STRATEGY */
+    .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .sc{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;border-left:3px solid}
+    .sc.sb{border-left-color:#38bdf8}.sc.sg2{border-left-color:#34d399}.sc.so{border-left-color:#fb923c}.sc.spk{border-left-color:#f472b6}.sc.sp{border-left-color:#818cf8}
+    .sc-t{font-size:13px;font-weight:800;color:#fff;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+    .sc-b{font-size:12px;color:var(--text2);line-height:1.7}
+    .sc-b ul{padding-left:16px;margin-top:5px}
+    .sc-b li{margin-bottom:3px}
+
+    /* FORMULA */
+    .fml{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:14px 18px;font-family:'Courier New',monospace;font-size:12px;color:#93c5fd;line-height:1.9;margin-bottom:14px}
+    .fml .ft{font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.05em}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-ico"><i class="fa-solid fa-brain"></i></div>
+    <div>
+      <h1>輔英科技大學 — IR 分層招生預測與對策決策系統</h1>
+      <p>111–115實際數據 ‧ 111–113訓練模型 ‧ 114驗證 ‧ 115回測 ‧ 116年各院系推估 ‧ 高屏生源整合</p>
+    </div>
+  </div>
+  <div class="htags">
+    <span class="htag b"><i class="fa-solid fa-flask"></i> 預測模型</span>
+    <span class="htag p"><i class="fa-solid fa-layer-group"></i> 分層IR</span>
+    <span class="htag g"><i class="fa-solid fa-map-location-dot"></i> 生源分析</span>
+    <span class="htag o"><i class="fa-solid fa-lightbulb"></i> 招生對策</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" id="tab-p0" onclick="switchPage('p0')"><i class="fa-solid fa-table-list"></i> 全院系數據總表</button>
+  <button class="nav-btn" id="tab-p1" onclick="switchPage('p1')"><i class="fa-solid fa-chart-line"></i> 趨勢圖表</button>
+  <button class="nav-btn" id="tab-p2" onclick="switchPage('p2')"><i class="fa-solid fa-telescope"></i> 116年推估</button>
+  <button class="nav-btn" id="tab-p3" onclick="switchPage('p3')"><i class="fa-solid fa-microscope"></i> 模型驗證</button>
+  <button class="nav-btn" id="tab-p4" onclick="switchPage('p4')"><i class="fa-solid fa-map"></i> 區域生源</button>
+  <button class="nav-btn" id="tab-p5" onclick="switchPage('p5')"><i class="fa-solid fa-chess-knight"></i> 招生對策</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 0 — 全院系數據總表
+═══════════════════════════════════════════════════════ -->
+<section id="p0" class="page active">
+
+  <!-- KPI -->
+  <div class="g4">
+    <div class="kpi kb">
+      <div class="kpi-l">甄選 111–115 合計</div>
+      <div class="kpi-v" style="color:#38bdf8">527<span style="font-size:14px">人</span></div>
+      <div class="kpi-s">年均 105人 ‧ 161→78 (-51.6%)</div>
+      <span class="badge bd"><i class="fa-solid fa-arrow-trend-down"></i> 顯著下滑</span>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-l">申請 111–115 合計</div>
+      <div class="kpi-v" style="color:#34d399">757<span style="font-size:14px">人</span></div>
+      <div class="kpi-s">年均 151人 ‧ 193→155 (-19.7%)</div>
+      <span class="badge bd"><i class="fa-solid fa-arrow-trend-down"></i> 緩降趨穩</span>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-l">116年全校推估</div>
+      <div class="kpi-v" style="color:#fb923c">~213<span style="font-size:14px">人</span></div>
+      <div class="kpi-s">甄選 ~67 + 申請 ~146</div>
+      <span class="badge bw"><i class="fa-solid fa-triangle-exclamation"></i> 持續收縮</span>
+    </div>
+    <div class="kpi kpk">
+      <div class="kpi-l">申請就讀率 115年</div>
+      <div class="kpi-v" style="color:#f472b6">44.9%</div>
+      <div class="kpi-s">155/345人（人數計）‧ 歷年最高</div>
+      <span class="badge bu"><i class="fa-solid fa-arrow-trend-up"></i> 逐年上升</span>
+    </div>
+  </div>
+
+  <!-- 甄選全院系總表 -->
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-building-columns"></i></span>甄選入學（技高）— 各院系 111–115 報到人數 + 116推估</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th class="tl" style="min-width:140px">學系</th>
+            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+            <th style="background:rgba(56,189,248,.15)">5年合計</th>
+            <th style="background:rgba(56,189,248,.15)">年均</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
+            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間</th>
+            <th>趨勢</th>
+          </tr>
+        </thead>
+        <tbody id="tbZTotal"></tbody>
+      </table>
+    </div>
+    <div class="notice" style="margin-top:12px;margin-bottom:0">
+      <i class="fa-solid fa-circle-info"></i>
+      <span><b style="color:#f472b6">116推估</b> = 修正線性趨勢模型 (α=0.55×線性外推 + β=0.45×均值) × (1 + δ半程修正)。 紫色背景欄位為預測值，非實際數據。</span>
+    </div>
+  </div>
+
+  <!-- 申請全院系總表 -->
+  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-building-columns"></i></span>申請入學（普高）— 各院系 111–115 報到人數 + 116推估</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th class="tl" style="min-width:140px">學系</th>
+            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+            <th style="background:rgba(52,211,153,.15);color:#34d399">5年合計</th>
+            <th style="background:rgba(52,211,153,.15);color:#34d399">年均</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
+            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間</th>
+            <th>趨勢</th>
+          </tr>
+        </thead>
+        <tbody id="tbSTotal"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 兩管道合併總計表 -->
+  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>兩管道合計 — 各系雙管道匯總（有記錄系所）</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th class="tl" style="min-width:140px">學系</th>
+            <th>管道</th>
+            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+            <th style="background:rgba(129,140,248,.15);color:#818cf8">5年合計</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
+          </tr>
+        </thead>
+        <tbody id="tbCombined"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 1 — 趨勢圖表
+═══════════════════════════════════════════════════════ -->
+<section id="p1" class="page">
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-line"></i></span>111–115各系報到人數趨勢（含116預測點）</div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 甄選入學 — 全院總量趨勢</div>
+      <div class="ch"><canvas id="chartZTotal"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#34d399"></i> 申請入學 — 全院總量趨勢</div>
+      <div class="ch"><canvas id="chartSTotal"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-bar"></i></span>甄選各系 111–116 折線趨勢（含116推估標籤）</div>
+  <div class="card fw">
+    <div class="ch-lg"><canvas id="chartZDepts"></canvas></div>
+  </div>
+
+  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-chart-bar"></i></span>申請各系 111–116 折線趨勢（含116推估標籤）</div>
+  <div class="card fw">
+    <div class="ch-lg"><canvas id="chartSDepts"></canvas></div>
+  </div>
+
+  <div class="st" style="margin-top:4px"><span class="ico ico-o"><i class="fa-solid fa-chart-column"></i></span>申請就讀率演變 (人數計)</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-percent" style="color:#fb923c"></i> 申請 — 一階→二階→報到 各年轉換率</div>
+      <div class="ch"><canvas id="chartRates"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-bar" style="color:#818cf8"></i> 雙管道 115年 vs 116推估 比較</div>
+      <div class="ch"><canvas id="chartComp"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 2 — 116年推估
+═══════════════════════════════════════════════════════ -->
+<section id="p2" class="page">
+  <div class="notice warn"><i class="fa-solid fa-triangle-exclamation"></i><span>116推估基於111–115年5年歷史數據，採修正線性趨勢模型（α=0.55, β=0.45）加115年δ半程修正。粉紅色欄位為預測值，預測區間為±18%。</span></div>
+
+  <div class="st"><span class="ico ico-pk"><i class="fa-solid fa-telescope"></i></span>甄選入學 — 116學年度各系招生人數推估（含逐年趨勢）</div>
+  <div class="card fw">
+    <div class="ch-md"><canvas id="chart116ZBar"></canvas></div>
+  </div>
+  <div class="card fw" style="margin-top:-2px">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th class="tl">學系</th>
+          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+          <th>初步預測</th><th>δ修正</th>
+          <th style="background:rgba(244,114,182,.15);color:#f472b6">116最終推估</th>
+          <th>預測區間</th><th>YoY</th><th>風險</th>
+        </tr></thead>
+        <tbody id="tb116Z"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:8px"><span class="ico ico-g"><i class="fa-solid fa-telescope"></i></span>申請入學 — 116學年度各系招生人數推估（含逐年趨勢）</div>
+  <div class="card fw">
+    <div class="ch-md"><canvas id="chart116SBar"></canvas></div>
+  </div>
+  <div class="card fw" style="margin-top:-2px">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th class="tl">學系</th>
+          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+          <th>初步預測</th><th>δ修正</th>
+          <th style="background:rgba(244,114,182,.15);color:#f472b6">116最終推估</th>
+          <th>預測區間</th><th>YoY</th><th>風險</th>
+        </tr></thead>
+        <tbody id="tb116S"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 116全院匯總 -->
+  <div class="st" style="margin-top:8px"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>116學年度全校招生總量推估匯總</div>
+  <div class="g3">
+    <div class="kpi kb">
+      <div class="kpi-l">甄選 116推估</div>
+      <div class="kpi-v bl" id="kpi116Z">—</div>
+      <div class="kpi-s" id="kpi116ZSub">計算中...</div>
+      <span class="badge bd"><i class="fa-solid fa-arrow-down"></i> YoY ≈ -14%</span>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-l">申請 116推估</div>
+      <div class="kpi-v gr" id="kpi116S">—</div>
+      <div class="kpi-s" id="kpi116SSub">計算中...</div>
+      <span class="badge bd"><i class="fa-solid fa-arrow-down"></i> YoY ≈ -6%</span>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-l">全校 116合計推估</div>
+      <div class="kpi-v" style="color:#fb923c" id="kpi116All">—</div>
+      <div class="kpi-s">115年實際 233人</div>
+      <span class="badge bw"><i class="fa-solid fa-triangle-exclamation"></i> 持續收縮</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 3 — 模型驗證
+═══════════════════════════════════════════════════════ -->
+<section id="p3" class="page">
+  <div class="fml">
+    <div class="ft">📐 預測模型公式（修正線性加權趨勢模型）</div>
+    訓練集: 111–113年 (t=1,2,3) → OLS線性回歸 y = a + b×t<br>
+    加權預測: ŷ = α×(a + b×t_target) + β×μ₃年均值　[α=0.55, β=0.45]<br>
+    114年驗證: MAPE = Σ|實際-預測|/實際 / n × 100%<br>
+    115年回測: δ = (實際-預測)/預測 × 100%（各系平均）<br>
+    116推估: ŷ₁₁₆ = ŷ_5yr_model × (1 + δ_avg/2)　← 半程誤差修正策略
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#38bdf8"></i> 甄選 — 114年驗證 (預測 vs 實際)</div>
+      <div class="ch"><canvas id="chartV114Z"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#34d399"></i> 申請 — 114年驗證 (預測 vs 實際)</div>
+      <div class="ch"><canvas id="chartV114S"></canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fb923c"></i> 甄選 — 115年回測 (預測 vs 實際)</div>
+      <div class="ch"><canvas id="chartBT115Z"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fbbf24"></i> 申請 — 115年回測 (預測 vs 實際)</div>
+      <div class="ch"><canvas id="chartBT115S"></canvas></div>
+    </div>
+  </div>
+
+  <div class="g4">
+    <div class="kpi kb"><div class="kpi-l">甄選 MAPE (114)</div><div class="kpi-v bl" id="mapeZ114">—</div><div class="kpi-s">114年驗證誤差率</div></div>
+    <div class="kpi kg"><div class="kpi-l">申請 MAPE (114)</div><div class="kpi-v gr" id="mapeS114">—</div><div class="kpi-s">114年驗證誤差率</div></div>
+    <div class="kpi ko"><div class="kpi-l">甄選 MAPE (115)</div><div class="kpi-v" style="color:#fb923c" id="mapeZ115">—</div><div class="kpi-s">115年回測誤差率</div></div>
+    <div class="kpi kpk"><div class="kpi-l">申請 MAPE (115)</div><div class="kpi-v pk" id="mapeS115">—</div><div class="kpi-s">115年回測誤差率</div></div>
+  </div>
+
+  <div class="card fw">
+    <div class="card-t"><i class="fa-solid fa-table" style="color:#818cf8"></i> 114+115年驗證與回測明細</div>
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th>年度</th><th>管道</th><th class="tl">學系</th>
+          <th>預測值</th><th>實際值</th><th>誤差</th><th>誤差率%</th><th>評等</th>
+        </tr></thead>
+        <tbody id="tbVal"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 4 — 區域生源
+═══════════════════════════════════════════════════════ -->
+<section id="p4" class="page">
+  <div class="notice"><i class="fa-solid fa-circle-info"></i><span>數據來源：教育部公開資料庫 + <a href="https://github.com/laisiff-dev/student-number-campus" target="_blank" style="color:#38bdf8">laisiff-dev/student-number-campus</a> 高屏91校GIS資料庫。</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-pie" style="color:#34d399"></i> 5年報到生源區域分佈（合計1284人）</div>
+      <div class="ch"><canvas id="chartRegPie"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 主要區域年度趨勢</div>
+      <div class="ch"><canvas id="chartRegTrend"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-school"></i></span>主要生源高中職 Top 15 — 就讀人數與5年趨勢</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th>排名</th><th class="tl">學校</th><th>類型</th>
+          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+          <th style="color:#38bdf8">5年合計</th><th>全校人數</th><th>就讀率</th><th>趨勢</th>
+        </tr></thead>
+        <tbody id="tbSrcHS"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-school-flag"></i></span>周邊國中生源 — 中期潛力評估（3–6年後生源管線）</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th class="tl">學校</th><th>區域</th><th>總人數</th>
+          <th>七年級</th><th>八年級</th><th>九年級</th>
+          <th>距離</th><th>潛力評估</th>
+        </tr></thead>
+        <tbody id="tbSrcJH"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 5 — 招生對策
+═══════════════════════════════════════════════════════ -->
+<section id="p5" class="page">
+  <div class="st"><span class="ico ico-o"><i class="fa-solid fa-triangle-exclamation"></i></span>各系風險分級矩陣</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr>
+          <th>管道</th><th class="tl">學系</th>
+          <th>115實際</th><th>116推估</th><th>風險等級</th>
+          <th class="tl">關鍵問題</th><th class="tl">優先行動</th>
+        </tr></thead>
+        <tbody id="tbRisk"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="st" style="margin-top:8px"><span class="ico ico-b"><i class="fa-solid fa-lightbulb"></i></span>分層招生策略建議</div>
+  <div class="sg">
+    <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-magnet" style="color:#38bdf8"></i> 策略一：精準深耕高轉換生源</div><div class="sc-b">針對中山工商(25.3%)、小港高中(28.8%)、樹德家商(33.9%)、林園高中(27.3%)。<ul><li>每年赴校辦說明會（含職涯展望數據）</li><li>與輔導老師建立LINE群組直通聯繫</li><li>優先名額校園參訪（甄選前辦理）</li><li>TOP3生源校設立獎學金加分誘因</li></ul></div></div>
+    <div class="sc sg2"><div class="sc-t"><i class="fa-solid fa-graduation-cap" style="color:#34d399"></i> 策略二：申請就讀率鞏固（44.9%歷年高點）</div><div class="sc-b">115年就讀率達44.9%（人數計），需持續強化。<ul><li>二階正取24hr關懷電話機制</li><li>二階放榜3日辦「學系歡迎日」</li><li>設就讀疑慮諮詢熱線與個案追蹤</li><li>申請志願輔導教師獎勵制度</li></ul></div></div>
+    <div class="sc so"><div class="sc-t"><i class="fa-solid fa-seedling" style="color:#fb923c"></i> 策略三：國中扎根中期培育</div><div class="sc-b">大寮(2km)、鳳甲、楠梓等近距離國中優先。<ul><li>辦「健康科學探索營」邀國中生體驗</li><li>學系教授指導國中科學競賽</li><li>追蹤各國中七年級人口變動</li><li>與各區國中建立定期交流協議</li></ul></div></div>
+    <div class="sc spk"><div class="sc-t"><i class="fa-solid fa-triangle-exclamation" style="color:#f472b6"></i> 策略四：高風險系所緊急干預</div><div class="sc-b">甄選護理(44→5人)、休閒遊憩(1人)等嚴重縮招系所。<ul><li>甄選護理：聯繫技高護理相關科優先推薦</li><li>休閒遊憩：結合在地旅遊熱點辦體驗活動</li><li>各風險系設月報KPI紅線警報機制</li><li>考量系所整合或課程調整可行性</li></ul></div></div>
+    <div class="sc sp"><div class="sc-t"><i class="fa-solid fa-globe" style="color:#818cf8"></i> 策略五：跨區生源開拓</div><div class="sc-b">高屏60.6%，南部13.5%，仍有拓展空間。<ul><li>台南私立高中職聯合說明行程（3月前）</li><li>加強中部技高醫護專班合作（雲嘉方向）</li><li>離島線上說明會（澎湖、金門）</li><li>利用YT Shorts等新媒體觸及Z世代</li></ul></div></div>
+    <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-chart-mixed" style="color:#38bdf8"></i> 策略六：IR數據驅動決策</div><div class="sc-b">建立即時IR預警儀表板，落實數據驅動管理。<ul><li>每年11月完成次年招生目標設定</li><li>每季追蹤一階報名率(人次/人數)變化</li><li>建立一階→二階→報到全流程漏斗追蹤</li><li>每年6月更新預測模型（納入新年度數據）</li></ul></div></div>
+  </div>
+
+  <div class="st" style="margin-top:16px"><span class="ico ico-o"><i class="fa-solid fa-calendar-days"></i></span>116學年度招生行動月曆</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead><tr><th>月份</th><th class="tl">招生事項</th><th class="tl">關鍵行動</th><th>KPI指標</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge bb">11–12月</span></td><td class="tl">甄選一階報名期</td><td class="tl">確認技高推薦名單；辦線上說明會</td><td>報名人次 &gt;400</td></tr>
+          <tr><td><span class="badge bb">1月</span></td><td class="tl">甄選一階篩選結果</td><td class="tl">通過名單即時關懷；備審資料輔導</td><td>關懷率100%</td></tr>
+          <tr><td><span class="badge bp">2月</span></td><td class="tl">甄選二階面試</td><td class="tl">校園面試體驗日；家長參訪</td><td>到考率 &gt;85%</td></tr>
+          <tr><td><span class="badge bu">3月</span></td><td class="tl">申請一階 + 甄選放榜</td><td class="tl">甄選正取Welcome Day；申請一階接觸</td><td>甄選報到率 &gt;90%</td></tr>
+          <tr><td><span class="badge bu">4月</span></td><td class="tl">申請入學二階</td><td class="tl">書審+面試；二階後辦上課體驗日</td><td>二階到場率 &gt;80%</td></tr>
+          <tr><td><span class="badge bw">5月</span></td><td class="tl">申請放榜/確認就讀</td><td class="tl">正取24hr關懷電話；就讀疑慮諮詢</td><td>確認就讀率 &gt;45%</td></tr>
+          <tr><td><span class="badge bw">7–8月</span></td><td class="tl">報到/新生入學</td><td class="tl">入學輔導週；宿舍抽籤透明化</td><td>報到率 &gt;95%</td></tr>
+          <tr><td><span class="badge bd">9–10月</span></td><td class="tl">招生檢討 + 模型更新</td><td class="tl">更新IR預測模型；設定下年度目標</td><td>完成116→117預測報告</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer style="text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid var(--border2);margin-top:8px">
+  輔英科技大學 IR 招生預測決策系統 ‧ 111–115學年度歷史數據 ‧ 生源地圖整合自 laisiff-dev/student-number-campus ‧ 本系統預測值僅供IR參考，招生策略須結合現場訪查綜合研判
+</footer>
+
+<script>
+Chart.register(ChartDataLabels);
+
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const ZDEPTS = [
+  {dept:'職業安全衛生系', college:'醫護學院', y111:10, y112:11, y113:22, y114:9,  y115:21},
+  {dept:'護理系',         college:'醫護學院', y111:44, y112:11, y113:1,  y114:5,  y115:5},
+  {dept:'保健營養系',     college:'醫護學院', y111:12, y112:11, y113:17, y114:10, y115:9},
+  {dept:'健康美容系',     college:'健康學院', y111:18, y112:11, y113:9,  y114:9,  y115:10},
+  {dept:'幼兒保育暨產業系',college:'人文學院',y111:15, y112:12, y113:10, y114:8,  y115:7},
+  {dept:'物理治療系',     college:'醫護學院', y111:11, y112:14, y113:8,  y114:9,  y115:3},
+  {dept:'休閒與遊憩事業管理系',college:'管理學院',y111:14,y112:5,y113:15,y114:8,y115:1},
+  {dept:'高齡及長期照護事業系',college:'醫護學院',y111:17,y112:5,y113:5, y114:7, y115:4},
+  {dept:'資訊科技與管理系',college:'管理學院', y111:9,  y112:5,  y113:2,  y114:8,  y115:2},
+  {dept:'環境工程與科學系',college:'工程學院', y111:4,  y112:1,  y113:7,  y114:3,  y115:9},
+  {dept:'應用化學及材料科學系',college:'工程學院',y111:4,y112:3,y113:7, y114:5,  y115:4},
+  {dept:'健康事業管理系', college:'管理學院', y111:2,  y112:1,  y113:4,  y114:3,  y115:2},
+];
+
+const SDEPTS = [
+  {dept:'護理系',         college:'醫護學院', y111:91, y112:90, y113:70, y114:78, y115:84},
+  {dept:'健康事業管理系', college:'管理學院', y111:25, y112:12, y113:15, y114:20, y115:14},
+  {dept:'物理治療系',     college:'醫護學院', y111:13, y112:15, y113:13, y114:15, y115:15},
+  {dept:'環境工程與科學系',college:'工程學院',y111:24, y112:11, y113:1,  y114:8,  y115:14},
+  {dept:'應用化學及材料科學系',college:'工程學院',y111:16,y112:6,y113:14,y114:3, y115:8},
+  {dept:'生物科技與綠色產業系',college:'生科學院',y111:16,y112:11,y113:5,y114:5,y115:7},
+  {dept:'健康美容系',     college:'健康學院', y111:8,  y112:3,  y113:3,  y114:1,  y115:6},
+  {dept:'幼兒保育暨產業系',college:'人文學院',y111:0,  y112:0,  y113:5,  y114:5,  y115:7},
+];
+
+const REGION_DATA = [
+  {r:'高屏地區', y111:182,y112:140,y113:163,y114:137,y115:156,total:778,pct:60.6},
+  {r:'南部地區', y111:66, y112:32, y113:20, y114:28, y115:27, total:173,pct:13.5},
+  {r:'中部地區', y111:59, y112:31, y113:28, y114:23, y115:24, total:165,pct:12.9},
+  {r:'北部地區', y111:24, y112:20, y113:14, y114:11, y115:14, total:83, pct:6.5},
+  {r:'東部地區', y111:7,  y112:7,  y113:3,  y114:5,  y115:6,  total:28, pct:2.2},
+  {r:'離島地區', y111:10, y112:6,  y113:2,  y114:4,  y115:5,  total:27, pct:2.1},
+  {r:'其他',     y111:6,  y112:5,  y113:5,  y114:13, y115:1,  total:30, pct:2.3},
+];
+
+const TOP15 = [
+  {rank:1, school:'中山工商',     type:'高屏技高', y111:18,y112:21,y113:35,y114:11,y115:16,total:101,sz:8400,conv:'25.3%'},
+  {rank:2, school:'高雄小港高中', type:'高屏普高', y111:11,y112:6, y113:5, y114:13,y115:9, total:44, sz:null,conv:'28.8%'},
+  {rank:3, school:'樹德家商',     type:'高屏技高', y111:12,y112:7, y113:3, y114:9, y115:10,total:41, sz:null,conv:'33.9%'},
+  {rank:4, school:'復華高中',     type:'高屏私高', y111:13,y112:7, y113:6, y114:9, y115:1, total:36, sz:null,conv:'26.7%'},
+  {rank:5, school:'立志高中',     type:'高屏私高', y111:7, y112:8, y113:8, y114:2, y115:10,total:35, sz:null,conv:'32.7%'},
+  {rank:6, school:'潮州高中',     type:'高屏普高', y111:6, y112:7, y113:11,y114:5, y115:3, total:32, sz:1420,conv:'23.7%'},
+  {rank:7, school:'高雄林園高中', type:'高屏普高', y111:4, y112:6, y113:5, y114:3, y115:12,total:30, sz:null,conv:'27.3%'},
+  {rank:8, school:'岡山高中',     type:'高屏普高', y111:4, y112:8, y113:5, y114:5, y115:4, total:26, sz:null,conv:'22.6%'},
+  {rank:9, school:'道明高中',     type:'高屏私高', y111:12,y112:4, y113:4, y114:2, y115:3, total:25, sz:null,conv:'13.2%'},
+  {rank:10,school:'高雄文山高中', type:'高屏普高', y111:8, y112:2, y113:4, y114:2, y115:7, total:23, sz:1520,conv:'—'},
+  {rank:11,school:'高雄左營高中', type:'高屏普高', y111:6, y112:3, y113:3, y114:5, y115:4, total:21, sz:null,conv:'15.6%'},
+  {rank:12,school:'屏榮高中',     type:'高屏技高', y111:5, y112:4, y113:5, y114:2, y115:2, total:18, sz:null,conv:'—'},
+  {rank:13,school:'巨人高中',     type:'中部技高', y111:0, y112:9, y113:5, y114:3, y115:1, total:18, sz:null,conv:'13.7%'},
+  {rank:14,school:'高雄鼓山高中', type:'高屏普高', y111:4, y112:1, y113:3, y114:4, y115:5, total:17, sz:null,conv:'—'},
+  {rank:15,school:'高雄仁武高中', type:'高屏普高', y111:3, y112:1, y113:6, y114:3, y115:4, total:17, sz:null,conv:'—'},
+];
+
+const JH_SCHOOLS = [
+  {school:'高雄市立大寮國民中學',area:'高雄市大寮區',total:1180,g7:400,g8:395,g9:385,dist:'最近(~2km)',note:'🌟 最近距離，直接生源圈'},
+  {school:'高雄市立中庄國民中學',area:'高雄市大寮區',total:680, g7:230,g8:230,g9:220,dist:'近(~3km)',  note:'🌟 同區第二國中'},
+  {school:'高雄市立鳳甲國民中學',area:'高雄市鳳山區',total:1450,g7:490,g8:485,g9:475,dist:'近(~8km)',  note:'⭐ 鳳山大校，升學意願高'},
+  {school:'高雄市立楠梓國民中學',area:'高雄市楠梓區',total:1380,g7:470,g8:460,g9:450,dist:'中(~12km)', note:'⭐ 楠梓技職生源重點'},
+  {school:'高雄市立岡山國民中學',area:'高雄市岡山區',total:1220,g7:415,g8:405,g9:400,dist:'中(~16km)', note:'📌 北高雄穩定來源'},
+  {school:'屏東縣立中正國民中學',area:'屏東縣屏東市',total:1890,g7:640,g8:630,g9:620,dist:'中(~18km)', note:'📌 屏東最大國中'},
+  {school:'屏東縣立明正國民中學',area:'屏東縣屏東市',total:1720,g7:580,g8:570,g9:570,dist:'中(~18km)', note:'📌 屏東第二大'},
+  {school:'屏東縣立潮州國民中學',area:'屏東縣潮州鎮',total:920, g7:310,g8:310,g9:300,dist:'遠(~25km)', note:'📍 潮州高中前端生源'},
+  {school:'屏東縣立東港國民中學',area:'屏東縣東港鎮',total:880, g7:300,g8:290,g9:290,dist:'遠(~28km)', note:'📍 東港海事前端'},
+  {school:'高雄市立陽明國民中學',area:'高雄市三民區',total:2580,g7:870,g8:860,g9:850,dist:'遠(~20km)', note:'📍 三民大校，競爭激烈'},
+];
+
+// ═══════════════════════════════════════════════════
+// MODEL ENGINE
+// ═══════════════════════════════════════════════════
+function linReg(xs, ys) {
+  const n=xs.length, sx=xs.reduce((a,b)=>a+b,0), sy=ys.reduce((a,b)=>a+b,0);
+  const sxy=xs.reduce((s,x,i)=>s+x*ys[i],0), sx2=xs.reduce((s,x)=>s+x*x,0);
+  const denom=n*sx2-sx*sx;
+  const b=denom===0?0:(n*sxy-sx*sy)/denom;
+  const a=(sy-b*sx)/n;
+  const ym=sy/n;
+  const ss_t=ys.reduce((s,y)=>s+(y-ym)**2,0);
+  const ss_r=ys.reduce((s,y,i)=>s+(y-(a+b*xs[i]))**2,0);
+  return {a,b,r2:ss_t===0?1:1-ss_r/ss_t};
+}
+
+function predict(dept, trainTs, targetT, alpha=0.55, beta=0.45) {
+  const ys=trainTs.map(t=>dept['y'+(110+t)]);
+  const {a,b,r2}=linReg(trainTs,ys);
+  const mu=ys.reduce((s,v)=>s+v,0)/ys.length;
+  const yL=a+b*targetT;
+  return {pred:Math.max(0,alpha*yL+beta*mu),a,b,r2,mu};
+}
+
+// compute delta (system error %) for 115 backtest
+function computeDelta(depts, trainTs=[1,2,3,4], targetT=5) {
+  const deltas=depts.map(d=>{
+    const {pred}=predict(d,trainTs,targetT);
+    const act=d['y'+(110+targetT)];
+    return pred>0?(act-pred)/pred*100:0;
+  });
+  return deltas.reduce((s,v)=>s+v,0)/deltas.length;
+}
+
+// ═══════════════════════════════════════════════════
+// CHART FACTORY
+// ═══════════════════════════════════════════════════
+const CLRS=['#38bdf8','#34d399','#818cf8','#fb923c','#f472b6','#fbbf24','#a78bfa','#4ade80','#f97316','#e879f9','#2dd4bf','#facc15'];
+
+function makeChart(id, type, labels, datasets, extra={}) {
+  const ctx=document.getElementById(id);
+  if(!ctx) return;
+  return new Chart(ctx, {
+    type, data:{labels, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#94a3b8',font:{size:11},boxWidth:14}},
+        datalabels: extra.datalabels || {display:false},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label||''}: ${c.parsed.y??c.parsed}`}}
+      },
+      scales: (type==='pie'||type==='doughnut')?undefined:{
+        x:{ticks:{color:'#64748b',font:{size:11}},grid:{color:'rgba(99,179,237,0.06)'}},
+        y:{ticks:{color:'#64748b',font:{size:11}},grid:{color:'rgba(99,179,237,0.08)'},beginAtZero:true,...(extra.yOpts||{})}
+      },
+      ...extra.chartOpts
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// BUILDS
+// ═══════════════════════════════════════════════════
+
+function trendBadge(vals) {
+  const n=vals.length; if(n<2)return '<span class="badge bn">—</span>';
+  const slope=(vals[n-1]-vals[0])/(n-1);
+  if(slope>1) return '<span class="badge bu">↑ 成長</span>';
+  if(slope<-1)return '<span class="badge bd">↓ 下滑</span>';
+  return '<span class="badge bn">→ 持平</span>';
+}
+
+function riskTag(val, prev) {
+  const d=prev>0?(val-prev)/prev*100:0;
+  if(val<5) return '<span class="badge bd">🔴 極高</span>';
+  if(val<8||d<-30) return '<span class="badge bw">🟡 高</span>';
+  if(d<-15) return '<span class="badge bw">🟡 中</span>';
+  return '<span class="badge bu">🟢 穩定</span>';
+}
+
+/* ── 全院系總表（甄選/申請） ── */
+function buildTotalTable(depts, tbodyId, delta, colorClass) {
+  const tb=document.getElementById(tbodyId);
+  tb.innerHTML='';
+  let totals={y111:0,y112:0,y113:0,y114:0,y115:0,total:0,pred116:0};
+
+  depts.forEach(d=>{
+    const {pred:raw}=predict(d,[1,2,3,4,5],6);
+    const p116=Math.max(0,raw*(1+delta/2/100));
+    const lo=(p116*0.82).toFixed(0), hi=(p116*1.18).toFixed(0);
+    const tot=d.y111+d.y112+d.y113+d.y114+d.y115;
+    const avg=(tot/5).toFixed(1);
+    const trend=trendBadge([d.y111,d.y112,d.y113,d.y114,d.y115]);
+
+    totals.y111+=d.y111;totals.y112+=d.y112;totals.y113+=d.y113;
+    totals.y114+=d.y114;totals.y115+=d.y115;totals.total+=tot;totals.pred116+=p116;
+
+    tb.innerHTML+=`<tr>
+      <td class="tl"><b>${d.dept}</b><br><small style="color:#64748b">${d.college||''}</small></td>
+      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
+      <td><b>${d.y115}</b></td>
+      <td class="${colorClass}"><b>${tot}</b></td>
+      <td>${avg}</td>
+      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
+      <td class="pred116-range">${lo}–${hi}</td>
+      <td>${trend}</td>
+    </tr>`;
+  });
+
+  // Total row
+  const pt=totals.pred116;
+  tb.innerHTML+=`<tr class="total-row">
+    <td class="tl"><b>合計</b></td>
+    <td><b>${totals.y111}</b></td><td><b>${totals.y112}</b></td><td><b>${totals.y113}</b></td>
+    <td><b>${totals.y114}</b></td><td><b>${totals.y115}</b></td>
+    <td class="${colorClass}"><b>${totals.total}</b></td>
+    <td>${(totals.total/5).toFixed(1)}</td>
+    <td><span class="pred116">~${pt.toFixed(0)}</span></td>
+    <td class="pred116-range">—</td><td>—</td>
+  </tr>`;
+}
+
+/* ── 雙管道合併表 ── */
+function buildCombinedTable(dZ, dS) {
+  const tb=document.getElementById('tbCombined');
+  tb.innerHTML='';
+  const dZDelta=computeDelta(dZ,[1,2,3,4],5);
+  const dSDelta=computeDelta(dS,[1,2,3,4],5);
+
+  const makeRow=(d,ch,delta,cls)=>{
+    const {pred:raw}=predict(d,[1,2,3,4,5],6);
+    const p116=Math.max(0,raw*(1+delta/2/100));
+    const tot=d.y111+d.y112+d.y113+d.y114+d.y115;
+    tb.innerHTML+=`<tr>
+      <td class="tl"><b>${d.dept}</b></td>
+      <td><span class="badge ${cls}">${ch}</span></td>
+      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
+      <td><b>${d.y115}</b></td>
+      <td class="${cls==='bb'?'bl':'gr'}"><b>${tot}</b></td>
+      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
+    </tr>`;
+  };
+
+  dZ.forEach(d=>makeRow(d,'甄選',dZDelta,'bb'));
+  dS.forEach(d=>makeRow(d,'申請',dSDelta,'bu'));
+}
+
+/* ── 116推估詳表 ── */
+function build116Table(depts, tbodyId, delta, kpiValId, kpiSubId) {
+  const tb=document.getElementById(tbodyId);
+  tb.innerHTML='';
+  let total116=0;
+  const results=[];
+
+  depts.forEach(d=>{
+    const {pred:rawFull}=predict(d,[1,2,3,4,5],6);
+    const p116=Math.max(0,rawFull*(1+delta/2/100));
+    const {pred:rawPre}=predict(d,[1,2,3,4,5],6);
+    const lo=(p116*0.82).toFixed(0), hi=(p116*1.18).toFixed(0);
+    const yoy=d.y115>0?((p116-d.y115)/d.y115*100):0;
+    const yoyTxt=`<span class="${yoy>=0?'gr':'rd'}">${yoy>=0?'+':''}${yoy.toFixed(0)}%</span>`;
+    const risk=riskTag(p116,d.y115);
+    total116+=p116;
+    results.push({dept:d.dept,actual115:d.y115,corrected:p116,lo,hi});
+
+    tb.innerHTML+=`<tr>
+      <td class="tl"><b>${d.dept}</b></td>
+      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
+      <td><b>${d.y115}</b></td>
+      <td>${rawPre.toFixed(1)}</td>
+      <td class="${delta>=0?'gr':'rd'}">${delta>=0?'+':''}${(delta/2).toFixed(1)}%</td>
+      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
+      <td class="pred116-range">${lo}–${hi}</td>
+      <td>${yoyTxt}</td>
+      <td>${risk}</td>
+    </tr>`;
+  });
+
+  if(kpiValId){
+    document.getElementById(kpiValId).innerHTML=`~${total116.toFixed(0)}<span style="font-size:14px">人</span>`;
+    const act115=depts.reduce((s,d)=>s+d.y115,0);
+    const yoy115=((total116-act115)/act115*100).toFixed(1);
+    if(document.getElementById(kpiSubId))
+      document.getElementById(kpiSubId).textContent=`115實際: ${act115}人 ‧ YoY ${yoy115}%`;
+  }
+  return results;
+}
+
+/* ── 驗證表 ── */
+function buildValTable(dZ, dS) {
+  const tb=document.getElementById('tbVal');
+  tb.innerHTML='';
+  let errZ114=[],errS114=[],errZ115=[],errS115=[];
+
+  const row=(yr,ch,d,trainTs,targetT,earr,cls)=>{
+    const {pred}=predict(d,trainTs,targetT);
+    const act=d['y'+(110+targetT)];
+    const err=act-pred, errR=act>0?Math.abs(err/act)*100:0;
+    earr.push(errR);
+    const grade=errR<15?'<span class="badge bu">優</span>':errR<25?'<span class="badge bw">可</span>':'<span class="badge bd">差</span>';
+    return `<tr>
+      <td>${yr}</td><td><span class="badge ${cls}">${ch}</span></td>
+      <td class="tl">${d.dept}</td>
+      <td>${pred.toFixed(1)}</td><td><b>${act}</b></td>
+      <td class="${err>=0?'gr':'rd'}">${err>=0?'+':''}${err.toFixed(1)}</td>
+      <td class="${errR<20?'gr':errR<30?'yw':'rd'}">${errR.toFixed(1)}%</td>
+      <td>${grade}</td>
+    </tr>`;
+  };
+
+  dZ.forEach(d=>tb.innerHTML+=row('114','甄選',d,[1,2,3],4,errZ114,'bb'));
+  dS.forEach(d=>tb.innerHTML+=row('114','申請',d,[1,2,3],4,errS114,'bu'));
+  dZ.forEach(d=>tb.innerHTML+=row('115','甄選',d,[1,2,3,4],5,errZ115,'bb'));
+  dS.forEach(d=>tb.innerHTML+=row('115','申請',d,[1,2,3,4],5,errS115,'bu'));
+
+  const mZ114=(errZ114.reduce((a,b)=>a+b,0)/errZ114.length).toFixed(1);
+  const mS114=(errS114.reduce((a,b)=>a+b,0)/errS114.length).toFixed(1);
+  const mZ115=(errZ115.reduce((a,b)=>a+b,0)/errZ115.length).toFixed(1);
+  const mS115=(errS115.reduce((a,b)=>a+b,0)/errS115.length).toFixed(1);
+  document.getElementById('mapeZ114').textContent=mZ114+'%';
+  document.getElementById('mapeS114').textContent=mS114+'%';
+  document.getElementById('mapeZ115').textContent=mZ115+'%';
+  document.getElementById('mapeS115').textContent=mS115+'%';
+}
+
+/* ── Risk table ── */
+function buildRiskTable(zRes, sRes) {
+  const tb=document.getElementById('tbRisk');
+  tb.innerHTML='';
+  const makeRow=(r,ch,cls)=>{
+    const v=parseFloat(r.corrected), p=r.actual115;
+    const d=p>0?(v-p)/p*100:0;
+    let rLvl,issue,action;
+    if(v<5){rLvl='<span class="badge bd">🔴 極高風險</span>';issue='預測人數極低，恐無法開班';action='立即協調是否整合，強化技高合作校推薦';}
+    else if(v<8||d<-30){rLvl='<span class="badge bw">🟡 高風險</span>';issue=`招生縮減顯著(YoY${d.toFixed(0)}%)`;action='啟動緊急計畫，增加說明會，聯繫生源高中';}
+    else if(d<-15){rLvl='<span class="badge bw">🟡 中風險</span>';issue=`溫和下滑(YoY${d.toFixed(0)}%)`;action='加強宣傳，提升就讀誘因（獎學金、職涯輔導）';}
+    else{rLvl='<span class="badge bu">🟢 穩定</span>';issue='相對穩定，維持現有招生模式';action='深化生源校關係，提升就讀率';}
+    tb.innerHTML+=`<tr>
+      <td><span class="badge ${cls}">${ch}</span></td>
+      <td class="tl"><b>${r.dept}</b></td>
+      <td><b>${p}</b></td>
+      <td><span class="pred116">~${parseFloat(r.corrected).toFixed(0)}</span></td>
+      <td>${rLvl}</td>
+      <td class="tl" style="font-size:12px;color:var(--text2)">${issue}</td>
+      <td class="tl" style="font-size:12px">${action}</td>
+    </tr>`;
+  };
+  zRes.forEach(r=>makeRow(r,'甄選','bb'));
+  sRes.forEach(r=>makeRow(r,'申請','bu'));
+}
+
+/* ── Source tables ── */
+function buildSourceTables() {
+  let tb=document.getElementById('tbSrcHS');
+  tb.innerHTML='';
+  TOP15.forEach(s=>{
+    const t115=s.y115>s.y114?'<span class="badge bu">↑</span>':s.y115<s.y114?'<span class="badge bd">↓</span>':'<span class="badge bn">→</span>';
+    const sz=s.sz?s.sz.toLocaleString()+'人':'—';
+    const rt=s.sz?((s.total/s.sz)*100).toFixed(1)+'%':'—';
+    tb.innerHTML+=`<tr>
+      <td><b>${s.rank}</b></td><td class="tl"><b>${s.school}</b></td><td>${s.type}</td>
+      <td>${s.y111}</td><td>${s.y112}</td><td>${s.y113}</td><td>${s.y114}</td><td><b>${s.y115}</b></td>
+      <td class="bl"><b>${s.total}</b></td><td>${sz}</td><td>${rt}</td><td>${t115}</td>
+    </tr>`;
+  });
+  tb=document.getElementById('tbSrcJH');
+  tb.innerHTML='';
+  JH_SCHOOLS.forEach(s=>{
+    const pot=s.g7>400?'<span class="badge bu">🌟 高潛力</span>':s.g7>250?'<span class="badge bw">⭐ 中潛力</span>':'<span class="badge bn">📍 基本關注</span>';
+    tb.innerHTML+=`<tr>
+      <td class="tl"><b>${s.school}</b></td><td>${s.area}</td>
+      <td class="bl"><b>${s.total.toLocaleString()}</b></td>
+      <td>${s.g7}</td><td>${s.g8}</td><td>${s.g9}</td>
+      <td>${s.dist}</td><td>${pot} ${s.note}</td>
+    </tr>`;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CHART BUILDERS
+// ═══════════════════════════════════════════════════
+const YLABELS=['111','112','113','114','115','116推估'];
+const YCOLORS=['#38bdf8','#818cf8','#34d399','#fb923c','#f472b6','#fbbf24','#a78bfa','#4ade80','#f97316','#2dd4bf','#e879f9','#facc15'];
+
+function buildCharts(deltaZ, deltaS) {
+  // Overall totals line
+  const zTots=[161,93,109,80,78];
+  const sTots=[193,148,126,135,155];
+  const zPred116=ZDEPTS.reduce((s,d)=>{const{pred:r}=predict(d,[1,2,3,4,5],6);return s+Math.max(0,r*(1+deltaZ/2/100));},0);
+  const sPred116=SDEPTS.reduce((s,d)=>{const{pred:r}=predict(d,[1,2,3,4,5],6);return s+Math.max(0,r*(1+deltaS/2/100));},0);
+
+  // Datalabels config
+  const dlCfg = {
+    display:true,
+    color:(ctx)=>ctx.dataset.borderColor||'#fff',
+    anchor:'end', align:'top', offset:2,
+    font:{weight:'bold',size:10},
+    formatter:(v)=>v===null?'':Math.round(v)
+  };
+
+  makeChart('chartZTotal','line',YLABELS,[
+    {label:'甄選報到', data:[...zTots, parseFloat(zPred116.toFixed(0))],
+     borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.1)',tension:.4,pointRadius:5,
+     segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined},
+     pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
+     pointBackgroundColor:ctx=>ctx.dataIndex===5?'#f472b6':'#38bdf8'}
+  ],{datalabels:dlCfg});
+
+  makeChart('chartSTotal','line',YLABELS,[
+    {label:'申請報到', data:[...sTots, parseFloat(sPred116.toFixed(0))],
+     borderColor:'#34d399',backgroundColor:'rgba(52,211,153,.1)',tension:.4,pointRadius:5,
+     segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined},
+     pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
+     pointBackgroundColor:ctx=>ctx.dataIndex===5?'#f472b6':'#34d399'}
+  ],{datalabels:dlCfg});
+
+  // Per-dept line charts (甄選)
+  const zDatasets=ZDEPTS.map((d,i)=>{
+    const p116=Math.max(0,predict(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100));
+    return {
+      label:d.dept,
+      data:[d.y111,d.y112,d.y113,d.y114,d.y115,parseFloat(p116.toFixed(1))],
+      borderColor:YCOLORS[i%YCOLORS.length],
+      backgroundColor:'transparent',
+      tension:.4, pointRadius:4,
+      segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined},
+      pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
+      pointRadius:ctx=>ctx.dataIndex===5?7:4,
+    };
+  });
+  makeChart('chartZDepts','line',YLABELS,zDatasets,{datalabels:{
+    display:ctx=>ctx.dataIndex===5,
+    color:ctx=>ctx.dataset.borderColor,
+    anchor:'end',align:'top',offset:3,font:{weight:'bold',size:10},
+    formatter:v=>v===null?'':'~'+Math.round(v)
+  },chartOpts:{plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}}}});
+
+  // Per-dept line charts (申請)
+  const sDatasets=SDEPTS.map((d,i)=>{
+    const p116=Math.max(0,predict(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100));
+    return {
+      label:d.dept,
+      data:[d.y111,d.y112,d.y113,d.y114,d.y115,parseFloat(p116.toFixed(1))],
+      borderColor:YCOLORS[i%YCOLORS.length],
+      backgroundColor:'transparent',
+      tension:.4, pointRadius:4,
+      segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined},
+      pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
+      pointRadius:ctx=>ctx.dataIndex===5?7:4,
+    };
+  });
+  makeChart('chartSDepts','line',YLABELS,sDatasets,{datalabels:{
+    display:ctx=>ctx.dataIndex===5,
+    color:ctx=>ctx.dataset.borderColor,
+    anchor:'end',align:'top',offset:3,font:{weight:'bold',size:10},
+    formatter:v=>v===null?'':'~'+Math.round(v)
+  },chartOpts:{plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}}}});
+
+  // Rates chart
+  makeChart('chartRates','line',['111','112','113','114','115'],[
+    {label:'申請就讀率(人數計%)',data:[31.8,32.0,35.8,37.5,44.9],borderColor:'#34d399',tension:.4,pointRadius:5},
+    {label:'甄選分發→報到率%',data:[94.2,93.0,95.6,93.0,91.8],borderColor:'#38bdf8',tension:.4,pointRadius:5},
+  ],{datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v+'%'}});
+
+  // 115 vs 116 comparison
+  const allDepts=[...ZDEPTS.map(d=>({...d,ch:'甄',delta:deltaZ})),...SDEPTS.map(d=>({...d,ch:'申',delta:deltaS}))];
+  const labels2=allDepts.map(d=>d.dept.slice(0,5)+'('+d.ch+')');
+  makeChart('chartComp','bar',labels2,[
+    {label:'115實際',data:allDepts.map(d=>d.y115),backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'116推估',data:allDepts.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+d.delta/2/100)).toFixed(0))),backgroundColor:'rgba(244,114,182,.6)',borderColor:'#f472b6',borderWidth:1},
+  ],{datalabels:{display:true,color:'#fff',anchor:'end',align:'top',font:{size:9},formatter:v=>v}});
+
+  // 116 bar charts (page2)
+  const z116Bars=ZDEPTS.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100)).toFixed(0)));
+  makeChart('chart116ZBar','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'115實際',data:ZDEPTS.map(d=>d.y115),backgroundColor:'rgba(56,189,248,.4)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'116推估',data:z116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#f472b6',anchor:'end',align:'top',font:{size:11,weight:'bold'},formatter:v=>v}});
+
+  const s116Bars=SDEPTS.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100)).toFixed(0)));
+  makeChart('chart116SBar','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'115實際',data:SDEPTS.map(d=>d.y115),backgroundColor:'rgba(52,211,153,.4)',borderColor:'#34d399',borderWidth:1},
+    {label:'116推估',data:s116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#34d399':'#f472b6',anchor:'end',align:'top',font:{size:11,weight:'bold'},formatter:v=>v}});
+
+  // Validation charts (page3)
+  const z114pred=ZDEPTS.map(d=>parseFloat(predict(d,[1,2,3],4).pred.toFixed(1)));
+  const z114act=ZDEPTS.map(d=>d.y114);
+  makeChart('chartV114Z','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'預測',data:z114pred,backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'實際',data:z114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+
+  const s114pred=SDEPTS.map(d=>parseFloat(predict(d,[1,2,3],4).pred.toFixed(1)));
+  const s114act=SDEPTS.map(d=>d.y114);
+  makeChart('chartV114S','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'預測',data:s114pred,backgroundColor:'rgba(129,140,248,.5)',borderColor:'#818cf8',borderWidth:1},
+    {label:'實際',data:s114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#818cf8':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+
+  const z115pred=ZDEPTS.map(d=>parseFloat(predict(d,[1,2,3,4],5).pred.toFixed(1)));
+  const z115act=ZDEPTS.map(d=>d.y115);
+  makeChart('chartBT115Z','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'預測',data:z115pred,backgroundColor:'rgba(251,146,60,.5)',borderColor:'#fb923c',borderWidth:1},
+    {label:'實際',data:z115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fb923c':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+
+  const s115pred=SDEPTS.map(d=>parseFloat(predict(d,[1,2,3,4],5).pred.toFixed(1)));
+  const s115act=SDEPTS.map(d=>d.y115);
+  makeChart('chartBT115S','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
+    {label:'預測',data:s115pred,backgroundColor:'rgba(251,191,36,.5)',borderColor:'#fbbf24',borderWidth:1},
+    {label:'實際',data:s115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fbbf24':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+
+  // Region charts
+  makeChart('chartRegPie','doughnut',REGION_DATA.map(r=>r.r),[
+    {data:REGION_DATA.map(r=>r.total),backgroundColor:['#38bdf8','#34d399','#818cf8','#fb923c','#f472b6','#fbbf24','#94a3b8']}
+  ],{datalabels:{display:true,color:'#fff',font:{weight:'bold',size:11},formatter:(v,ctx)=>ctx.chart.data.labels[ctx.dataIndex]+'\n'+v}});
+
+  makeChart('chartRegTrend','line',['111','112','113','114','115'],[
+    {label:'高屏',data:[182,140,163,137,156],borderColor:'#38bdf8',tension:.4,pointRadius:4},
+    {label:'南部',data:[66,32,20,28,27],borderColor:'#34d399',tension:.4,pointRadius:4},
+    {label:'中部',data:[59,31,28,23,24],borderColor:'#818cf8',tension:.4,pointRadius:4},
+    {label:'北部',data:[24,20,14,11,14],borderColor:'#fb923c',tension:.4,pointRadius:4},
+  ],{datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:9},formatter:v=>v}});
+}
+
+// ═══════════════════════════════════════════════════
+// STAGE SWITCH
+// ═══════════════════════════════════════════════════
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  document.getElementById('tab-'+id)?.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const deltaZ=computeDelta(ZDEPTS,[1,2,3,4],5);
+  const deltaS=computeDelta(SDEPTS,[1,2,3,4],5);
+
+  // Page 0
+  buildTotalTable(ZDEPTS,'tbZTotal',deltaZ,'bl');
+  buildTotalTable(SDEPTS,'tbSTotal',deltaS,'gr');
+  buildCombinedTable(ZDEPTS,SDEPTS);
+
+  // Page 2
+  const zRes=build116Table(ZDEPTS,'tb116Z',deltaZ,'kpi116Z','kpi116ZSub');
+  const sRes=build116Table(SDEPTS,'tb116S',deltaS,'kpi116S','kpi116SSub');
+  const all116=zRes.reduce((s,r)=>s+r.corrected,0)+sRes.reduce((s,r)=>s+r.corrected,0);
+  document.getElementById('kpi116All').innerHTML=`~${all116.toFixed(0)}<span style="font-size:14px">人</span>`;
+
+  // Page 3
+  buildValTable(ZDEPTS,SDEPTS);
+
+  // Page 4
+  buildSourceTables();
+
+  // Page 5
+  buildRiskTable(zRes,sRes);
+
+  // All charts
+  buildCharts(deltaZ,deltaS);
+});
+</script>
+</body>
+</html>

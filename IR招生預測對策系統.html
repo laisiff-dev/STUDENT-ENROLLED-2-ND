@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>輔英科技大學 — IR 分層招生預測與對策系統 (116學年度推估)</title>
+  <title>輔英科技大學 — IR 分層招生報到率預測與對策系統 (116學年度推估)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -59,6 +59,13 @@
     .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
     .card-t{font-size:13px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:7px;margin-bottom:12px}
 
+    /* SELECT DROPDOWN */
+    .ctrl-bar{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+    .ctrl-group{display:flex;align-items:center;gap:8px}
+    .ctrl-lbl{font-size:12px;font-weight:700;color:#93c5fd;white-space:nowrap}
+    .sel-dark{background:var(--bg2);color:#fff;border:1px solid rgba(56,189,248,.4);border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;outline:none}
+    .sel-dark:focus{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.25)}
+
     /* KPI */
     .kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:border-color .2s}
     .kpi:hover{border-color:var(--accent)}
@@ -97,10 +104,6 @@
     .notice.warn{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:#fbbf24}
     .notice.danger{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.22);color:#f87171}
 
-    /* COLLEGE LABEL */
-    .clg-header{background:linear-gradient(90deg,rgba(56,189,248,.12),transparent);border-left:3px solid #38bdf8;padding:6px 14px;font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:8px;border-radius:0 6px 6px 0}
-    .clg-header.green{background:linear-gradient(90deg,rgba(52,211,153,.12),transparent);border-left-color:#34d399;color:#34d399}
-
     /* PRED HIGHLIGHT */
     .pred116{background:rgba(244,114,182,.12);color:#f472b6;font-weight:900;border:1px solid rgba(244,114,182,.3);border-radius:5px;padding:2px 8px;font-size:12px}
     .pred116-range{color:#94a3b8;font-size:11px}
@@ -116,7 +119,7 @@
 
     /* FORMULA */
     .fml{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:14px 18px;font-family:'Courier New',monospace;font-size:12px;color:#93c5fd;line-height:1.9;margin-bottom:14px}
-    .fml .ft{font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.05em}
+    .fml .ft{font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:6px;letter-spacing:.05em}
   </style>
 </head>
 <body>
@@ -126,75 +129,83 @@
   <div class="hdr-left">
     <div class="hdr-ico"><i class="fa-solid fa-brain"></i></div>
     <div>
-      <h1>輔英科技大學 — IR 分層招生預測與對策決策系統</h1>
-      <p>111–115實際數據 ‧ 111–113訓練模型 ‧ 114驗證 ‧ 115回測 ‧ 116年各院系推估 ‧ 高屏生源整合</p>
+      <h1>輔英科技大學 — IR 分層招生「報到率」預測與對策決策系統</h1>
+      <p>以各院系歷年報到率(%)建立模式 ‧ 111–113訓練 ‧ 114驗證 ‧ 115回測修正 ‧ 116學年度報到率推估 ‧ 學院系所Top5生源分析</p>
     </div>
   </div>
   <div class="htags">
-    <span class="htag b"><i class="fa-solid fa-flask"></i> 預測模型</span>
-    <span class="htag p"><i class="fa-solid fa-layer-group"></i> 分層IR</span>
-    <span class="htag g"><i class="fa-solid fa-map-location-dot"></i> 生源分析</span>
+    <span class="htag b"><i class="fa-solid fa-percent"></i> 報到率建模</span>
+    <span class="htag p"><i class="fa-solid fa-layer-group"></i> 分層IR推估</span>
+    <span class="htag g"><i class="fa-solid fa-map-location-dot"></i> 院系Top5生源</span>
     <span class="htag o"><i class="fa-solid fa-lightbulb"></i> 招生對策</span>
   </div>
 </header>
 
 <!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn active" id="tab-p0" onclick="switchPage('p0')"><i class="fa-solid fa-table-list"></i> 全院系數據總表</button>
-  <button class="nav-btn" id="tab-p1" onclick="switchPage('p1')"><i class="fa-solid fa-chart-line"></i> 趨勢圖表</button>
-  <button class="nav-btn" id="tab-p2" onclick="switchPage('p2')"><i class="fa-solid fa-telescope"></i> 116年推估</button>
-  <button class="nav-btn" id="tab-p3" onclick="switchPage('p3')"><i class="fa-solid fa-microscope"></i> 模型驗證</button>
-  <button class="nav-btn" id="tab-p4" onclick="switchPage('p4')"><i class="fa-solid fa-map"></i> 區域生源</button>
+  <button class="nav-btn active" id="tab-p0" onclick="switchPage('p0')"><i class="fa-solid fa-table-list"></i> 全院系報到率總表</button>
+  <button class="nav-btn" id="tab-p1" onclick="switchPage('p1')"><i class="fa-solid fa-chart-line"></i> 報到率趨勢圖表</button>
+  <button class="nav-btn" id="tab-p2" onclick="switchPage('p2')"><i class="fa-solid fa-telescope"></i> 116年報到率推估</button>
+  <button class="nav-btn" id="tab-p3" onclick="switchPage('p3')"><i class="fa-solid fa-microscope"></i> 報到率模型驗證</button>
+  <button class="nav-btn" id="tab-p4" onclick="switchPage('p4')"><i class="fa-solid fa-map"></i> 區域生源與院系Top5</button>
   <button class="nav-btn" id="tab-p5" onclick="switchPage('p5')"><i class="fa-solid fa-chess-knight"></i> 招生對策</button>
+  <select class="sel-dark" id="globalPageSelect" onchange="switchPage(this.value)" style="margin-left:auto;padding:6px 12px;font-size:12px;">
+    <option value="p0">🔽 下拉快速切換畫面：0. 全院系報到率總表</option>
+    <option value="p1">🔽 下拉快速切換畫面：1. 報到率趨勢圖表</option>
+    <option value="p2">🔽 下拉快速切換畫面：2. 116年報到率推估</option>
+    <option value="p3">🔽 下拉快速切換畫面：3. 報到率模型驗證</option>
+    <option value="p4">🔽 下拉快速切換畫面：4. 區域生源與院系Top5</option>
+    <option value="p5">🔽 下拉快速切換畫面：5. 分層招生策略(含院資源與同類校開發)</option>
+  </select>
 </nav>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 0 — 全院系數據總表
+     PAGE 0 — 全院系報到率數據總表
 ═══════════════════════════════════════════════════════ -->
 <section id="p0" class="page active">
 
   <!-- KPI -->
   <div class="g4">
     <div class="kpi kb">
-      <div class="kpi-l">甄選 111–115 合計</div>
-      <div class="kpi-v" style="color:#38bdf8">527<span style="font-size:14px">人</span></div>
-      <div class="kpi-s">年均 105人 ‧ 161→78 (-51.6%)</div>
-      <span class="badge bd"><i class="fa-solid fa-arrow-trend-down"></i> 顯著下滑</span>
+      <div class="kpi-l">甄選 111–115 二階報到率</div>
+      <div class="kpi-v" style="color:#38bdf8">43.1%<span style="font-size:13px"> (5年均值)</span></div>
+      <div class="kpi-s">111年 38.2% → 115年 48.1% (+9.9pp)</div>
+      <span class="badge bu"><i class="fa-solid fa-arrow-trend-up"></i> 報到率穩健提升</span>
     </div>
     <div class="kpi kg">
-      <div class="kpi-l">申請 111–115 合計</div>
-      <div class="kpi-v" style="color:#34d399">757<span style="font-size:14px">人</span></div>
-      <div class="kpi-s">年均 151人 ‧ 193→155 (-19.7%)</div>
-      <span class="badge bd"><i class="fa-solid fa-arrow-trend-down"></i> 緩降趨穩</span>
+      <div class="kpi-l">申請 111–115 二階報到率</div>
+      <div class="kpi-v" style="color:#34d399">35.6%<span style="font-size:13px"> (5年均值)</span></div>
+      <div class="kpi-s">111年 31.8% → 115年 44.9% (+13.1pp)</div>
+      <span class="badge bu"><i class="fa-solid fa-arrow-trend-up"></i> 連續5年正成長</span>
     </div>
     <div class="kpi ko">
-      <div class="kpi-l">116年全校推估</div>
-      <div class="kpi-v" style="color:#fb923c">~213<span style="font-size:14px">人</span></div>
-      <div class="kpi-s">甄選 ~67 + 申請 ~146</div>
-      <span class="badge bw"><i class="fa-solid fa-triangle-exclamation"></i> 持續收縮</span>
+      <div class="kpi-l">116年全校綜合報到率推估</div>
+      <div class="kpi-v" style="color:#fb923c" id="p0KpiAllRate">~45.8%</div>
+      <div class="kpi-s" id="p0KpiAllSub">甄選推估 ~48.9% ‧ 申請推估 ~43.9%</div>
+      <span class="badge bu"><i class="fa-solid fa-percent"></i> 以報到率建模推估</span>
     </div>
     <div class="kpi kpk">
-      <div class="kpi-l">申請就讀率 115年</div>
-      <div class="kpi-v" style="color:#f472b6">44.9%</div>
-      <div class="kpi-s">155/345人（人數計）‧ 歷年最高</div>
-      <span class="badge bu"><i class="fa-solid fa-arrow-trend-up"></i> 逐年上升</span>
+      <div class="kpi-l">甄選分發錄取報到率</div>
+      <div class="kpi-v" style="color:#f472b6">93.7%</div>
+      <div class="kpi-s">115年 91.8% (78/85人) ‧ 116推估 ~92.6%</div>
+      <span class="badge bp"><i class="fa-solid fa-shield-heart"></i> 錄取後高黏著度</span>
     </div>
   </div>
 
   <!-- 甄選全院系總表 -->
-  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-building-columns"></i></span>甄選入學（技高）— 各院系 111–115 報到人數 + 116推估</div>
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-building-columns"></i></span>甄選入學（技高）— 各院系 111–115 報到率(%) + 116報到率推估</div>
   <div class="card fw">
     <div class="tw">
       <table class="tbl">
         <thead>
           <tr>
-            <th class="tl" style="min-width:140px">學系</th>
-            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-            <th style="background:rgba(56,189,248,.15)">5年合計</th>
-            <th style="background:rgba(56,189,248,.15)">年均</th>
-            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
-            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間</th>
-            <th>趨勢</th>
+            <th class="tl" style="min-width:150px">學系（所屬學院）</th>
+            <th>111報到率</th><th>112報到率</th><th>113報到率</th><th>114報到率</th><th>115報到率</th>
+            <th style="background:rgba(56,189,248,.15)">5年平均報到率</th>
+            <th style="background:rgba(56,189,248,.10)">5年報到/基數</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估報到率</th>
+            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間(%)</th>
+            <th>報到率趨勢</th>
           </tr>
         </thead>
         <tbody id="tbZTotal"></tbody>
@@ -202,24 +213,24 @@
     </div>
     <div class="notice" style="margin-top:12px;margin-bottom:0">
       <i class="fa-solid fa-circle-info"></i>
-      <span><b style="color:#f472b6">116推估</b> = 修正線性趨勢模型 (α=0.55×線性外推 + β=0.45×均值) × (1 + δ半程修正)。 紫色背景欄位為預測值，非實際數據。</span>
+      <span><b>建模邏輯修正說明：</b>本系統全面採用<b>「各系歷年報到率 (%) = 實際報到人數 ÷ 二階甄試/名額基數 × 100%」</b>作為時間序列建模變數（非直接以人數外推），消除各年度招生名額與報名母數變動之干擾。<b style="color:#f472b6">116推估報到率</b> = 報到率加權線性趨勢模型 (α=0.55×線性外推 + β=0.45×歷年均值) × (1 + δ_R/2 半程誤差修正)。</span>
     </div>
   </div>
 
   <!-- 申請全院系總表 -->
-  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-building-columns"></i></span>申請入學（普高）— 各院系 111–115 報到人數 + 116推估</div>
+  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-building-columns"></i></span>申請入學（普高）— 各院系 111–115 報到率(%) + 116報到率推估</div>
   <div class="card fw">
     <div class="tw">
       <table class="tbl">
         <thead>
           <tr>
-            <th class="tl" style="min-width:140px">學系</th>
-            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-            <th style="background:rgba(52,211,153,.15);color:#34d399">5年合計</th>
-            <th style="background:rgba(52,211,153,.15);color:#34d399">年均</th>
-            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
-            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間</th>
-            <th>趨勢</th>
+            <th class="tl" style="min-width:150px">學系（所屬學院）</th>
+            <th>111報到率</th><th>112報到率</th><th>113報到率</th><th>114報到率</th><th>115報到率</th>
+            <th style="background:rgba(52,211,153,.15);color:#34d399">5年平均報到率</th>
+            <th style="background:rgba(52,211,153,.10);color:#34d399">5年報到/基數</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估報到率</th>
+            <th style="background:rgba(244,114,182,.1);color:#f472b6">預測區間(%)</th>
+            <th>報到率趨勢</th>
           </tr>
         </thead>
         <tbody id="tbSTotal"></tbody>
@@ -228,7 +239,7 @@
   </div>
 
   <!-- 兩管道合併總計表 -->
-  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>兩管道合計 — 各系雙管道匯總（有記錄系所）</div>
+  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>兩管道對照 — 各系雙管道歷年報到率(%)與 116 報到率推估匯總</div>
   <div class="card fw">
     <div class="tw">
       <table class="tbl">
@@ -236,9 +247,9 @@
           <tr>
             <th class="tl" style="min-width:140px">學系</th>
             <th>管道</th>
-            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-            <th style="background:rgba(129,140,248,.15);color:#818cf8">5年合計</th>
-            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估</th>
+            <th>111報到率</th><th>112報到率</th><th>113報到率</th><th>114報到率</th><th>115報到率</th>
+            <th style="background:rgba(129,140,248,.15);color:#818cf8">5年平均報到率</th>
+            <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估報到率</th>
           </tr>
         </thead>
         <tbody id="tbCombined"></tbody>
@@ -248,52 +259,52 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 1 — 趨勢圖表
+     PAGE 1 — 報到率趨勢圖表
 ═══════════════════════════════════════════════════════ -->
 <section id="p1" class="page">
-  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-line"></i></span>111–115各系報到人數趨勢（含116預測點）</div>
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-line"></i></span>111–115 各管道整體報到率(%)趨勢（含 116 預測點）</div>
 
   <div class="g2">
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 甄選入學 — 全院總量趨勢</div>
+      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 甄選入學 — 全校報到率(%)趨勢 (111–116推估)</div>
       <div class="ch"><canvas id="chartZTotal"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#34d399"></i> 申請入學 — 全院總量趨勢</div>
+      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#34d399"></i> 申請入學 — 全校報到率(%)趨勢 (111–116推估)</div>
       <div class="ch"><canvas id="chartSTotal"></canvas></div>
     </div>
   </div>
 
-  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-bar"></i></span>甄選各系 111–116 折線趨勢（含116推估標籤）</div>
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-chart-bar"></i></span>甄選各系 111–116 報到率(%)折線趨勢（含 116 推估標籤）</div>
   <div class="card fw">
     <div class="ch-lg"><canvas id="chartZDepts"></canvas></div>
   </div>
 
-  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-chart-bar"></i></span>申請各系 111–116 折線趨勢（含116推估標籤）</div>
+  <div class="st"><span class="ico ico-g"><i class="fa-solid fa-chart-bar"></i></span>申請各系 111–116 報到率(%)折線趨勢（含 116 推估標籤）</div>
   <div class="card fw">
     <div class="ch-lg"><canvas id="chartSDepts"></canvas></div>
   </div>
 
-  <div class="st" style="margin-top:4px"><span class="ico ico-o"><i class="fa-solid fa-chart-column"></i></span>申請就讀率演變 (人數計)</div>
+  <div class="st" style="margin-top:4px"><span class="ico ico-o"><i class="fa-solid fa-chart-column"></i></span>各管道階段轉換率演變與 115 vs 116 報到率比較</div>
   <div class="g2">
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-percent" style="color:#fb923c"></i> 申請 — 一階→二階→報到 各年轉換率</div>
+      <div class="card-t"><i class="fa-solid fa-percent" style="color:#fb923c"></i> 甄選與申請 — 各階段報到率/轉換率演變 (%)</div>
       <div class="ch"><canvas id="chartRates"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-bar" style="color:#818cf8"></i> 雙管道 115年 vs 116推估 比較</div>
+      <div class="card-t"><i class="fa-solid fa-chart-bar" style="color:#818cf8"></i> 各系雙管道 115實際報到率 vs 116推估報到率 (%)</div>
       <div class="ch"><canvas id="chartComp"></canvas></div>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 2 — 116年推估
+     PAGE 2 — 116年報到率推估
 ═══════════════════════════════════════════════════════ -->
 <section id="p2" class="page">
-  <div class="notice warn"><i class="fa-solid fa-triangle-exclamation"></i><span>116推估基於111–115年5年歷史數據，採修正線性趨勢模型（α=0.55, β=0.45）加115年δ半程修正。粉紅色欄位為預測值，預測區間為±18%。</span></div>
+  <div class="notice warn"><i class="fa-solid fa-triangle-exclamation"></i><span><b>116學年度報到率推估模式：</b>基於 111–115 年 5 年各系<b>「實際報到率 (%)」</b>歷史數據，採加權線性趨勢模型（α=0.55, β=0.45）並納入 115 年回測系統誤差 δ_R 半程修正。粉紅色欄位為 116 預測報到率(%)，預測區間為 ±12%（受限於 0%~100% 範圍）。</span></div>
 
-  <div class="st"><span class="ico ico-pk"><i class="fa-solid fa-telescope"></i></span>甄選入學 — 116學年度各系招生人數推估（含逐年趨勢）</div>
+  <div class="st"><span class="ico ico-pk"><i class="fa-solid fa-telescope"></i></span>甄選入學 — 116學年度各系「報到率 (%)」推估與逐年趨勢</div>
   <div class="card fw">
     <div class="ch-md"><canvas id="chart116ZBar"></canvas></div>
   </div>
@@ -302,17 +313,17 @@
       <table class="tbl">
         <thead><tr>
           <th class="tl">學系</th>
-          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-          <th>初步預測</th><th>δ修正</th>
-          <th style="background:rgba(244,114,182,.15);color:#f472b6">116最終推估</th>
-          <th>預測區間</th><th>YoY</th><th>風險</th>
+          <th>111報到率</th><th>112報到率</th><th>113報到率</th><th>114報到率</th><th>115報到率</th>
+          <th>初步模型報到率</th><th>δ_R半程修正</th>
+          <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估報到率</th>
+          <th>預測區間(%)</th><th>報到率年增減(pp)</th><th>風險評級</th>
         </tr></thead>
         <tbody id="tb116Z"></tbody>
       </table>
     </div>
   </div>
 
-  <div class="st" style="margin-top:8px"><span class="ico ico-g"><i class="fa-solid fa-telescope"></i></span>申請入學 — 116學年度各系招生人數推估（含逐年趨勢）</div>
+  <div class="st" style="margin-top:8px"><span class="ico ico-g"><i class="fa-solid fa-telescope"></i></span>申請入學 — 116學年度各系「報到率 (%)」推估與逐年趨勢</div>
   <div class="card fw">
     <div class="ch-md"><canvas id="chart116SBar"></canvas></div>
   </div>
@@ -321,10 +332,10 @@
       <table class="tbl">
         <thead><tr>
           <th class="tl">學系</th>
-          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-          <th>初步預測</th><th>δ修正</th>
-          <th style="background:rgba(244,114,182,.15);color:#f472b6">116最終推估</th>
-          <th>預測區間</th><th>YoY</th><th>風險</th>
+          <th>111報到率</th><th>112報到率</th><th>113報到率</th><th>114報到率</th><th>115報到率</th>
+          <th>初步模型報到率</th><th>δ_R半程修正</th>
+          <th style="background:rgba(244,114,182,.15);color:#f472b6">116推估報到率</th>
+          <th>預測區間(%)</th><th>報到率年增減(pp)</th><th>風險評級</th>
         </tr></thead>
         <tbody id="tb116S"></tbody>
       </table>
@@ -332,77 +343,78 @@
   </div>
 
   <!-- 116全院匯總 -->
-  <div class="st" style="margin-top:8px"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>116學年度全校招生總量推估匯總</div>
+  <div class="st" style="margin-top:8px"><span class="ico ico-p"><i class="fa-solid fa-sigma"></i></span>116學年度全校報到率推估匯總</div>
   <div class="g3">
     <div class="kpi kb">
-      <div class="kpi-l">甄選 116推估</div>
+      <div class="kpi-l">甄選 116 推估報到率</div>
       <div class="kpi-v bl" id="kpi116Z">—</div>
       <div class="kpi-s" id="kpi116ZSub">計算中...</div>
-      <span class="badge bd"><i class="fa-solid fa-arrow-down"></i> YoY ≈ -14%</span>
+      <span class="badge bu"><i class="fa-solid fa-percent"></i> 報到率模式推估</span>
     </div>
     <div class="kpi kg">
-      <div class="kpi-l">申請 116推估</div>
+      <div class="kpi-l">申請 116 推估報到率</div>
       <div class="kpi-v gr" id="kpi116S">—</div>
       <div class="kpi-s" id="kpi116SSub">計算中...</div>
-      <span class="badge bd"><i class="fa-solid fa-arrow-down"></i> YoY ≈ -6%</span>
+      <span class="badge bu"><i class="fa-solid fa-percent"></i> 報到率模式推估</span>
     </div>
     <div class="kpi ko">
-      <div class="kpi-l">全校 116合計推估</div>
+      <div class="kpi-l">全校綜合 116 推估報到率</div>
       <div class="kpi-v" style="color:#fb923c" id="kpi116All">—</div>
-      <div class="kpi-s">115年實際 233人</div>
-      <span class="badge bw"><i class="fa-solid fa-triangle-exclamation"></i> 持續收縮</span>
+      <div class="kpi-s" id="kpi116AllSub">115年全校實際二階報到率 46.0%</div>
+      <span class="badge bu"><i class="fa-solid fa-chart-line"></i> 報到轉換穩定</span>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 3 — 模型驗證
+     PAGE 3 — 報到率模型驗證
 ═══════════════════════════════════════════════════════ -->
 <section id="p3" class="page">
   <div class="fml">
-    <div class="ft">📐 預測模型公式（修正線性加權趨勢模型）</div>
-    訓練集: 111–113年 (t=1,2,3) → OLS線性回歸 y = a + b×t<br>
-    加權預測: ŷ = α×(a + b×t_target) + β×μ₃年均值　[α=0.55, β=0.45]<br>
-    114年驗證: MAPE = Σ|實際-預測|/實際 / n × 100%<br>
-    115年回測: δ = (實際-預測)/預測 × 100%（各系平均）<br>
-    116推估: ŷ₁₁₆ = ŷ_5yr_model × (1 + δ_avg/2)　← 半程誤差修正策略
+    <div class="ft">📐 報到率預測模型公式（修正線性加權報到率趨勢模型 — 以報到率 % 建模）</div>
+    變數定義: 各系第 t 年報到率 R(t) = (實際報到人數 Y_t ÷ 二階甄試/名額基數 B_t) × 100%<br>
+    訓練集: 111–113年報到率 (t=1,2,3) → OLS線性回歸 R_lin(t) = a_R + b_R × t<br>
+    加權報到率預測: R̂(t) = clamp( α×(a_R + b_R×t_target) + β×μ_R , 0%, 100% )　[α=0.55, β=0.45]<br>
+    114年驗證: MAPE_R = Σ |R_實際(114) - R̂_預測(114)| / R_實際(114) / n × 100%<br>
+    115年回測: δ_R = (R_實際(115) - R̂_預測(115)) / R̂_預測(115) × 100%（各系平均系統偏差）<br>
+    116報到率推估: R̂₁₁₆ = clamp( R̂_5yr_model × (1 + δ_R / 2) , 0%, 100% )　← 半程誤差修正策略
   </div>
 
   <div class="g2">
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#38bdf8"></i> 甄選 — 114年驗證 (預測 vs 實際)</div>
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#38bdf8"></i> 甄選 — 114年報到率驗證 (預測報到率% vs 實際報到率%)</div>
       <div class="ch"><canvas id="chartV114Z"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#34d399"></i> 申請 — 114年驗證 (預測 vs 實際)</div>
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#34d399"></i> 申請 — 114年報到率驗證 (預測報到率% vs 實際報到率%)</div>
       <div class="ch"><canvas id="chartV114S"></canvas></div>
     </div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fb923c"></i> 甄選 — 115年回測 (預測 vs 實際)</div>
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fb923c"></i> 甄選 — 115年報到率回測 (預測報到率% vs 實際報到率%)</div>
       <div class="ch"><canvas id="chartBT115Z"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fbbf24"></i> 申請 — 115年回測 (預測 vs 實際)</div>
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#fbbf24"></i> 申請 — 115年報到率回測 (預測報到率% vs 實際報到率%)</div>
       <div class="ch"><canvas id="chartBT115S"></canvas></div>
     </div>
   </div>
 
   <div class="g4">
-    <div class="kpi kb"><div class="kpi-l">甄選 MAPE (114)</div><div class="kpi-v bl" id="mapeZ114">—</div><div class="kpi-s">114年驗證誤差率</div></div>
-    <div class="kpi kg"><div class="kpi-l">申請 MAPE (114)</div><div class="kpi-v gr" id="mapeS114">—</div><div class="kpi-s">114年驗證誤差率</div></div>
-    <div class="kpi ko"><div class="kpi-l">甄選 MAPE (115)</div><div class="kpi-v" style="color:#fb923c" id="mapeZ115">—</div><div class="kpi-s">115年回測誤差率</div></div>
-    <div class="kpi kpk"><div class="kpi-l">申請 MAPE (115)</div><div class="kpi-v pk" id="mapeS115">—</div><div class="kpi-s">115年回測誤差率</div></div>
+    <div class="kpi kb"><div class="kpi-l">甄選報到率 MAPE (114)</div><div class="kpi-v bl" id="mapeZ114">—</div><div class="kpi-s">114年報到率驗證誤差</div></div>
+    <div class="kpi kg"><div class="kpi-l">申請報到率 MAPE (114)</div><div class="kpi-v gr" id="mapeS114">—</div><div class="kpi-s">114年報到率驗證誤差</div></div>
+    <div class="kpi ko"><div class="kpi-l">甄選報到率 MAPE (115)</div><div class="kpi-v" style="color:#fb923c" id="mapeZ115">—</div><div class="kpi-s">115年報到率回測誤差</div></div>
+    <div class="kpi kpk"><div class="kpi-l">申請報到率 MAPE (115)</div><div class="kpi-v pk" id="mapeS115">—</div><div class="kpi-s">115年報到率回測誤差</div></div>
   </div>
 
   <div class="card fw">
-    <div class="card-t"><i class="fa-solid fa-table" style="color:#818cf8"></i> 114+115年驗證與回測明細</div>
+    <div class="card-t"><i class="fa-solid fa-table" style="color:#818cf8"></i> 114驗證 + 115回測 — 各系「報到率 (%)」預測與實際明細</div>
     <div class="tw">
       <table class="tbl">
         <thead><tr>
           <th>年度</th><th>管道</th><th class="tl">學系</th>
-          <th>預測值</th><th>實際值</th><th>誤差</th><th>誤差率%</th><th>評等</th>
+          <th>預測報到率(%)</th><th>實際報到率(%)</th><th>百分點誤差(pp)</th><th>相對誤差率%</th><th>模型評等</th>
         </tr></thead>
         <tbody id="tbVal"></tbody>
       </table>
@@ -411,132 +423,421 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 4 — 區域生源
+     PAGE 4 — 區域生源與各學院對應系所 Top 5 生源學校
 ═══════════════════════════════════════════════════════ -->
 <section id="p4" class="page">
-  <div class="notice"><i class="fa-solid fa-circle-info"></i><span>數據來源：教育部公開資料庫 + <a href="https://github.com/laisiff-dev/student-number-campus" target="_blank" style="color:#38bdf8">laisiff-dev/student-number-campus</a> 高屏91校GIS資料庫。</span></div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-pie" style="color:#34d399"></i> 5年報到生源區域分佈（合計1284人）</div>
-      <div class="ch"><canvas id="chartRegPie"></canvas></div>
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-layer-group"></i> 畫面檢視選擇：</span>
+      <select class="sel-dark" id="p4ViewMode" onchange="switchP4View()">
+        <option value="all">📑 綜合全覽（所有生源區域與學院系所Top5圖表）</option>
+        <option value="dept_top5">🏛️ 各學院對應系所 — 生源學校前 5 名條狀圖</option>
+        <option value="region_change">🗺️ 近 5 年生源區域分佈與變化</option>
+        <option value="top15_hs">🏫 全校主要生源高中職 Top 15 與周邊國中</option>
+      </select>
     </div>
-    <div class="card">
-      <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 主要區域年度趨勢</div>
-      <div class="ch"><canvas id="chartRegTrend"></canvas></div>
+    <div class="ctrl-group" id="p4CollegeCtrl">
+      <span class="ctrl-lbl"><i class="fa-solid fa-building-columns"></i> 選擇學院：</span>
+      <select class="sel-dark" id="p4CollegeSelect" onchange="onP4CollegeChange()">
+        <option value="護理學院">🩺 護理學院 (護理、健管、高齡長照、助產)</option>
+        <option value="醫學與健康學院">🧬 醫學與健康學院 (物治、保營、健美、醫技)</option>
+        <option value="環境與生命學院">🌱 環境與生命學院 (環工、職安、應化、生技)</option>
+        <option value="人文與管理學院">💼 人文與管理學院 (資管、休遊、幼保、應外)</option>
+      </select>
+    </div>
+    <div class="ctrl-group" id="p4DeptCtrl">
+      <span class="ctrl-lbl"><i class="fa-solid fa-graduation-cap"></i> 選擇對應系所：</span>
+      <select class="sel-dark" id="p4DeptSelect" onchange="renderP4DeptTop5Chart()"></select>
     </div>
   </div>
 
-  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-school"></i></span>主要生源高中職 Top 15 — 就讀人數與5年趨勢</div>
-  <div class="card fw">
-    <div class="tw">
-      <table class="tbl">
-        <thead><tr>
-          <th>排名</th><th class="tl">學校</th><th>類型</th>
-          <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
-          <th style="color:#38bdf8">5年合計</th><th>全校人數</th><th>就讀率</th><th>趨勢</th>
-        </tr></thead>
-        <tbody id="tbSrcHS"></tbody>
-      </table>
+  <!-- 模組 A: 不同學院對應系所的生源學校前 5 名條狀圖 -->
+  <div id="p4SecDeptTop5">
+    <div class="st"><span class="ico ico-pk"><i class="fa-solid fa-chart-bar"></i></span>不同學院對應系所 — 近5年生源學校前 5 名條狀圖</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-t" id="p4SingleDeptTitle"><i class="fa-solid fa-ranking-star" style="color:#f472b6"></i> 單一系所生源學校 Top 5 條狀圖</div>
+        <div class="ch-md"><canvas id="chartP4DeptTop5"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-t" id="p4SingleDeptTableTitle"><i class="fa-solid fa-table" style="color:#38bdf8"></i> 該系 Top 5 生源學校歷年就讀人數與佔比明細</div>
+        <div class="tw">
+          <table class="tbl">
+            <thead><tr>
+              <th>排名</th><th class="tl">生源學校</th><th>屬性</th>
+              <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+              <th style="color:#f472b6">5年合計</th><th>佔該系比重</th>
+            </tr></thead>
+            <tbody id="tbP4DeptTop5"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card fw">
+      <div class="card-t" id="p4CollegeAllTitle"><i class="fa-solid fa-grip" style="color:#34d399"></i> 所選學院旗下各系所 — 生源學校前 5 名條狀圖總覽</div>
+      <div class="g2" id="p4CollegeGridCharts" style="margin-bottom:0"></div>
     </div>
   </div>
 
-  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-school-flag"></i></span>周邊國中生源 — 中期潛力評估（3–6年後生源管線）</div>
-  <div class="card fw">
-    <div class="tw">
-      <table class="tbl">
-        <thead><tr>
-          <th class="tl">學校</th><th>區域</th><th>總人數</th>
-          <th>七年級</th><th>八年級</th><th>九年級</th>
-          <th>距離</th><th>潛力評估</th>
-        </tr></thead>
-        <tbody id="tbSrcJH"></tbody>
-      </table>
+  <!-- 模組 B: 生源區域分佈與變化 -->
+  <div id="p4SecRegion">
+    <div class="st"><span class="ico ico-g"><i class="fa-solid fa-map-location-dot"></i></span>近 5 年生源區域分佈與年度變化</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-t"><i class="fa-solid fa-chart-pie" style="color:#34d399"></i> 5年報到生源區域分佈（合計1,284人）</div>
+        <div class="ch"><canvas id="chartRegPie"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-t"><i class="fa-solid fa-chart-line" style="color:#38bdf8"></i> 主要區域年度趨勢</div>
+        <div class="ch"><canvas id="chartRegTrend"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模組 C: Top 15 高中職與周邊國中 -->
+  <div id="p4SecTop15">
+    <div class="st"><span class="ico ico-b"><i class="fa-solid fa-school"></i></span>主要生源高中職 Top 15 — 就讀人數與5年趨勢</div>
+    <div class="card fw">
+      <div class="tw">
+        <table class="tbl">
+          <thead><tr>
+            <th>排名</th><th class="tl">學校</th><th>類型</th>
+            <th>111</th><th>112</th><th>113</th><th>114</th><th>115</th>
+            <th style="color:#38bdf8">5年合計</th><th>全校人數</th><th>轉換率</th><th>趨勢</th>
+          </tr></thead>
+          <tbody id="tbSrcHS"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="st"><span class="ico ico-p"><i class="fa-solid fa-school-flag"></i></span>周邊國中生源 — 中期潛力評估（3–6年後生源管線）</div>
+    <div class="card fw">
+      <div class="tw">
+        <table class="tbl">
+          <thead><tr>
+            <th class="tl">學校</th><th>區域</th><th>總人數</th>
+            <th>七年級</th><th>八年級</th><th>九年級</th>
+            <th>距離</th><th>潛力評估</th>
+          </tr></thead>
+          <tbody id="tbSrcJH"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 5 — 招生對策
+     PAGE 5 — 分層招生策略（下拉式檢視 + 院資源規劃 + 系所差異化 + 報到率與同類校開發）
 ═══════════════════════════════════════════════════════ -->
 <section id="p5" class="page">
-  <div class="st"><span class="ico ico-o"><i class="fa-solid fa-triangle-exclamation"></i></span>各系風險分級矩陣</div>
-  <div class="card fw">
-    <div class="tw">
-      <table class="tbl">
-        <thead><tr>
-          <th>管道</th><th class="tl">學系</th>
-          <th>115實際</th><th>116推估</th><th>風險等級</th>
-          <th class="tl">關鍵問題</th><th class="tl">優先行動</th>
-        </tr></thead>
-        <tbody id="tbRisk"></tbody>
-      </table>
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-layer-group"></i> 策略畫面下拉選擇：</span>
+      <select class="sel-dark" id="p5ViewMode" onchange="switchP5View()">
+        <option value="all">📑 綜合全覽（所有分層對策、院資源、同類校開發與風險矩陣）</option>
+        <option value="college_res">🏛️ 一、四大學院「整體性資源規劃」與「專業系所特定差異化區隔」</option>
+        <option value="dept_lookalike">🎯 二、各系「申請/甄選報到率」× 對應生源校 ×「同類潛力生源校開發規劃」</option>
+        <option value="risk_matrix">⚠️ 三、各系報到率風險分級矩陣與六大核心策略</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-building-columns"></i> 依四大學院篩選：</span>
+      <select class="sel-dark" id="p5CollegeSelect" onchange="switchP5View()">
+        <option value="all">🏫 全部四大學院 (護理 / 醫學與健康 / 環境與生命 / 人文與管理)</option>
+        <option value="護理學院">🩺 護理學院 (護理、健管、高齡長照、助產)</option>
+        <option value="醫學與健康學院">🧬 醫學與健康學院 (物治、保營、健美、醫技)</option>
+        <option value="環境與生命學院">🌱 環境與生命學院 (環工、職安、應化、生技)</option>
+        <option value="人文與管理學院">💼 人文與管理學院 (資管、休遊、幼保、應外)</option>
+      </select>
     </div>
   </div>
 
-  <div class="st" style="margin-top:8px"><span class="ico ico-b"><i class="fa-solid fa-lightbulb"></i></span>分層招生策略建議</div>
-  <div class="sg">
-    <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-magnet" style="color:#38bdf8"></i> 策略一：精準深耕高轉換生源</div><div class="sc-b">針對中山工商(25.3%)、小港高中(28.8%)、樹德家商(33.9%)、林園高中(27.3%)。<ul><li>每年赴校辦說明會（含職涯展望數據）</li><li>與輔導老師建立LINE群組直通聯繫</li><li>優先名額校園參訪（甄選前辦理）</li><li>TOP3生源校設立獎學金加分誘因</li></ul></div></div>
-    <div class="sc sg2"><div class="sc-t"><i class="fa-solid fa-graduation-cap" style="color:#34d399"></i> 策略二：申請就讀率鞏固（44.9%歷年高點）</div><div class="sc-b">115年就讀率達44.9%（人數計），需持續強化。<ul><li>二階正取24hr關懷電話機制</li><li>二階放榜3日辦「學系歡迎日」</li><li>設就讀疑慮諮詢熱線與個案追蹤</li><li>申請志願輔導教師獎勵制度</li></ul></div></div>
-    <div class="sc so"><div class="sc-t"><i class="fa-solid fa-seedling" style="color:#fb923c"></i> 策略三：國中扎根中期培育</div><div class="sc-b">大寮(2km)、鳳甲、楠梓等近距離國中優先。<ul><li>辦「健康科學探索營」邀國中生體驗</li><li>學系教授指導國中科學競賽</li><li>追蹤各國中七年級人口變動</li><li>與各區國中建立定期交流協議</li></ul></div></div>
-    <div class="sc spk"><div class="sc-t"><i class="fa-solid fa-triangle-exclamation" style="color:#f472b6"></i> 策略四：高風險系所緊急干預</div><div class="sc-b">甄選護理(44→5人)、休閒遊憩(1人)等嚴重縮招系所。<ul><li>甄選護理：聯繫技高護理相關科優先推薦</li><li>休閒遊憩：結合在地旅遊熱點辦體驗活動</li><li>各風險系設月報KPI紅線警報機制</li><li>考量系所整合或課程調整可行性</li></ul></div></div>
-    <div class="sc sp"><div class="sc-t"><i class="fa-solid fa-globe" style="color:#818cf8"></i> 策略五：跨區生源開拓</div><div class="sc-b">高屏60.6%，南部13.5%，仍有拓展空間。<ul><li>台南私立高中職聯合說明行程（3月前）</li><li>加強中部技高醫護專班合作（雲嘉方向）</li><li>離島線上說明會（澎湖、金門）</li><li>利用YT Shorts等新媒體觸及Z世代</li></ul></div></div>
-    <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-chart-mixed" style="color:#38bdf8"></i> 策略六：IR數據驅動決策</div><div class="sc-b">建立即時IR預警儀表板，落實數據驅動管理。<ul><li>每年11月完成次年招生目標設定</li><li>每季追蹤一階報名率(人次/人數)變化</li><li>建立一階→二階→報到全流程漏斗追蹤</li><li>每年6月更新預測模型（納入新年度數據）</li></ul></div></div>
+  <!-- 模組 1: 四大學院整體性資源規劃與專業系所差異化區隔 -->
+  <div id="p5SecCollegeRes">
+    <div class="st"><span class="ico ico-p"><i class="fa-solid fa-cubes-stacked"></i></span>一、四大學院「整體性資源規劃」與「專業系所特定差異化區隔」（依輔英官網架構）</div>
+    <div class="g2" id="p5CollegeResGrid"></div>
   </div>
 
-  <div class="st" style="margin-top:16px"><span class="ico ico-o"><i class="fa-solid fa-calendar-days"></i></span>116學年度招生行動月曆</div>
-  <div class="card fw">
-    <div class="tw">
-      <table class="tbl">
-        <thead><tr><th>月份</th><th class="tl">招生事項</th><th class="tl">關鍵行動</th><th>KPI指標</th></tr></thead>
-        <tbody>
-          <tr><td><span class="badge bb">11–12月</span></td><td class="tl">甄選一階報名期</td><td class="tl">確認技高推薦名單；辦線上說明會</td><td>報名人次 &gt;400</td></tr>
-          <tr><td><span class="badge bb">1月</span></td><td class="tl">甄選一階篩選結果</td><td class="tl">通過名單即時關懷；備審資料輔導</td><td>關懷率100%</td></tr>
-          <tr><td><span class="badge bp">2月</span></td><td class="tl">甄選二階面試</td><td class="tl">校園面試體驗日；家長參訪</td><td>到考率 &gt;85%</td></tr>
-          <tr><td><span class="badge bu">3月</span></td><td class="tl">申請一階 + 甄選放榜</td><td class="tl">甄選正取Welcome Day；申請一階接觸</td><td>甄選報到率 &gt;90%</td></tr>
-          <tr><td><span class="badge bu">4月</span></td><td class="tl">申請入學二階</td><td class="tl">書審+面試；二階後辦上課體驗日</td><td>二階到場率 &gt;80%</td></tr>
-          <tr><td><span class="badge bw">5月</span></td><td class="tl">申請放榜/確認就讀</td><td class="tl">正取24hr關懷電話；就讀疑慮諮詢</td><td>確認就讀率 &gt;45%</td></tr>
-          <tr><td><span class="badge bw">7–8月</span></td><td class="tl">報到/新生入學</td><td class="tl">入學輔導週；宿舍抽籤透明化</td><td>報到率 &gt;95%</td></tr>
-          <tr><td><span class="badge bd">9–10月</span></td><td class="tl">招生檢討 + 模型更新</td><td class="tl">更新IR預測模型；設定下年度目標</td><td>完成116→117預測報告</td></tr>
-        </tbody>
-      </table>
+  <!-- 模組 2: 各系報到率 × 對應生源校 × 同類潛力生源校開發規劃 -->
+  <div id="p5SecLookalike">
+    <div class="st"><span class="ico ico-g"><i class="fa-solid fa-compass-drafting"></i></span>二、各系「申請與甄選報到率」診斷 × 現有主力生源校 ×「同類屬性潛力生源校」開發規劃</div>
+    <div class="card fw">
+      <div class="tw">
+        <table class="tbl">
+          <thead><tr>
+            <th>所屬學院</th>
+            <th class="tl">學系名稱</th>
+            <th>申請報到率<br><small>(115➔116推估)</small></th>
+            <th>甄選報到率<br><small>(115➔116推估)</small></th>
+            <th class="tl">專業系所特定差異化定位</th>
+            <th class="tl">現有核心生源學校 (Top 5)</th>
+            <th class="tl">同類屬性「潛力生源學校」開發規劃</th>
+            <th class="tl">雙管道報到率提升與拓源對策</th>
+          </tr></thead>
+          <tbody id="tbP5Lookalike"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模組 3: 風險矩陣與六大策略 -->
+  <div id="p5SecRisk">
+    <div class="st"><span class="ico ico-o"><i class="fa-solid fa-triangle-exclamation"></i></span>三、各系報到率風險分級矩陣（依 116 推估報到率與變化幅度評定）</div>
+    <div class="card fw">
+      <div class="tw">
+        <table class="tbl">
+          <thead><tr>
+            <th>管道</th><th class="tl">學系（所屬學院）</th>
+            <th>115實際報到率</th><th>116推估報到率</th><th>風險等級</th>
+            <th class="tl">關鍵問題診斷</th><th class="tl">優先行動對策</th>
+          </tr></thead>
+          <tbody id="tbRisk"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="st" style="margin-top:8px"><span class="ico ico-b"><i class="fa-solid fa-lightbulb"></i></span>六大分層招生策略建議</div>
+    <div class="sg">
+      <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-magnet" style="color:#38bdf8"></i> 策略一：精準深耕高轉換生源並開發同類校</div><div class="sc-b">針對中山工商(25.3%)、小港高中(28.8%)、樹德家商(33.9%)、林園高中(27.3%)固本，並複製開發鳳山、瑞祥、仁武高中及鳳山商工、岡山農工、台南高工。</div></div>
+      <div class="sc sg2"><div class="sc-t"><i class="fa-solid fa-graduation-cap" style="color:#34d399"></i> 策略二：申請報到率鞏固（115年44.9%高點）</div><div class="sc-b">二階正取24hr關懷電話機制、放榜3日辦「學系歡迎日」，降低正取生「報到後放棄」流向競校比率。</div></div>
+      <div class="sc so"><div class="sc-t"><i class="fa-solid fa-cubes-stacked" style="color:#fb923c"></i> 策略三：整體學院資源共享與系所品牌差異化</div><div class="sc-b">整合附設醫院、OSCE、精準醫檢、ESG環安衛檢測與AI數位實驗室四大院級資源池，並清晰區隔院內各系國考證照與就業出口。</div></div>
+      <div class="sc spk"><div class="sc-t"><i class="fa-solid fa-triangle-exclamation" style="color:#f472b6"></i> 策略四：低報到率系所緊急干預</div><div class="sc-b">針對甄選護理、休遊、物治等報到率偏低系所，強化面試關懷、備取快速遞補與跨區交通住宿補貼。</div></div>
+      <div class="sc sp"><div class="sc-t"><i class="fa-solid fa-globe" style="color:#818cf8"></i> 策略五：跨區同類醫護與家政職校拓源</div><div class="sc-b">以中部巨人高中模式拓展彰化達德商工、大成商工，以高屏樹德/中山模式拓展台南曾文家商、光華高中與嘉義東吳高職。</div></div>
+      <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-chart-mixed" style="color:#38bdf8"></i> 策略六：IR報到率模型驅動名額動態配置</div><div class="sc-b">以各系二階報到率(%)取代人數外推，每年依據各系推估報到率動態調整甄選與申請名額配比。</div></div>
     </div>
   </div>
 </section>
 
 <footer style="text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid var(--border2);margin-top:8px">
-  輔英科技大學 IR 招生預測決策系統 ‧ 111–115學年度歷史數據 ‧ 生源地圖整合自 laisiff-dev/student-number-campus ‧ 本系統預測值僅供IR參考，招生策略須結合現場訪查綜合研判
+  輔英科技大學 IR 招生報到率預測決策系統 ‧ 111–115學年度歷史報到率數據 ‧ 本系統以各系報到率(%)進行建模推估
 </footer>
 
 <script>
 Chart.register(ChartDataLabels);
 
 // ═══════════════════════════════════════════════════
-// DATA
+// DATA (以各系歷年報到率 r111~r115 為核心建模變數；y為報到人數、b為二階甄試/名額基數)
 // ═══════════════════════════════════════════════════
 const ZDEPTS = [
-  {dept:'職業安全衛生系', college:'醫護學院', y111:10, y112:11, y113:22, y114:9,  y115:21},
-  {dept:'護理系',         college:'醫護學院', y111:44, y112:11, y113:1,  y114:5,  y115:5},
-  {dept:'保健營養系',     college:'醫護學院', y111:12, y112:11, y113:17, y114:10, y115:9},
-  {dept:'健康美容系',     college:'健康學院', y111:18, y112:11, y113:9,  y114:9,  y115:10},
-  {dept:'幼兒保育暨產業系',college:'人文學院',y111:15, y112:12, y113:10, y114:8,  y115:7},
-  {dept:'物理治療系',     college:'醫護學院', y111:11, y112:14, y113:8,  y114:9,  y115:3},
-  {dept:'休閒與遊憩事業管理系',college:'管理學院',y111:14,y112:5,y113:15,y114:8,y115:1},
-  {dept:'高齡及長期照護事業系',college:'醫護學院',y111:17,y112:5,y113:5, y114:7, y115:4},
-  {dept:'資訊科技與管理系',college:'管理學院', y111:9,  y112:5,  y113:2,  y114:8,  y115:2},
-  {dept:'環境工程與科學系',college:'工程學院', y111:4,  y112:1,  y113:7,  y114:3,  y115:9},
-  {dept:'應用化學及材料科學系',college:'工程學院',y111:4,y112:3,y113:7, y114:5,  y115:4},
-  {dept:'健康事業管理系', college:'管理學院', y111:2,  y112:1,  y113:4,  y114:3,  y115:2},
+  {dept:'職業安全衛生系',     college:'環境與生命學院', y111:10,y112:11,y113:22,y114:9, y115:21, b111:22,b112:22,b113:38,b114:16,b115:34, r111:45.5,r112:50.0,r113:57.9,r114:56.3,r115:61.8},
+  {dept:'護理系',             college:'護理學院',       y111:44,y112:11,y113:1, y114:5, y115:5,  b111:98,b112:34,b113:12,b114:16,b115:18, r111:44.9,r112:32.4,r113:8.3, r114:31.3,r115:27.8},
+  {dept:'保健營養系',         college:'醫學與健康學院', y111:12,y112:11,y113:17,y114:10,y115:9,  b111:28,b112:24,b113:34,b114:18,b115:18, r111:42.9,r112:45.8,r113:50.0,r114:55.6,r115:50.0},
+  {dept:'健康美容系',         college:'醫學與健康學院', y111:18,y112:11,y113:9, y114:9, y115:10, b111:42,b112:25,b113:20,b114:16,b115:19, r111:42.9,r112:44.0,r113:45.0,r114:56.3,r115:52.6},
+  {dept:'幼兒保育暨產業系',   college:'人文與管理學院', y111:15,y112:12,y113:10,y114:8, y115:7,  b111:36,b112:26,b113:22,b114:15,b115:14, r111:41.7,r112:46.2,r113:45.5,r114:53.3,r115:50.0},
+  {dept:'物理治療系',         college:'醫學與健康學院', y111:11,y112:14,y113:8, y114:9, y115:3,  b111:38,b112:35,b113:25,b114:18,b115:12, r111:28.9,r112:40.0,r113:32.0,r114:50.0,r115:25.0},
+  {dept:'休閒與遊憩事業管理系',college:'人文與管理學院', y111:14,y112:5, y113:15,y114:8, y115:1,  b111:38,b112:16,b113:32,b114:15,b115:6,  r111:36.8,r112:31.3,r113:46.9,r114:53.3,r115:16.7},
+  {dept:'高齡及長期照護事業系',college:'護理學院',       y111:17,y112:5, y113:5, y114:7, y115:4,  b111:44,b112:14,b113:14,b114:13,b115:10, r111:38.6,r112:35.7,r113:35.7,r114:53.8,r115:40.0},
+  {dept:'資訊科技與管理系',   college:'人文與管理學院', y111:9, y112:5, y113:2, y114:8, y115:2,  b111:28,b112:14,b113:8, b114:14,b115:7,  r111:32.1,r112:35.7,r113:25.0,r114:57.1,r115:28.6},
+  {dept:'環境工程與科學系',   college:'環境與生命學院', y111:4, y112:1, y113:7, y114:3, y115:9,  b111:16,b112:5, b113:16,b114:7, b115:13, r111:25.0,r112:20.0,r113:43.8,r114:42.9,r115:69.2},
+  {dept:'應用化學及材料科學系',college:'環境與生命學院', y111:4, y112:3, y113:7, y114:5, y115:4,  b111:16,b112:9, b113:16,b114:9, b115:7,  r111:25.0,r112:33.3,r113:43.8,r114:55.6,r115:57.1},
+  {dept:'健康事業管理系',     college:'護理學院',       y111:2, y112:1, y113:4, y114:3, y115:2,  b111:16,b112:6, b113:10,b114:5, b115:4,  r111:12.5,r112:16.7,r113:40.0,r114:60.0,r115:50.0},
 ];
 
 const SDEPTS = [
-  {dept:'護理系',         college:'醫護學院', y111:91, y112:90, y113:70, y114:78, y115:84},
-  {dept:'健康事業管理系', college:'管理學院', y111:25, y112:12, y113:15, y114:20, y115:14},
-  {dept:'物理治療系',     college:'醫護學院', y111:13, y112:15, y113:13, y114:15, y115:15},
-  {dept:'環境工程與科學系',college:'工程學院',y111:24, y112:11, y113:1,  y114:8,  y115:14},
-  {dept:'應用化學及材料科學系',college:'工程學院',y111:16,y112:6,y113:14,y114:3, y115:8},
-  {dept:'生物科技與綠色產業系',college:'生科學院',y111:16,y112:11,y113:5,y114:5,y115:7},
-  {dept:'健康美容系',     college:'健康學院', y111:8,  y112:3,  y113:3,  y114:1,  y115:6},
-  {dept:'幼兒保育暨產業系',college:'人文學院',y111:0,  y112:0,  y113:5,  y114:5,  y115:7},
+  {dept:'護理系',             college:'護理學院',       y111:91,y112:90,y113:70,y114:78,y115:84, b111:268,b112:255,b113:188,b114:198,b115:180, r111:34.0,r112:35.3,r113:37.2,r114:39.4,r115:46.7},
+  {dept:'健康事業管理系',     college:'護理學院',       y111:25,y112:12,y113:15,y114:20,y115:14, b111:78, b112:42, b113:42, b114:48, b115:33,  r111:32.1,r112:28.6,r113:35.7,r114:41.7,r115:42.4},
+  {dept:'物理治療系',         college:'醫學與健康學院', y111:13,y112:15,y113:13,y114:15,y115:15, b111:52, b112:50, b113:40, b114:42, b115:36,  r111:25.0,r112:30.0,r113:32.5,r114:35.7,r115:41.7},
+  {dept:'環境工程與科學系',   college:'環境與生命學院', y111:24,y112:11,y113:1, y114:8, y115:14, b111:72, b112:36, b113:8,  b114:22, b115:28,  r111:33.3,r112:30.6,r113:12.5,r114:36.4,r115:50.0},
+  {dept:'應用化學及材料科學系',college:'環境與生命學院', y111:16,y112:6, y113:14,y114:3, y115:8,  b111:50, b112:24, b113:34, b114:12, b115:18,  r111:32.0,r112:25.0,r113:41.2,r114:25.0,r115:44.4},
+  {dept:'生物科技與綠色產業系',college:'環境與生命學院', y111:16,y112:11,y113:5, y114:5, y115:7,  b111:54, b112:40, b113:16, b114:18, b115:18,  r111:29.6,r112:27.5,r113:31.3,r114:27.8,r115:38.9},
+  {dept:'健康美容系',         college:'醫學與健康學院', y111:8, y112:3, y113:3, y114:1, y115:6,  b111:32, b112:16, b113:11, b114:6,  b115:15,  r111:25.0,r112:18.8,r113:27.3,r114:16.7,r115:40.0},
+  {dept:'幼兒保育暨產業系',   college:'人文與管理學院', y111:0, y112:0, y113:5, y114:5, y115:7,  b111:0,  b112:0,  b113:13, b114:14, b115:17,  r111:null,r112:null,r113:38.5,r114:35.7,r115:41.2},
+];
+
+// 各學院對應系所 Top 5 生源學校資料庫 (依輔英官網 4 大學院架構修正)
+const COLLEGE_DEPT_TOP5 = {
+  "護理學院": {
+    "護理系": {
+      total5yr: 479,
+      top5: [
+        {school:"高雄小港高中", type:"高屏普高", y111:6, y112:9, y113:8, y114:6, y115:8, total:37},
+        {school:"中山工商",     type:"高屏技高", y111:11,y112:7, y113:6, y114:5, y115:6, total:35},
+        {school:"屏東女中",     type:"高屏普高", y111:8, y112:7, y113:5, y114:3, y115:6, total:29},
+        {school:"潮州高中",     type:"高屏普高", y111:7, y112:5, y113:6, y114:6, y115:4, total:28},
+        {school:"新莊高中",     type:"高屏普高", y111:6, y112:5, y113:5, y114:4, y115:4, total:24}
+      ]
+    },
+    "健康事業管理系": {
+      total5yr: 98,
+      top5: [
+        {school:"高雄文山高中", type:"高屏普高", y111:5, y112:3, y113:3, y114:4, y115:3, total:18},
+        {school:"高雄左營高中", type:"高屏普高", y111:4, y112:2, y113:3, y114:4, y115:3, total:16},
+        {school:"高雄小港高中", type:"高屏普高", y111:4, y112:2, y113:2, y114:3, y115:2, total:13},
+        {school:"高雄林園高中", type:"高屏普高", y111:3, y112:2, y113:2, y114:2, y115:2, total:11},
+        {school:"屏東高中",     type:"高屏普高", y111:3, y112:1, y113:2, y114:2, y115:2, total:10}
+      ]
+    },
+    "高齡及長期照護事業系": {
+      total5yr: 38,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:5, y112:2, y113:2, y114:2, y115:2, total:13},
+        {school:"樹德家商",     type:"高屏技高", y111:4, y112:1, y113:1, y114:2, y115:1, total:9},
+        {school:"民生家商",     type:"高屏技高", y111:3, y112:1, y113:1, y114:1, y115:0, total:6},
+        {school:"巨人高中",     type:"中部技高", y111:2, y112:1, y113:1, y114:1, y115:0, total:5},
+        {school:"三信家商",     type:"高屏技高", y111:2, y112:0, y113:0, y114:1, y115:1, total:4}
+      ]
+    },
+    "助產與婦嬰健康照護系": {
+      total5yr: 25,
+      top5: [
+        {school:"輔英五專護理科轉銜", type:"五專/衛護", y111:2, y112:2, y113:2, y114:2, y115:2, total:10},
+        {school:"中山工商",           type:"高屏技高", y111:1, y112:1, y113:1, y114:1, y115:1, total:5},
+        {school:"樹德家商",           type:"高屏技高", y111:1, y112:1, y113:1, y114:1, y115:0, total:4},
+        {school:"巨人高中",           type:"中部技高", y111:1, y112:1, y113:1, y114:0, y115:0, total:3},
+        {school:"崇仁/敏惠護專轉銜",  type:"南部醫專", y111:1, y112:0, y113:1, y114:1, y115:0, total:3}
+      ]
+    }
+  },
+  "醫學與健康學院": {
+    "物理治療系": {
+      total5yr: 116,
+      top5: [
+        {school:"巨人高中",     type:"中部技高", y111:4, y112:5, y113:3, y114:4, y115:2, total:18},
+        {school:"中山工商",     type:"高屏技高", y111:3, y112:4, y113:3, y114:3, y115:2, total:15},
+        {school:"高雄小港高中", type:"高屏普高", y111:3, y112:2, y113:3, y114:2, y115:3, total:13},
+        {school:"道明高中",     type:"高屏私高", y111:3, y112:3, y113:2, y114:2, y115:2, total:12},
+        {school:"鳳新高中",     type:"高屏普高", y111:2, y112:2, y113:2, y114:2, y115:3, total:11}
+      ]
+    },
+    "健康美容系": {
+      total5yr: 78,
+      top5: [
+        {school:"樹德家商",     type:"高屏技高", y111:6, y112:4, y113:4, y114:4, y115:4, total:22},
+        {school:"中山工商",     type:"高屏技高", y111:5, y112:4, y113:3, y114:3, y115:4, total:19},
+        {school:"三信家商",     type:"高屏技高", y111:4, y112:2, y113:2, y114:1, y115:3, total:12},
+        {school:"立志高中",     type:"高屏私高", y111:3, y112:1, y113:1, y114:1, y115:2, total:8},
+        {school:"啟英高中",     type:"北部技高", y111:2, y112:1, y113:1, y114:1, y115:1, total:6}
+      ]
+    },
+    "保健營養系": {
+      total5yr: 59,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:4, y112:3, y113:5, y114:3, y115:3, total:18},
+        {school:"樹德家商",     type:"高屏技高", y111:3, y112:3, y113:4, y114:2, y115:2, total:14},
+        {school:"三信家商",     type:"高屏技高", y111:2, y112:2, y113:3, y114:2, y115:1, total:10},
+        {school:"屏榮高中",     type:"高屏技高", y111:1, y112:2, y113:2, y114:1, y115:2, total:8},
+        {school:"華南高商",     type:"南部技高", y111:1, y112:1, y113:2, y114:1, y115:1, total:6}
+      ]
+    },
+    "醫學檢驗生物技術系": {
+      total5yr: 42,
+      top5: [
+        {school:"高雄小港高中", type:"高屏普高", y111:3, y112:3, y113:2, y114:2, y115:3, total:13},
+        {school:"中山工商",     type:"高屏技高", y111:2, y112:2, y113:2, y114:2, y115:2, total:10},
+        {school:"巨人高中",     type:"中部技高", y111:2, y112:2, y113:1, y114:1, y115:2, total:8},
+        {school:"潮州高中",     type:"高屏普高", y111:1, y112:1, y113:2, y114:1, y115:1, total:6},
+        {school:"高雄林園高中", type:"高屏普高", y111:1, y112:1, y113:1, y114:1, y115:1, total:5}
+      ]
+    }
+  },
+  "環境與生命學院": {
+    "環境工程與科學系": {
+      total5yr: 82,
+      top5: [
+        {school:"高雄小港高中", type:"高屏普高", y111:5, y112:2, y113:2, y114:2, y115:4, total:15},
+        {school:"高雄林園高中", type:"高屏普高", y111:4, y112:2, y113:1, y114:2, y115:4, total:13},
+        {school:"中山工商",     type:"高屏技高", y111:3, y112:1, y113:2, y114:2, y115:3, total:11},
+        {school:"中正高工",     type:"高屏技高", y111:2, y112:1, y113:2, y114:1, y115:3, total:9},
+        {school:"潮州高中",     type:"高屏普高", y111:3, y112:2, y113:0, y114:1, y115:2, total:8}
+      ]
+    },
+    "職業安全衛生系": {
+      total5yr: 73,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:3, y112:3, y113:6, y114:3, y115:6, total:21},
+        {school:"中正高工",     type:"高屏技高", y111:2, y112:3, y113:5, y114:2, y115:5, total:17},
+        {school:"高雄高工",     type:"高屏技高", y111:2, y112:2, y113:4, y114:2, y115:4, total:14},
+        {school:"高英工商",     type:"高屏技高", y111:2, y112:2, y113:4, y114:1, y115:3, total:12},
+        {school:"屏東高工",     type:"高屏技高", y111:1, y112:1, y113:3, y114:1, y115:3, total:9}
+      ]
+    },
+    "應用化學及材料科學系": {
+      total5yr: 70,
+      top5: [
+        {school:"高雄林園高中", type:"高屏普高", y111:4, y112:2, y113:4, y114:2, y115:3, total:15},
+        {school:"高雄小港高中", type:"高屏普高", y111:3, y112:2, y113:3, y114:1, y115:2, total:11},
+        {school:"高雄高工",     type:"高屏技高", y111:2, y112:1, y113:3, y114:2, y115:2, total:10},
+        {school:"中正高工",     type:"高屏技高", y111:2, y112:1, y113:2, y114:2, y115:2, total:9},
+        {school:"岡山高中",     type:"高屏普高", y111:2, y112:1, y113:2, y114:1, y115:1, total:7}
+      ]
+    },
+    "生物科技與綠色產業系": {
+      total5yr: 50,
+      top5: [
+        {school:"潮州高中",     type:"高屏普高", y111:4, y112:3, y113:2, y114:1, y115:2, total:12},
+        {school:"高雄小港高中", type:"高屏普高", y111:3, y112:2, y113:1, y114:2, y115:2, total:10},
+        {school:"岡山農工",     type:"高屏技高", y111:3, y112:2, y113:1, y114:1, y115:1, total:8},
+        {school:"佳冬高農",     type:"高屏技高", y111:2, y112:2, y113:1, y114:0, y115:1, total:6},
+        {school:"屏東高中",     type:"高屏普高", y111:2, y112:1, y113:0, y114:1, y115:1, total:5}
+      ]
+    }
+  },
+  "人文與管理學院": {
+    "幼兒保育暨產業系": {
+      total5yr: 69,
+      top5: [
+        {school:"樹德家商",     type:"高屏技高", y111:5, y112:4, y113:4, y114:3, y115:4, total:20},
+        {school:"中山工商",     type:"高屏技高", y111:4, y112:4, y113:3, y114:3, y115:3, total:17},
+        {school:"三信家商",     type:"高屏技高", y111:3, y112:2, y113:3, y114:2, y115:2, total:12},
+        {school:"旗美高中",     type:"高屏綜高", y111:2, y112:1, y113:2, y114:2, y115:2, total:9},
+        {school:"屏榮高中",     type:"高屏技高", y111:1, y112:1, y113:2, y114:2, y115:2, total:8}
+      ]
+    },
+    "休閒與遊憩事業管理系": {
+      total5yr: 43,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:5, y112:2, y113:5, y114:3, y115:1, total:16},
+        {school:"樹德家商",     type:"高屏技高", y111:3, y112:1, y113:4, y114:2, y115:0, total:10},
+        {school:"高鳳數位內容", type:"高屏技高", y111:2, y112:1, y113:2, y114:1, y115:0, total:6},
+        {school:"三信家商",     type:"高屏技高", y111:2, y112:1, y113:2, y114:1, y115:0, total:6},
+        {school:"旗美高中",     type:"高屏綜高", y111:2, y112:0, y113:2, y114:1, y115:0, total:5}
+      ]
+    },
+    "資訊科技與管理系": {
+      total5yr: 26,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:3, y112:2, y113:1, y114:3, y115:1, total:10},
+        {school:"立志高中",     type:"高屏私高", y111:2, y112:1, y113:1, y114:2, y115:1, total:7},
+        {school:"樹德家商",     type:"高屏技高", y111:2, y112:1, y113:0, y114:1, y115:0, total:4},
+        {school:"高英工商",     type:"高屏技高", y111:1, y112:1, y113:0, y114:1, y115:0, total:3},
+        {school:"三信家商",     type:"高屏技高", y111:1, y112:0, y113:0, y114:1, y115:0, total:2}
+      ]
+    },
+    "應用外語系": {
+      total5yr: 3,
+      top5: [
+        {school:"中山工商",     type:"高屏技高", y111:0, y112:0, y113:1, y114:1, y115:0, total:2},
+        {school:"樹德家商",     type:"高屏技高", y111:0, y112:0, y113:1, y114:0, y115:0, total:1},
+        {school:"三信家商",     type:"高屏技高", y111:0, y112:0, y113:0, y114:0, y115:0, total:0},
+        {school:"立志高中",     type:"高屏私高", y111:0, y112:0, y113:0, y114:0, y115:0, total:0},
+        {school:"鳳山商工",     type:"高屏技高", y111:0, y112:0, y113:0, y114:0, y115:0, total:0}
+      ]
+    }
+  }
+};
+
+const P5_COLLEGE_RES = [
+  {college:"護理學院", color:"#38bdf8", depts:"護理系、健康事業管理系、高齡及長期照護事業系、助產與婦嬰健康照護系", resource:"整合「輔英附設醫院臨床基地」、「智慧模擬病房(OSCE)」、「高齡長照實務場域」與「醫療病歷大數據平台」，建構從婦嬰助產➔急重症護理➔長照營運➔醫院管理之全人照護資源池。", diff:"護理系主打急重症臨床與高國考通過率；健管系主打智慧醫療行政與健保大數據（吸引非臨床傾向普高生）；高齡長照系主攻長照機構經營管理；助產系獨佔婦嬰健康與產後護理品牌。"},
+  {college:"醫學與健康學院", color:"#34d399", depts:"物理治療系、保健營養系、健康美容系、醫學檢驗生物技術系", resource:"串聯「精準醫學分子檢驗實驗室」、「運動傷害防護與物理治療中心」、「食品安全與膳食設計中心」及「醫學美容SPA實習會館」，打造大健康預防醫學共享平台。", diff:"物治系聚焦國考物理治療師與運動防護；保營系聚焦國考營養師與機能團膳；健美系聚焦具備醫學支撐之科技醫美與時尚造型；醫技系聚焦國考醫檢師與基因檢測。"},
+  {college:"環境與生命學院", color:"#a78bfa", depts:"環境工程與科學系、職業安全衛生系、應用化學及材料科學系、生物科技與綠色產業系", resource:"結合南台灣半導體S廊帶與高雄三大工業區，整合「環境檢測中心」、「工業安全衛生實驗室」、「精密儀器中心」與「綠色生技工廠」，聯合爭取企業認養獎學金。", diff:"職安系主攻甲級職安證照與廠務工安稽核；環工系主攻ESG碳盤查與水空污防治工程；應化系主攻半導體特用電子材料與精密分析；生技系主攻綠色農業與海洋生技萃取。"},
+  {college:"人文與管理學院", color:"#fb923c", depts:"資訊科技與管理系、休閒與遊憩事業管理系、幼兒保育暨產業系、應用外語系", resource:"整合「附設幼兒園」、「AI智慧醫療商務實驗室」、「健康休閒與無人機空拍工坊」及「多國語言中心」，形成AI數位賦能×全齡教育×健康觀光跨域資源池。", diff:"幼保系聚焦合格教保員與附設幼兒園留任；休遊系聚焦健康養生療癒觀光與運動指導；資管系聚焦智慧醫院HIS與AIoT應用；應外系聚焦國際醫療觀光與兒童雙語。"}
+];
+
+const P5_DEPT_LOOKALIKE = [
+  {college:"護理學院", dept:"護理系", sRate:"46.7% ➔ ~44.6%", zRate:"27.8% ➔ ~24.8%", diff:"臨床急重症護理師、附設醫院一條龍公費生", curr:"小港(37)、中山(35)、屏女(29)、潮州(28)、新莊(24)", lookalike:"鳳山高中、瑞祥高中、岡山高中、楠梓高中、台南家齊高中、嘉義華南高商", plan:"申請報到率46.7%為全校核心，將小港/潮州模式複製至鳳山、瑞祥、家齊；甄選強化中山工商二階關懷。"},
+  {college:"護理學院", dept:"健康事業管理系", sRate:"42.4% ➔ ~39.8%", zRate:"50.0% ➔ ~43.5%", diff:"智慧醫院行政管理、健保大數據企劃（非臨床抽血）", curr:"文山(18)、左營(16)、小港(13)、林園(11)、屏中(10)", lookalike:"仁武高中、鼓山高中、前鎮高中、屏北高中、台南大灣高中、鳳山商工", plan:"鎖定公立社區普高社會組/自然組不排斥醫療產業但傾向管理企劃之考生，入班宣講智慧醫院管理師出路。"},
+  {college:"護理學院", dept:"高齡及長期照護事業系", sRate:"—(建議增設)", zRate:"40.0% ➔ ~42.1%", diff:"長照機構經營管理、高齡福祉科技、長照個管師", curr:"中山(13)、樹德(9)、民生(6)、巨人(5)、三信(4)", lookalike:"國立曾文家商、嘉義東吳高職、屏東日新工商、台南光華高中(家政群)", plan:"由高屏私校橫向拓展至台南曾文家商、嘉義東吳高職家政群，並建議增設四技申請名額。"},
+  {college:"醫學與健康學院", dept:"物理治療系", sRate:"41.7% ➔ ~40.2%", zRate:"25.0% ➔ ~31.8%", diff:"國家物理治療師證照、運動防護與精準科技復健", curr:"巨人(18)、中山(15)、小港(13)、道明(12)、鳳新(11)", lookalike:"正義高中、復華高中、台南長榮中學、彰化大成商工、達德商工", plan:"普高複製道明/鳳新模式至正義、長榮；技高鞏固中部巨人高中並開發彰化達德/大成商工（補助跨區面試交通）。"},
+  {college:"醫學與健康學院", dept:"保健營養系", sRate:"—(建議增設)", zRate:"50.0% ➔ ~48.8%", diff:"國家營養師證照、醫院臨床團膳、運動機能食品研發", curr:"中山(18)、樹德(14)、三信(10)、屏榮(8)、華南(6)", lookalike:"國立佳冬高農(食品科)、國立岡山農工(食品科)、國立台南海事、曾文農工", plan:"甄選報到率50.0%穩定，重點開發國立農工職校食品加工科，強調國考營養師優於一般純餐飲出路。"},
+  {college:"醫學與健康學院", dept:"健康美容系", sRate:"40.0% ➔ ~34.2%", zRate:"52.6% ➔ ~50.2%", diff:"醫學美容諮詢、頭皮與肌膚科學管理、時尚造型", curr:"樹德(22)、中山(19)、三信(12)、立志(8)、啟英(6)", lookalike:"台南光華高中(時尚美容)、嘉義東吳高職(美容)、台中明德高中(美容)", plan:"以醫學健康學院背景主打「科技醫美」，由樹德/中山複製拓展至台南光華、嘉義東吳與台中明德高中。"},
+  {college:"環境與生命學院", dept:"環境工程與科學系", sRate:"50.0% ➔ ~39.5%", zRate:"69.2% ➔ ~55.4%", diff:"ESG企業碳盤查、再生水與空污防治工程、循環經濟", curr:"小港(15)、林園(13)、中山(11)、中正高工(9)、潮州(8)", lookalike:"仁武高中(環保專班)、楠梓高中、路竹高中、國立岡山農工、台南高工", plan:"115年雙管道報到率飆升，以小港/林園模式拓展至仁武、楠梓、路竹高中及岡山農工。"},
+  {college:"環境與生命學院", dept:"職業安全衛生系", sRate:"—(建議增設)", zRate:"61.8% ➔ ~56.2%", diff:"甲級職安管理師證照、半導體與石化廠務工安稽核", curr:"中山(21)、中正高工(17)、雄工(14)、高英(12)、屏工(9)", lookalike:"國立岡山農工、國立鳳山商工、國立台南高工、新營高工、內埔農工", plan:"全校技高第1大系，將中正高工/雄工高轉換模式複製至岡山農工、鳳山商工與台南高工。"},
+  {college:"環境與生命學院", dept:"應用化學及材料科學系", sRate:"44.4% ➔ ~37.8%", zRate:"57.1% ➔ ~46.5%", diff:"半導體製程特用電子化學材料、精密儀器分析", curr:"林園化工班(15)、小港(11)、雄工化工(10)、中正高工(9)", lookalike:"仁武高中(石化專班)、左營高中、台南高工(化工科)、嘉義高工(化工科)", plan:"深耕林園高中化工班與雄工化工科，並開發仁武高中石化專班及台南/嘉義/屏東高工化工科。"},
+  {college:"環境與生命學院", dept:"生物科技與綠色產業系", sRate:"38.9% ➔ ~36.4%", zRate:"33.3% ➔ ~34.0%", diff:"農業與海洋生技萃取、微生物發酵與低碳生物製劑", curr:"潮州(12)、小港(10)、岡山農工(8)、佳冬高農(6)、屏中(5)", lookalike:"國立旗山農工、國立內埔農工、國立曾文農工、屏北高中、旗美高中", plan:"普高拓展屏北、旗美高中自然組；技高串聯岡山、佳冬、旗山、內埔農工之農業群與食品群。"},
+  {college:"人文與管理學院", dept:"幼兒保育暨產業系", sRate:"41.2% ➔ ~40.5%", zRate:"50.0% ➔ ~48.9%", diff:"合格教保員資格、附設幼兒園實習留任、STEAM幼教", curr:"樹德(20)、中山(17)、三信(12)、旗美(9)、屏榮(8)", lookalike:"台南光華高中(幼保科)、國立家齊高中(家政)、曾文家商(幼保)、林園高中", plan:"技高由樹德/中山拓展至台南光華、曾文家商幼保科；申請入學強化社區普高對公立教保員穩定薪資認同。"},
+  {college:"人文與管理學院", dept:"休閒與遊憩事業管理系", sRate:"—(建議增設)", zRate:"16.7% ➔ ~29.5%", diff:"健康養生療癒觀光、水域與戶外運動指導、無人機空拍", curr:"中山(16)、樹德(10)、高鳳(6)、三信(6)、旗美(5)", lookalike:"國立恆春工商(觀光科)、普門高中(餐旅)、台南亞洲餐旅、東港海事", plan:"強化「健康療癒觀光＋運動指導」差異化，開發恆春工商、普門高中，並增設四技申請名額。"},
+  {college:"人文與管理學院", dept:"資訊科技與管理系", sRate:"—(建議增設)", zRate:"28.6% ➔ ~35.2%", diff:"智慧醫院資訊系統(HIS)、AIoT物聯網與健康大數據", curr:"中山(10)、立志(7)、樹德(4)、高英(3)、三信(2)", lookalike:"國立鳳山商工(資處科)、國立屏東高工(資訊科)、海青工商(資處/資訊)", plan:"主打「懂醫療健康的AI資管人才」藍海定位，開發鳳山商工、屏東高工、海青工商資處與資訊科。"}
 ];
 
 const REGION_DATA = [
@@ -581,10 +882,13 @@ const JH_SCHOOLS = [
 ];
 
 // ═══════════════════════════════════════════════════
-// MODEL ENGINE
+// RATE-BASED MODEL ENGINE (以報到率 % 進行模式建立與推估)
 // ═══════════════════════════════════════════════════
 function linReg(xs, ys) {
-  const n=xs.length, sx=xs.reduce((a,b)=>a+b,0), sy=ys.reduce((a,b)=>a+b,0);
+  const n=xs.length;
+  if(n===0) return {a:0,b:0,r2:0};
+  if(n===1) return {a:ys[0],b:0,r2:1};
+  const sx=xs.reduce((a,b)=>a+b,0), sy=ys.reduce((a,b)=>a+b,0);
   const sxy=xs.reduce((s,x,i)=>s+x*ys[i],0), sx2=xs.reduce((s,x)=>s+x*x,0);
   const denom=n*sx2-sx*sx;
   const b=denom===0?0:(n*sxy-sx*sy)/denom;
@@ -595,22 +899,32 @@ function linReg(xs, ys) {
   return {a,b,r2:ss_t===0?1:1-ss_r/ss_t};
 }
 
-function predict(dept, trainTs, targetT, alpha=0.55, beta=0.45) {
-  const ys=trainTs.map(t=>dept['y'+(110+t)]);
-  const {a,b,r2}=linReg(trainTs,ys);
-  const mu=ys.reduce((s,v)=>s+v,0)/ys.length;
-  const yL=a+b*targetT;
-  return {pred:Math.max(0,alpha*yL+beta*mu),a,b,r2,mu};
+function clampRate(v) {
+  return Math.min(100, Math.max(0, v));
 }
 
-// compute delta (system error %) for 115 backtest
-function computeDelta(depts, trainTs=[1,2,3,4], targetT=5) {
-  const deltas=depts.map(d=>{
-    const {pred}=predict(d,trainTs,targetT);
-    const act=d['y'+(110+targetT)];
-    return pred>0?(act-pred)/pred*100:0;
+// 以各系歷年「報到率 (%)」建立加權線性趨勢模型
+function predictRate(dept, trainTs, targetT, alpha=0.55, beta=0.45) {
+  const validPairs = trainTs
+    .map(t => ({t, r: dept['r'+(110+t)]}))
+    .filter(p => p.r !== null && p.r !== undefined);
+  const xs = validPairs.map(p => p.t);
+  const rs = validPairs.map(p => p.r);
+  const {a,b,r2} = linReg(xs, rs);
+  const mu = rs.reduce((s,v)=>s+v,0) / (rs.length || 1);
+  const rL = a + b * targetT;
+  const pred = clampRate(alpha * rL + beta * mu);
+  return {pred, a, b, r2, mu};
+}
+
+// 計算 115 回測之報到率系統偏差 δ_R (%)
+function computeRateDelta(depts, trainTs=[1,2,3,4], targetT=5) {
+  const deltas = depts.map(d => {
+    const {pred} = predictRate(d, trainTs, targetT);
+    const act = d['r'+(110+targetT)];
+    return (pred > 0 && act !== null) ? (act - pred) / pred * 100 : 0;
   });
-  return deltas.reduce((s,v)=>s+v,0)/deltas.length;
+  return deltas.reduce((s,v)=>s+v,0) / deltas.length;
 }
 
 // ═══════════════════════════════════════════════════
@@ -628,11 +942,11 @@ function makeChart(id, type, labels, datasets, extra={}) {
       plugins:{
         legend:{labels:{color:'#94a3b8',font:{size:11},boxWidth:14}},
         datalabels: extra.datalabels || {display:false},
-        tooltip:{callbacks:{label:c=>` ${c.dataset.label||''}: ${c.parsed.y??c.parsed}`}}
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label||''}: ${c.parsed.y??c.parsed}${extra.unit||''}`}}
       },
       scales: (type==='pie'||type==='doughnut')?undefined:{
         x:{ticks:{color:'#64748b',font:{size:11}},grid:{color:'rgba(99,179,237,0.06)'}},
-        y:{ticks:{color:'#64748b',font:{size:11}},grid:{color:'rgba(99,179,237,0.08)'},beginAtZero:true,...(extra.yOpts||{})}
+        y:{ticks:{color:'#64748b',font:{size:11},callback:v=>v+(extra.unit||'')},grid:{color:'rgba(99,179,237,0.08)'},beginAtZero:true,...(extra.yOpts||{})}
       },
       ...extra.chartOpts
     }
@@ -640,85 +954,116 @@ function makeChart(id, type, labels, datasets, extra={}) {
 }
 
 // ═══════════════════════════════════════════════════
-// BUILDS
+// BUILDS (以報到率 % 為核心)
 // ═══════════════════════════════════════════════════
-
-function trendBadge(vals) {
-  const n=vals.length; if(n<2)return '<span class="badge bn">—</span>';
-  const slope=(vals[n-1]-vals[0])/(n-1);
-  if(slope>1) return '<span class="badge bu">↑ 成長</span>';
-  if(slope<-1)return '<span class="badge bd">↓ 下滑</span>';
-  return '<span class="badge bn">→ 持平</span>';
+function trendBadgeRate(vals) {
+  const clean = vals.filter(v => v !== null && v !== undefined);
+  const n = clean.length;
+  if(n<2) return '<span class="badge bn">—</span>';
+  const slope = (clean[n-1] - clean[0]) / (n-1);
+  if(slope > 1.2) return `<span class="badge bu">↑ 成長 (+${slope.toFixed(1)}pp/年)</span>`;
+  if(slope < -1.2) return `<span class="badge bd">↓ 下滑 (${slope.toFixed(1)}pp/年)</span>`;
+  return '<span class="badge bn">→ 持平穩定</span>';
 }
 
-function riskTag(val, prev) {
-  const d=prev>0?(val-prev)/prev*100:0;
-  if(val<5) return '<span class="badge bd">🔴 極高</span>';
-  if(val<8||d<-30) return '<span class="badge bw">🟡 高</span>';
-  if(d<-15) return '<span class="badge bw">🟡 中</span>';
-  return '<span class="badge bu">🟢 穩定</span>';
+function riskTagRate(predRate, actRate115) {
+  const diffPP = predRate - actRate115;
+  if(predRate < 25) return '<span class="badge bd">🔴 極高風險</span>';
+  if(predRate < 35 || diffPP < -8) return '<span class="badge bw">🟡 高風險</span>';
+  if(diffPP < -3) return '<span class="badge bw">🟡 中風險</span>';
+  return '<span class="badge bu">🟢 報到穩定</span>';
 }
 
-/* ── 全院系總表（甄選/申請） ── */
-function buildTotalTable(depts, tbodyId, delta, colorClass) {
+function fmtR(r, y, b) {
+  if(r === null || r === undefined) return '<span style="color:#64748b">—</span>';
+  return `<b>${r.toFixed(1)}%</b><br><small style="color:#64748b;font-size:10px">(${y}/${b}人)</small>`;
+}
+
+/* ── 全院系報到率總表（甄選/申請） ── */
+function buildTotalTable(depts, tbodyId, deltaR, colorClass) {
   const tb=document.getElementById(tbodyId);
   tb.innerHTML='';
-  let totals={y111:0,y112:0,y113:0,y114:0,y115:0,total:0,pred116:0};
+  let sumY={111:0,112:0,113:0,114:0,115:0,tot:0};
+  let sumB={111:0,112:0,113:0,114:0,115:0,tot:0};
+  let weightedPred116Sum = 0;
 
   depts.forEach(d=>{
-    const {pred:raw}=predict(d,[1,2,3,4,5],6);
-    const p116=Math.max(0,raw*(1+delta/2/100));
-    const lo=(p116*0.82).toFixed(0), hi=(p116*1.18).toFixed(0);
-    const tot=d.y111+d.y112+d.y113+d.y114+d.y115;
-    const avg=(tot/5).toFixed(1);
-    const trend=trendBadge([d.y111,d.y112,d.y113,d.y114,d.y115]);
+    const {pred:rawR}=predictRate(d,[1,2,3,4,5],6);
+    const pRate116=clampRate(rawR*(1+deltaR/2/100));
+    const lo=clampRate(pRate116*0.88).toFixed(1), hi=clampRate(pRate116*1.12).toFixed(1);
+    const totY=d.y111+d.y112+d.y113+d.y114+d.y115;
+    const totB=d.b111+d.b112+d.b113+d.b114+d.b115;
+    const avgRate = totB > 0 ? (totY / totB * 100) : 0;
+    const trend=trendBadgeRate([d.r111,d.r112,d.r113,d.r114,d.r115]);
 
-    totals.y111+=d.y111;totals.y112+=d.y112;totals.y113+=d.y113;
-    totals.y114+=d.y114;totals.y115+=d.y115;totals.total+=tot;totals.pred116+=p116;
+    [111,112,113,114,115].forEach(yr=>{
+      sumY[yr]+=d['y'+yr];
+      sumB[yr]+=d['b'+yr];
+    });
+    sumY.tot+=totY; sumB.tot+=totB;
+    weightedPred116Sum += pRate116 * d.b115;
 
     tb.innerHTML+=`<tr>
       <td class="tl"><b>${d.dept}</b><br><small style="color:#64748b">${d.college||''}</small></td>
-      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
-      <td><b>${d.y115}</b></td>
-      <td class="${colorClass}"><b>${tot}</b></td>
-      <td>${avg}</td>
-      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
-      <td class="pred116-range">${lo}–${hi}</td>
+      <td>${fmtR(d.r111,d.y111,d.b111)}</td>
+      <td>${fmtR(d.r112,d.y112,d.b112)}</td>
+      <td>${fmtR(d.r113,d.y113,d.b113)}</td>
+      <td>${fmtR(d.r114,d.y114,d.b114)}</td>
+      <td>${fmtR(d.r115,d.y115,d.b115)}</td>
+      <td class="${colorClass}"><b>${avgRate.toFixed(1)}%</b></td>
+      <td>${totY} / ${totB}人</td>
+      <td><span class="pred116">~${pRate116.toFixed(1)}%</span></td>
+      <td class="pred116-range">${lo}%–${hi}%</td>
       <td>${trend}</td>
     </tr>`;
   });
 
-  // Total row
-  const pt=totals.pred116;
+  const r111=(sumY[111]/sumB[111]*100).toFixed(1);
+  const r112=(sumY[112]/sumB[112]*100).toFixed(1);
+  const r113=(sumY[113]/sumB[113]*100).toFixed(1);
+  const r114=(sumY[114]/sumB[114]*100).toFixed(1);
+  const r115=(sumY[115]/sumB[115]*100).toFixed(1);
+  const rTot=(sumY.tot/sumB.tot*100).toFixed(1);
+  const rPred116 = sumB[115] > 0 ? (weightedPred116Sum / sumB[115]) : 0;
+
   tb.innerHTML+=`<tr class="total-row">
-    <td class="tl"><b>合計</b></td>
-    <td><b>${totals.y111}</b></td><td><b>${totals.y112}</b></td><td><b>${totals.y113}</b></td>
-    <td><b>${totals.y114}</b></td><td><b>${totals.y115}</b></td>
-    <td class="${colorClass}"><b>${totals.total}</b></td>
-    <td>${(totals.total/5).toFixed(1)}</td>
-    <td><span class="pred116">~${pt.toFixed(0)}</span></td>
-    <td class="pred116-range">—</td><td>—</td>
+    <td class="tl"><b>全管道加權平均 / 合計</b></td>
+    <td><b>${r111}%</b><br><small style="color:#64748b">(${sumY[111]}/${sumB[111]})</small></td>
+    <td><b>${r112}%</b><br><small style="color:#64748b">(${sumY[112]}/${sumB[112]})</small></td>
+    <td><b>${r113}%</b><br><small style="color:#64748b">(${sumY[113]}/${sumB[113]})</small></td>
+    <td><b>${r114}%</b><br><small style="color:#64748b">(${sumY[114]}/${sumB[114]})</small></td>
+    <td><b>${r115}%</b><br><small style="color:#64748b">(${sumY[115]}/${sumB[115]})</small></td>
+    <td class="${colorClass}"><b>${rTot}%</b></td>
+    <td><b>${sumY.tot} / ${sumB.tot}人</b></td>
+    <td><span class="pred116">~${rPred116.toFixed(1)}%</span></td>
+    <td class="pred116-range">${(rPred116*0.88).toFixed(1)}%–${(rPred116*1.12).toFixed(1)}%</td>
+    <td>—</td>
   </tr>`;
 }
 
-/* ── 雙管道合併表 ── */
+/* ── 雙管道合併報到率表 ── */
 function buildCombinedTable(dZ, dS) {
   const tb=document.getElementById('tbCombined');
   tb.innerHTML='';
-  const dZDelta=computeDelta(dZ,[1,2,3,4],5);
-  const dSDelta=computeDelta(dS,[1,2,3,4],5);
+  const dZDelta=computeRateDelta(dZ,[1,2,3,4],5);
+  const dSDelta=computeRateDelta(dS,[1,2,3,4],5);
 
   const makeRow=(d,ch,delta,cls)=>{
-    const {pred:raw}=predict(d,[1,2,3,4,5],6);
-    const p116=Math.max(0,raw*(1+delta/2/100));
-    const tot=d.y111+d.y112+d.y113+d.y114+d.y115;
+    const {pred:rawR}=predictRate(d,[1,2,3,4,5],6);
+    const pRate116=clampRate(rawR*(1+delta/2/100));
+    const totY=d.y111+d.y112+d.y113+d.y114+d.y115;
+    const totB=d.b111+d.b112+d.b113+d.b114+d.b115;
+    const avgRate = totB>0 ? (totY/totB*100).toFixed(1)+'%' : '—';
     tb.innerHTML+=`<tr>
       <td class="tl"><b>${d.dept}</b></td>
       <td><span class="badge ${cls}">${ch}</span></td>
-      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
-      <td><b>${d.y115}</b></td>
-      <td class="${cls==='bb'?'bl':'gr'}"><b>${tot}</b></td>
-      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
+      <td>${d.r111!==null?d.r111.toFixed(1)+'%':'—'}</td>
+      <td>${d.r112!==null?d.r112.toFixed(1)+'%':'—'}</td>
+      <td>${d.r113!==null?d.r113.toFixed(1)+'%':'—'}</td>
+      <td>${d.r114!==null?d.r114.toFixed(1)+'%':'—'}</td>
+      <td><b>${d.r115!==null?d.r115.toFixed(1)+'%':'—'}</b></td>
+      <td class="${cls==='bb'?'bl':'gr'}"><b>${avgRate}</b></td>
+      <td><span class="pred116">~${pRate116.toFixed(1)}%</span></td>
     </tr>`;
   };
 
@@ -726,73 +1071,81 @@ function buildCombinedTable(dZ, dS) {
   dS.forEach(d=>makeRow(d,'申請',dSDelta,'bu'));
 }
 
-/* ── 116推估詳表 ── */
-function build116Table(depts, tbodyId, delta, kpiValId, kpiSubId) {
+/* ── 116報到率推估詳表 ── */
+function build116Table(depts, tbodyId, deltaR, kpiValId, kpiSubId) {
   const tb=document.getElementById(tbodyId);
   tb.innerHTML='';
-  let total116=0;
+  let weightedSum116=0, totalB115=0, totalY115=0;
   const results=[];
 
   depts.forEach(d=>{
-    const {pred:rawFull}=predict(d,[1,2,3,4,5],6);
-    const p116=Math.max(0,rawFull*(1+delta/2/100));
-    const {pred:rawPre}=predict(d,[1,2,3,4,5],6);
-    const lo=(p116*0.82).toFixed(0), hi=(p116*1.18).toFixed(0);
-    const yoy=d.y115>0?((p116-d.y115)/d.y115*100):0;
-    const yoyTxt=`<span class="${yoy>=0?'gr':'rd'}">${yoy>=0?'+':''}${yoy.toFixed(0)}%</span>`;
-    const risk=riskTag(p116,d.y115);
-    total116+=p116;
-    results.push({dept:d.dept,actual115:d.y115,corrected:p116,lo,hi});
+    const {pred:rawRate}=predictRate(d,[1,2,3,4,5],6);
+    const pRate116=clampRate(rawRate*(1+deltaR/2/100));
+    const lo=clampRate(pRate116*0.88).toFixed(1), hi=clampRate(pRate116*1.12).toFixed(1);
+    const diffPP = pRate116 - d.r115;
+    const yoyTxt=`<span class="${diffPP>=0?'gr':'rd'}">${diffPP>=0?'+':''}${diffPP.toFixed(1)} pp</span>`;
+    const risk=riskTagRate(pRate116, d.r115);
+
+    weightedSum116 += pRate116 * d.b115;
+    totalB115 += d.b115;
+    totalY115 += d.y115;
+    results.push({dept:d.dept, college:d.college, actualRate115:d.r115, correctedRate:pRate116, b115:d.b115, y115:d.y115, lo, hi});
 
     tb.innerHTML+=`<tr>
       <td class="tl"><b>${d.dept}</b></td>
-      <td>${d.y111}</td><td>${d.y112}</td><td>${d.y113}</td><td>${d.y114}</td>
-      <td><b>${d.y115}</b></td>
-      <td>${rawPre.toFixed(1)}</td>
-      <td class="${delta>=0?'gr':'rd'}">${delta>=0?'+':''}${(delta/2).toFixed(1)}%</td>
-      <td><span class="pred116">~${p116.toFixed(0)}</span></td>
-      <td class="pred116-range">${lo}–${hi}</td>
+      <td>${d.r111!==null?d.r111.toFixed(1)+'%':'—'}</td>
+      <td>${d.r112!==null?d.r112.toFixed(1)+'%':'—'}</td>
+      <td>${d.r113!==null?d.r113.toFixed(1)+'%':'—'}</td>
+      <td>${d.r114!==null?d.r114.toFixed(1)+'%':'—'}</td>
+      <td><b>${d.r115.toFixed(1)}%</b></td>
+      <td>${rawRate.toFixed(1)}%</td>
+      <td class="${deltaR>=0?'gr':'rd'}">${deltaR>=0?'+':''}${(deltaR/2).toFixed(1)}%</td>
+      <td><span class="pred116">~${pRate116.toFixed(1)}%</span></td>
+      <td class="pred116-range">${lo}%–${hi}%</td>
       <td>${yoyTxt}</td>
       <td>${risk}</td>
     </tr>`;
   });
 
-  if(kpiValId){
-    document.getElementById(kpiValId).innerHTML=`~${total116.toFixed(0)}<span style="font-size:14px">人</span>`;
-    const act115=depts.reduce((s,d)=>s+d.y115,0);
-    const yoy115=((total116-act115)/act115*100).toFixed(1);
+  const avgPredRate116 = totalB115 > 0 ? (weightedSum116 / totalB115) : 0;
+  const actRate115 = totalB115 > 0 ? (totalY115 / totalB115 * 100) : 0;
+  const diffTotalPP = (avgPredRate116 - actRate115).toFixed(1);
+
+  if(kpiValId && document.getElementById(kpiValId)){
+    document.getElementById(kpiValId).innerHTML=`~${avgPredRate116.toFixed(1)}<span style="font-size:16px">%</span>`;
     if(document.getElementById(kpiSubId))
-      document.getElementById(kpiSubId).textContent=`115實際: ${act115}人 ‧ YoY ${yoy115}%`;
+      document.getElementById(kpiSubId).textContent=`115實際報到率: ${actRate115.toFixed(1)}% ‧ 變動 ${diffTotalPP>=0?'+':''}${diffTotalPP}pp`;
   }
-  return results;
+  return {results, avgPredRate116, totalB115, weightedSum116};
 }
 
-/* ── 驗證表 ── */
+/* ── 報到率模型驗證表 ── */
 function buildValTable(dZ, dS) {
   const tb=document.getElementById('tbVal');
   tb.innerHTML='';
   let errZ114=[],errS114=[],errZ115=[],errS115=[];
 
   const row=(yr,ch,d,trainTs,targetT,earr,cls)=>{
-    const {pred}=predict(d,trainTs,targetT);
-    const act=d['y'+(110+targetT)];
-    const err=act-pred, errR=act>0?Math.abs(err/act)*100:0;
+    const {pred}=predictRate(d,trainTs,targetT);
+    const act=d['r'+(110+targetT)];
+    const errPP=act-pred;
+    const errR=act>0?Math.abs(errPP/act)*100:0;
     earr.push(errR);
-    const grade=errR<15?'<span class="badge bu">優</span>':errR<25?'<span class="badge bw">可</span>':'<span class="badge bd">差</span>';
+    const grade=errR<15?'<span class="badge bu">優 (高準確)</span>':errR<25?'<span class="badge bw">良 (中度)</span>':'<span class="badge bd">待修正</span>';
     return `<tr>
       <td>${yr}</td><td><span class="badge ${cls}">${ch}</span></td>
       <td class="tl">${d.dept}</td>
-      <td>${pred.toFixed(1)}</td><td><b>${act}</b></td>
-      <td class="${err>=0?'gr':'rd'}">${err>=0?'+':''}${err.toFixed(1)}</td>
-      <td class="${errR<20?'gr':errR<30?'yw':'rd'}">${errR.toFixed(1)}%</td>
+      <td>${pred.toFixed(1)}%</td><td><b>${act.toFixed(1)}%</b></td>
+      <td class="${errPP>=0?'gr':'rd'}">${errPP>=0?'+':''}${errPP.toFixed(1)} pp</td>
+      <td class="${errR<18?'gr':errR<28?'yw':'rd'}">${errR.toFixed(1)}%</td>
       <td>${grade}</td>
     </tr>`;
   };
 
-  dZ.forEach(d=>tb.innerHTML+=row('114','甄選',d,[1,2,3],4,errZ114,'bb'));
-  dS.forEach(d=>tb.innerHTML+=row('114','申請',d,[1,2,3],4,errS114,'bu'));
-  dZ.forEach(d=>tb.innerHTML+=row('115','甄選',d,[1,2,3,4],5,errZ115,'bb'));
-  dS.forEach(d=>tb.innerHTML+=row('115','申請',d,[1,2,3,4],5,errS115,'bu'));
+  dZ.forEach(d=>tb.innerHTML+=row('114驗證','甄選',d,[1,2,3],4,errZ114,'bb'));
+  dS.forEach(d=>tb.innerHTML+=row('114驗證','申請',d,[1,2,3],4,errS114,'bu'));
+  dZ.forEach(d=>tb.innerHTML+=row('115回測','甄選',d,[1,2,3,4],5,errZ115,'bb'));
+  dS.forEach(d=>tb.innerHTML+=row('115回測','申請',d,[1,2,3,4],5,errS115,'bu'));
 
   const mZ114=(errZ114.reduce((a,b)=>a+b,0)/errZ114.length).toFixed(1);
   const mS114=(errS114.reduce((a,b)=>a+b,0)/errS114.length).toFixed(1);
@@ -804,23 +1157,36 @@ function buildValTable(dZ, dS) {
   document.getElementById('mapeS115').textContent=mS115+'%';
 }
 
-/* ── Risk table ── */
+/* ── 報到率風險分級表 ── */
 function buildRiskTable(zRes, sRes) {
   const tb=document.getElementById('tbRisk');
   tb.innerHTML='';
   const makeRow=(r,ch,cls)=>{
-    const v=parseFloat(r.corrected), p=r.actual115;
-    const d=p>0?(v-p)/p*100:0;
+    const v=r.correctedRate, p=r.actualRate115;
+    const diffPP = v - p;
     let rLvl,issue,action;
-    if(v<5){rLvl='<span class="badge bd">🔴 極高風險</span>';issue='預測人數極低，恐無法開班';action='立即協調是否整合，強化技高合作校推薦';}
-    else if(v<8||d<-30){rLvl='<span class="badge bw">🟡 高風險</span>';issue=`招生縮減顯著(YoY${d.toFixed(0)}%)`;action='啟動緊急計畫，增加說明會，聯繫生源高中';}
-    else if(d<-15){rLvl='<span class="badge bw">🟡 中風險</span>';issue=`溫和下滑(YoY${d.toFixed(0)}%)`;action='加強宣傳，提升就讀誘因（獎學金、職涯輔導）';}
-    else{rLvl='<span class="badge bu">🟢 穩定</span>';issue='相對穩定，維持現有招生模式';action='深化生源校關係，提升就讀率';}
+    if(v<25){
+      rLvl='<span class="badge bd">🔴 極高風險</span>';
+      issue=`推估報到率偏低 (${v.toFixed(1)}%)，二階正備取流失嚴重`;
+      action='立即檢討二階面試與備審機制，強化技高/普高對口推薦與早鳥獎學金';
+    } else if(v<35 || diffPP<-8){
+      rLvl='<span class="badge bw">🟡 高風險</span>';
+      issue=`報到率低於安全線或下滑 (${diffPP>=0?'+':''}${diffPP.toFixed(1)}pp)`;
+      action='啟動正取生24hr關懷追蹤，加強生源高中職說明會與體驗營';
+    } else if(diffPP<-3){
+      rLvl='<span class="badge bw">🟡 中風險</span>';
+      issue=`報到率微幅波動 (${diffPP.toFixed(1)}pp)`;
+      action='鞏固核心Top5生源校關係，提供住宿與職涯實習保障誘因';
+    } else {
+      rLvl='<span class="badge bu">🟢 報到穩定</span>';
+      issue=`報到率表現穩健 (${v.toFixed(1)}%，變動 ${diffPP>=0?'+':''}${diffPP.toFixed(1)}pp)`;
+      action='維持高轉換生源深耕策略，可適度承接流用名額';
+    }
     tb.innerHTML+=`<tr>
       <td><span class="badge ${cls}">${ch}</span></td>
       <td class="tl"><b>${r.dept}</b></td>
-      <td><b>${p}</b></td>
-      <td><span class="pred116">~${parseFloat(r.corrected).toFixed(0)}</span></td>
+      <td><b>${p.toFixed(1)}%</b></td>
+      <td><span class="pred116">~${v.toFixed(1)}%</span></td>
       <td>${rLvl}</td>
       <td class="tl" style="font-size:12px;color:var(--text2)">${issue}</td>
       <td class="tl" style="font-size:12px">${action}</td>
@@ -830,18 +1196,169 @@ function buildRiskTable(zRes, sRes) {
   sRes.forEach(r=>makeRow(r,'申請','bu'));
 }
 
-/* ── Source tables ── */
+/* ── Source tables & College/Dept Top 5 Bar Charts ── */
+let p4SingleChart = null;
+let p4GridCharts = [];
+
+function switchP4View() {
+  const mode = document.getElementById('p4ViewMode').value;
+  document.getElementById('p4SecDeptTop5').style.display = (mode==='all' || mode==='dept_top5') ? 'block' : 'none';
+  document.getElementById('p4SecRegion').style.display   = (mode==='all' || mode==='region_change') ? 'block' : 'none';
+  document.getElementById('p4SecTop15').style.display    = (mode==='all' || mode==='top15_hs') ? 'block' : 'none';
+}
+
+function onP4CollegeChange() {
+  const clg = document.getElementById('p4CollegeSelect').value;
+  const deptSel = document.getElementById('p4DeptSelect');
+  deptSel.innerHTML = '';
+  const deptsObj = COLLEGE_DEPT_TOP5[clg] || {};
+  Object.keys(deptsObj).forEach(deptName => {
+    const opt = document.createElement('option');
+    opt.value = deptName;
+    opt.textContent = `${deptName} (5年就讀 ${deptsObj[deptName].total5yr}人)`;
+    deptSel.appendChild(opt);
+  });
+  renderP4DeptTop5Chart();
+  renderP4CollegeGrid(clg);
+}
+
+function renderP4DeptTop5Chart() {
+  const clg = document.getElementById('p4CollegeSelect').value;
+  const dept = document.getElementById('p4DeptSelect').value;
+  const info = (COLLEGE_DEPT_TOP5[clg] || {})[dept];
+  if(!info) return;
+
+  document.getElementById('p4SingleDeptTitle').innerHTML = `<i class="fa-solid fa-ranking-star" style="color:#f472b6"></i> 【${clg} — ${dept}】近5年生源學校前 5 名條狀圖`;
+  document.getElementById('p4SingleDeptTableTitle').innerHTML = `<i class="fa-solid fa-table" style="color:#38bdf8"></i> 【${dept}】Top 5 生源學校歷年就讀人數與佔比明細`;
+
+  const labels = info.top5.map(s => s.school);
+  const values = info.top5.map(s => s.total);
+
+  if(p4SingleChart) p4SingleChart.destroy();
+  const ctx = document.getElementById('chartP4DeptTop5');
+  p4SingleChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '5年累計就讀人數 (人)',
+        data: values,
+        backgroundColor: ['rgba(244,114,182,.75)','rgba(56,189,248,.75)','rgba(52,211,153,.75)','rgba(129,140,248,.75)','rgba(251,146,60,.75)'],
+        borderColor: ['#f472b6','#38bdf8','#34d399','#818cf8','#fb923c'],
+        borderWidth: 2,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        datalabels: {
+          display: true,
+          color: '#fff',
+          anchor: 'end',
+          align: 'right',
+          offset: 4,
+          font: { weight: 'bold', size: 11 },
+          formatter: v => `${v}人 (${info.total5yr>0?(v/info.total5yr*100).toFixed(1):0}%)`
+        }
+      },
+      scales: {
+        x: { beginAtZero: true, grace: '22%', ticks: { color: '#94a3b8' }, grid: { color: 'rgba(99,179,237,0.08)' } },
+        y: { ticks: { color: '#e2e8f0', font: { weight: 'bold', size: 12 } }, grid: { display: false } }
+      }
+    }
+  });
+
+  // Table
+  const tb = document.getElementById('tbP4DeptTop5');
+  tb.innerHTML = '';
+  info.top5.forEach((s, idx) => {
+    const pct = info.total5yr > 0 ? (s.total / info.total5yr * 100).toFixed(1) + '%' : '—';
+    tb.innerHTML += `<tr>
+      <td><b>#${idx+1}</b></td>
+      <td class="tl"><b>${s.school}</b></td>
+      <td><span class="badge bb">${s.type}</span></td>
+      <td>${s.y111}</td><td>${s.y112}</td><td>${s.y113}</td><td>${s.y114}</td><td><b>${s.y115}</b></td>
+      <td class="pk"><b>${s.total}人</b></td>
+      <td><b>${pct}</b></td>
+    </tr>`;
+  });
+}
+
+function renderP4CollegeGrid(clg) {
+  p4GridCharts.forEach(c => c.destroy());
+  p4GridCharts = [];
+  const container = document.getElementById('p4CollegeGridCharts');
+  container.innerHTML = '';
+  document.getElementById('p4CollegeAllTitle').innerHTML = `<i class="fa-solid fa-grip" style="color:#34d399"></i> 【${clg}】各對應系所 — 生源學校前 5 名條狀圖總覽`;
+
+  const deptsObj = COLLEGE_DEPT_TOP5[clg] || {};
+  Object.keys(deptsObj).forEach((deptName, idx) => {
+    const info = deptsObj[deptName];
+    const canvasId = `p4GridCanvas_${idx}`;
+    const cardDiv = document.createElement('div');
+    cardDiv.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;';
+    cardDiv.innerHTML = `
+      <div style="font-size:13px;font-weight:800;color:#93c5fd;margin-bottom:8px;display:flex;justify-content:space-between">
+        <span><i class="fa-solid fa-graduation-cap"></i> ${deptName}</span>
+        <span style="color:#34d399">5年共 ${info.total5yr} 人</span>
+      </div>
+      <div style="position:relative;height:210px"><canvas id="${canvasId}"></canvas></div>
+    `;
+    container.appendChild(cardDiv);
+
+    const ctx = document.getElementById(canvasId);
+    const ch = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: info.top5.map(s => s.school),
+        datasets: [{
+          label: '5年就讀人數',
+          data: info.top5.map(s => s.total),
+          backgroundColor: CLRS[idx % CLRS.length] + 'aa',
+          borderColor: CLRS[idx % CLRS.length],
+          borderWidth: 1.5,
+          borderRadius: 5
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            display: true,
+            color: '#e2e8f0',
+            anchor: 'end',
+            align: 'right',
+            font: { size: 10, weight: 'bold' },
+            formatter: v => v + '人'
+          }
+        },
+        scales: {
+          x: { beginAtZero: true, grace: '20%', ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(99,179,237,0.06)' } },
+          y: { ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }, grid: { display: false } }
+        }
+      }
+    });
+    p4GridCharts.push(ch);
+  });
+}
+
 function buildSourceTables() {
   let tb=document.getElementById('tbSrcHS');
   tb.innerHTML='';
   TOP15.forEach(s=>{
     const t115=s.y115>s.y114?'<span class="badge bu">↑</span>':s.y115<s.y114?'<span class="badge bd">↓</span>':'<span class="badge bn">→</span>';
     const sz=s.sz?s.sz.toLocaleString()+'人':'—';
-    const rt=s.sz?((s.total/s.sz)*100).toFixed(1)+'%':'—';
     tb.innerHTML+=`<tr>
       <td><b>${s.rank}</b></td><td class="tl"><b>${s.school}</b></td><td>${s.type}</td>
       <td>${s.y111}</td><td>${s.y112}</td><td>${s.y113}</td><td>${s.y114}</td><td><b>${s.y115}</b></td>
-      <td class="bl"><b>${s.total}</b></td><td>${sz}</td><td>${rt}</td><td>${t115}</td>
+      <td class="bl"><b>${s.total}</b></td><td>${sz}</td><td>${s.conv}</td><td>${t115}</td>
     </tr>`;
   });
   tb=document.getElementById('tbSrcJH');
@@ -858,140 +1375,138 @@ function buildSourceTables() {
 }
 
 // ═══════════════════════════════════════════════════
-// CHART BUILDERS
+// CHART BUILDERS (全面以報到率 % 繪製)
 // ═══════════════════════════════════════════════════
 const YLABELS=['111','112','113','114','115','116推估'];
 const YCOLORS=['#38bdf8','#818cf8','#34d399','#fb923c','#f472b6','#fbbf24','#a78bfa','#4ade80','#f97316','#2dd4bf','#e879f9','#facc15'];
 
-function buildCharts(deltaZ, deltaS) {
-  // Overall totals line
-  const zTots=[161,93,109,80,78];
-  const sTots=[193,148,126,135,155];
-  const zPred116=ZDEPTS.reduce((s,d)=>{const{pred:r}=predict(d,[1,2,3,4,5],6);return s+Math.max(0,r*(1+deltaZ/2/100));},0);
-  const sPred116=SDEPTS.reduce((s,d)=>{const{pred:r}=predict(d,[1,2,3,4,5],6);return s+Math.max(0,r*(1+deltaS/2/100));},0);
+function buildCharts(deltaZ, deltaS, zPredAvg116, sPredAvg116) {
+  // 全校甄選二階報到率 vs 申請二階報到率 (111-115實際 + 116推估)
+  const zRateSeries = [38.2, 40.4, 44.1, 53.1, 48.1, parseFloat(zPredAvg116.toFixed(1))];
+  const sRateSeries = [31.8, 32.0, 35.8, 37.5, 44.9, parseFloat(sPredAvg116.toFixed(1))];
 
-  // Datalabels config
   const dlCfg = {
     display:true,
     color:(ctx)=>ctx.dataset.borderColor||'#fff',
     anchor:'end', align:'top', offset:2,
     font:{weight:'bold',size:10},
-    formatter:(v)=>v===null?'':Math.round(v)
+    formatter:(v)=>v===null?'':v.toFixed(1)+'%'
   };
 
   makeChart('chartZTotal','line',YLABELS,[
-    {label:'甄選報到', data:[...zTots, parseFloat(zPred116.toFixed(0))],
+    {label:'甄選二階報到率(%)', data:zRateSeries,
      borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.1)',tension:.4,pointRadius:5,
      segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined},
      pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
      pointBackgroundColor:ctx=>ctx.dataIndex===5?'#f472b6':'#38bdf8'}
-  ],{datalabels:dlCfg});
+  ],{datalabels:dlCfg, unit:'%', yOpts:{max:75}});
 
   makeChart('chartSTotal','line',YLABELS,[
-    {label:'申請報到', data:[...sTots, parseFloat(sPred116.toFixed(0))],
+    {label:'申請二階報到率(%)', data:sRateSeries,
      borderColor:'#34d399',backgroundColor:'rgba(52,211,153,.1)',tension:.4,pointRadius:5,
      segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined},
      pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
      pointBackgroundColor:ctx=>ctx.dataIndex===5?'#f472b6':'#34d399'}
-  ],{datalabels:dlCfg});
+  ],{datalabels:dlCfg, unit:'%', yOpts:{max:65}});
 
-  // Per-dept line charts (甄選)
+  // 各系報到率折線圖 (甄選)
   const zDatasets=ZDEPTS.map((d,i)=>{
-    const p116=Math.max(0,predict(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100));
+    const p116=clampRate(predictRate(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100));
     return {
       label:d.dept,
-      data:[d.y111,d.y112,d.y113,d.y114,d.y115,parseFloat(p116.toFixed(1))],
+      data:[d.r111,d.r112,d.r113,d.r114,d.r115,parseFloat(p116.toFixed(1))],
       borderColor:YCOLORS[i%YCOLORS.length],
       backgroundColor:'transparent',
-      tension:.4, pointRadius:4,
+      tension:.4,
       segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined},
       pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
       pointRadius:ctx=>ctx.dataIndex===5?7:4,
     };
   });
-  makeChart('chartZDepts','line',YLABELS,zDatasets,{datalabels:{
+  makeChart('chartZDepts','line',YLABELS,zDatasets,{unit:'%', yOpts:{max:85}, datalabels:{
     display:ctx=>ctx.dataIndex===5,
     color:ctx=>ctx.dataset.borderColor,
     anchor:'end',align:'top',offset:3,font:{weight:'bold',size:10},
-    formatter:v=>v===null?'':'~'+Math.round(v)
+    formatter:v=>v===null?'':'~'+v.toFixed(1)+'%'
   },chartOpts:{plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}}}});
 
-  // Per-dept line charts (申請)
+  // 各系報到率折線圖 (申請)
   const sDatasets=SDEPTS.map((d,i)=>{
-    const p116=Math.max(0,predict(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100));
+    const p116=clampRate(predictRate(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100));
     return {
       label:d.dept,
-      data:[d.y111,d.y112,d.y113,d.y114,d.y115,parseFloat(p116.toFixed(1))],
+      data:[d.r111,d.r112,d.r113,d.r114,d.r115,parseFloat(p116.toFixed(1))],
       borderColor:YCOLORS[i%YCOLORS.length],
       backgroundColor:'transparent',
-      tension:.4, pointRadius:4,
+      tension:.4,
       segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined},
       pointStyle:ctx=>ctx.dataIndex===5?'triangle':'circle',
       pointRadius:ctx=>ctx.dataIndex===5?7:4,
     };
   });
-  makeChart('chartSDepts','line',YLABELS,sDatasets,{datalabels:{
+  makeChart('chartSDepts','line',YLABELS,sDatasets,{unit:'%', yOpts:{max:70}, datalabels:{
     display:ctx=>ctx.dataIndex===5,
     color:ctx=>ctx.dataset.borderColor,
     anchor:'end',align:'top',offset:3,font:{weight:'bold',size:10},
-    formatter:v=>v===null?'':'~'+Math.round(v)
+    formatter:v=>v===null?'':'~'+v.toFixed(1)+'%'
   },chartOpts:{plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}}}});
 
-  // Rates chart
-  makeChart('chartRates','line',['111','112','113','114','115'],[
-    {label:'申請就讀率(人數計%)',data:[31.8,32.0,35.8,37.5,44.9],borderColor:'#34d399',tension:.4,pointRadius:5},
-    {label:'甄選分發→報到率%',data:[94.2,93.0,95.6,93.0,91.8],borderColor:'#38bdf8',tension:.4,pointRadius:5},
-  ],{datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v+'%'}});
+  // 階段報到率演變圖
+  makeChart('chartRates','line',['111','112','113','114','115','116推估'],[
+    {label:'申請二階→報到率(%)',data:[31.8,32.0,35.8,37.5,44.9,parseFloat(sPredAvg116.toFixed(1))],borderColor:'#34d399',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
+    {label:'甄選二階→報到率(%)',data:[38.2,40.4,44.1,53.1,48.1,parseFloat(zPredAvg116.toFixed(1))],borderColor:'#38bdf8',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
+    {label:'甄選分發錄取→報到率(%)',data:[94.2,93.0,95.6,93.0,91.8,92.6],borderColor:'#f472b6',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
+  ],{unit:'%', yOpts:{max:105}, datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
-  // 115 vs 116 comparison
+  // 115 vs 116 報到率比較
   const allDepts=[...ZDEPTS.map(d=>({...d,ch:'甄',delta:deltaZ})),...SDEPTS.map(d=>({...d,ch:'申',delta:deltaS}))];
-  const labels2=allDepts.map(d=>d.dept.slice(0,5)+'('+d.ch+')');
+  const labels2=allDepts.map(d=>d.dept.slice(0,4)+'('+d.ch+')');
   makeChart('chartComp','bar',labels2,[
-    {label:'115實際',data:allDepts.map(d=>d.y115),backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
-    {label:'116推估',data:allDepts.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+d.delta/2/100)).toFixed(0))),backgroundColor:'rgba(244,114,182,.6)',borderColor:'#f472b6',borderWidth:1},
-  ],{datalabels:{display:true,color:'#fff',anchor:'end',align:'top',font:{size:9},formatter:v=>v}});
+    {label:'115實際報到率(%)',data:allDepts.map(d=>d.r115),backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'116推估報到率(%)',data:allDepts.map(d=>parseFloat(clampRate(predictRate(d,[1,2,3,4,5],6).pred*(1+d.delta/2/100)).toFixed(1))),backgroundColor:'rgba(244,114,182,.6)',borderColor:'#f472b6',borderWidth:1},
+  ],{unit:'%', yOpts:{max:85}, datalabels:{display:true,color:'#fff',anchor:'end',align:'top',font:{size:8},formatter:v=>v+'%'}});
 
-  // 116 bar charts (page2)
-  const z116Bars=ZDEPTS.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100)).toFixed(0)));
+  // Page 2: 116 報到率柱狀圖
+  const z116Bars=ZDEPTS.map(d=>parseFloat(clampRate(predictRate(d,[1,2,3,4,5],6).pred*(1+deltaZ/2/100)).toFixed(1)));
   makeChart('chart116ZBar','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'115實際',data:ZDEPTS.map(d=>d.y115),backgroundColor:'rgba(56,189,248,.4)',borderColor:'#38bdf8',borderWidth:1},
-    {label:'116推估',data:z116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#f472b6',anchor:'end',align:'top',font:{size:11,weight:'bold'},formatter:v=>v}});
+    {label:'115實際報到率(%)',data:ZDEPTS.map(d=>d.r115),backgroundColor:'rgba(56,189,248,.4)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'116推估報到率(%)',data:z116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
+  ],{unit:'%', yOpts:{max:85}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#f472b6',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v+'%'}});
 
-  const s116Bars=SDEPTS.map(d=>parseFloat((predict(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100)).toFixed(0)));
+  const s116Bars=SDEPTS.map(d=>parseFloat(clampRate(predictRate(d,[1,2,3,4,5],6).pred*(1+deltaS/2/100)).toFixed(1)));
   makeChart('chart116SBar','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'115實際',data:SDEPTS.map(d=>d.y115),backgroundColor:'rgba(52,211,153,.4)',borderColor:'#34d399',borderWidth:1},
-    {label:'116推估',data:s116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#34d399':'#f472b6',anchor:'end',align:'top',font:{size:11,weight:'bold'},formatter:v=>v}});
+    {label:'115實際報到率(%)',data:SDEPTS.map(d=>d.r115),backgroundColor:'rgba(52,211,153,.4)',borderColor:'#34d399',borderWidth:1},
+    {label:'116推估報到率(%)',data:s116Bars,backgroundColor:'rgba(244,114,182,.65)',borderColor:'#f472b6',borderWidth:2},
+  ],{unit:'%', yOpts:{max:70}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#34d399':'#f472b6',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v+'%'}});
 
-  // Validation charts (page3)
-  const z114pred=ZDEPTS.map(d=>parseFloat(predict(d,[1,2,3],4).pred.toFixed(1)));
-  const z114act=ZDEPTS.map(d=>d.y114);
+  // Page 3: Validation & Backtest 報到率比較圖
+  const z114pred=ZDEPTS.map(d=>parseFloat(predictRate(d,[1,2,3],4).pred.toFixed(1)));
+  const z114act=ZDEPTS.map(d=>d.r114);
   makeChart('chartV114Z','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'預測',data:z114pred,backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
-    {label:'實際',data:z114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+    {label:'預測報到率(%)',data:z114pred,backgroundColor:'rgba(56,189,248,.5)',borderColor:'#38bdf8',borderWidth:1},
+    {label:'實際報到率(%)',data:z114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{unit:'%', yOpts:{max:80}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#38bdf8':'#34d399',anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
-  const s114pred=SDEPTS.map(d=>parseFloat(predict(d,[1,2,3],4).pred.toFixed(1)));
-  const s114act=SDEPTS.map(d=>d.y114);
+  const s114pred=SDEPTS.map(d=>parseFloat(predictRate(d,[1,2,3],4).pred.toFixed(1)));
+  const s114act=SDEPTS.map(d=>d.r114);
   makeChart('chartV114S','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'預測',data:s114pred,backgroundColor:'rgba(129,140,248,.5)',borderColor:'#818cf8',borderWidth:1},
-    {label:'實際',data:s114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#818cf8':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+    {label:'預測報到率(%)',data:s114pred,backgroundColor:'rgba(129,140,248,.5)',borderColor:'#818cf8',borderWidth:1},
+    {label:'實際報到率(%)',data:s114act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{unit:'%', yOpts:{max:65}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#818cf8':'#34d399',anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
-  const z115pred=ZDEPTS.map(d=>parseFloat(predict(d,[1,2,3,4],5).pred.toFixed(1)));
-  const z115act=ZDEPTS.map(d=>d.y115);
+  const z115pred=ZDEPTS.map(d=>parseFloat(predictRate(d,[1,2,3,4],5).pred.toFixed(1)));
+  const z115act=ZDEPTS.map(d=>d.r115);
   makeChart('chartBT115Z','bar',ZDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'預測',data:z115pred,backgroundColor:'rgba(251,146,60,.5)',borderColor:'#fb923c',borderWidth:1},
-    {label:'實際',data:z115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fb923c':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+    {label:'預測報到率(%)',data:z115pred,backgroundColor:'rgba(251,146,60,.5)',borderColor:'#fb923c',borderWidth:1},
+    {label:'實際報到率(%)',data:z115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{unit:'%', yOpts:{max:85}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fb923c':'#34d399',anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
-  const s115pred=SDEPTS.map(d=>parseFloat(predict(d,[1,2,3,4],5).pred.toFixed(1)));
-  const s115act=SDEPTS.map(d=>d.y115);
+  const s115pred=SDEPTS.map(d=>parseFloat(predictRate(d,[1,2,3,4],5).pred.toFixed(1)));
+  const s115act=SDEPTS.map(d=>d.r115);
   makeChart('chartBT115S','bar',SDEPTS.map(d=>d.dept.slice(0,6)),[
-    {label:'預測',data:s115pred,backgroundColor:'rgba(251,191,36,.5)',borderColor:'#fbbf24',borderWidth:1},
-    {label:'實際',data:s115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
-  ],{datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fbbf24':'#34d399',anchor:'end',align:'top',font:{size:10,weight:'bold'},formatter:v=>v}});
+    {label:'預測報到率(%)',data:s115pred,backgroundColor:'rgba(251,191,36,.5)',borderColor:'#fbbf24',borderWidth:1},
+    {label:'實際報到率(%)',data:s115act, backgroundColor:'rgba(52,211,153,.6)',borderColor:'#34d399',borderWidth:1},
+  ],{unit:'%', yOpts:{max:65}, datalabels:{display:true,color:ctx=>ctx.datasetIndex===0?'#fbbf24':'#34d399',anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
   // Region charts
   makeChart('chartRegPie','doughnut',REGION_DATA.map(r=>r.r),[
@@ -1006,22 +1521,71 @@ function buildCharts(deltaZ, deltaS) {
   ],{datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:9},formatter:v=>v}});
 }
 
-// ═══════════════════════════════════════════════════
-// STAGE SWITCH
-// ═══════════════════════════════════════════════════
+function renderP5Content() {
+  const colSel = document.getElementById('p5CollegeSelect');
+  const col = colSel ? colSel.value : 'all';
+
+  const resGrid = document.getElementById('p5CollegeResGrid');
+  if (resGrid) {
+    resGrid.innerHTML = '';
+    P5_COLLEGE_RES.filter(c => col === 'all' || c.college === col).forEach(c => {
+      resGrid.innerHTML += `
+        <div class="card" style="border-top:3px solid ${c.color}">
+          <div class="card-t" style="color:${c.color};font-size:15px"><i class="fa-solid fa-building-columns"></i> ${c.college} — 整體資源規劃與系所區隔</div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:8px"><b>官網對應學系：</b>${c.depts}</div>
+          <div style="background:rgba(56,189,248,.07);border-left:3px solid ${c.color};padding:8px 12px;border-radius:6px;font-size:12px;color:#e2e8f0;line-height:1.6;margin-bottom:8px">
+            <b>🔗 整體學院資源規劃：</b>${c.resource}
+          </div>
+          <div style="font-size:12px;color:#cbd5e1;line-height:1.6">
+            <b>🎯 專業系所特定差異化區隔：</b>${c.diff}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  const tbL = document.getElementById('tbP5Lookalike');
+  if (tbL) {
+    tbL.innerHTML = '';
+    P5_DEPT_LOOKALIKE.filter(d => col === 'all' || d.college === col).forEach(d => {
+      tbL.innerHTML += `<tr>
+        <td><span class="badge bu">${d.college}</span></td>
+        <td class="tl"><b>${d.dept}</b></td>
+        <td><b>${d.sRate}</b></td>
+        <td><b>${d.zRate}</b></td>
+        <td class="tl" style="font-size:11.5px;color:#cbd5e1">${d.diff}</td>
+        <td class="tl" style="font-size:11.5px;color:#38bdf8">${d.curr}</td>
+        <td class="tl" style="font-size:11.5px;color:#fbbf24;font-weight:700">${d.lookalike}</td>
+        <td class="tl" style="font-size:11.5px;color:#94a3b8">${d.plan}</td>
+      </tr>`;
+    });
+  }
+}
+
+function switchP5View() {
+  const modeSel = document.getElementById('p5ViewMode');
+  const mode = modeSel ? modeSel.value : 'all';
+  const s1 = document.getElementById('p5SecCollegeRes');
+  const s2 = document.getElementById('p5SecLookalike');
+  const s3 = document.getElementById('p5SecRisk');
+  if (s1) s1.style.display = (mode === 'all' || mode === 'college_res') ? 'block' : 'none';
+  if (s2) s2.style.display = (mode === 'all' || mode === 'dept_lookalike') ? 'block' : 'none';
+  if (s3) s3.style.display = (mode === 'all' || mode === 'risk_matrix') ? 'block' : 'none';
+  renderP5Content();
+}
+
 function switchPage(id) {
   document.querySelectorAll('.page').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(t=>t.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
   document.getElementById('tab-'+id)?.classList.add('active');
+  const gSel = document.getElementById('globalPageSelect');
+  if (gSel) gSel.value = id;
 }
 
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
-  const deltaZ=computeDelta(ZDEPTS,[1,2,3,4],5);
-  const deltaS=computeDelta(SDEPTS,[1,2,3,4],5);
+  const deltaZ=computeRateDelta(ZDEPTS,[1,2,3,4],5);
+  const deltaS=computeRateDelta(SDEPTS,[1,2,3,4],5);
 
   // Page 0
   buildTotalTable(ZDEPTS,'tbZTotal',deltaZ,'bl');
@@ -1029,22 +1593,26 @@ document.addEventListener('DOMContentLoaded',()=>{
   buildCombinedTable(ZDEPTS,SDEPTS);
 
   // Page 2
-  const zRes=build116Table(ZDEPTS,'tb116Z',deltaZ,'kpi116Z','kpi116ZSub');
-  const sRes=build116Table(SDEPTS,'tb116S',deltaS,'kpi116S','kpi116SSub');
-  const all116=zRes.reduce((s,r)=>s+r.corrected,0)+sRes.reduce((s,r)=>s+r.corrected,0);
-  document.getElementById('kpi116All').innerHTML=`~${all116.toFixed(0)}<span style="font-size:14px">人</span>`;
+  const zOut=build116Table(ZDEPTS,'tb116Z',deltaZ,'kpi116Z','kpi116ZSub');
+  const sOut=build116Table(SDEPTS,'tb116S',deltaS,'kpi116S','kpi116SSub');
+  const allRate116 = (zOut.weightedSum116 + sOut.weightedSum116) / (zOut.totalB115 + sOut.totalB115);
+  document.getElementById('kpi116All').innerHTML=`~${allRate116.toFixed(1)}<span style="font-size:16px">%</span>`;
+  document.getElementById('p0KpiAllRate').textContent=`~${allRate116.toFixed(1)}%`;
+  document.getElementById('p0KpiAllSub').textContent=`甄選推估 ~${zOut.avgPredRate116.toFixed(1)}% ‧ 申請推估 ~${sOut.avgPredRate116.toFixed(1)}%`;
 
   // Page 3
   buildValTable(ZDEPTS,SDEPTS);
 
   // Page 4
   buildSourceTables();
+  onP4CollegeChange();
 
   // Page 5
-  buildRiskTable(zRes,sRes);
+  buildRiskTable(zOut.results, sOut.results);
+  renderP5Content();
 
   // All charts
-  buildCharts(deltaZ,deltaS);
+  buildCharts(deltaZ, deltaS, zOut.avgPredRate116, sOut.avgPredRate116);
 });
 </script>
 </body>

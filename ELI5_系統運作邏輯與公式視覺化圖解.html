@@ -210,6 +210,7 @@ tr.highlight-red td { background: #fef2f2; }
         <option value="sec3">📐 3. 全系統 12 項計算公式與分子/分母定義字典</option>
         <option value="sec4">📊 4. 兩大管道 111–115 階段歷程明細表 (紅字修正版)</option>
         <option value="sec5">🎯 5. IR 116學年「報到率基準」推估模型演算法</option>
+        <option value="sec6">🚀 6. 進階 IR 四大決策引擎邏輯與公式 (F13–F16)</option>
       </select>
       <a class="btn-link" href="index.html">⬅ 返回生源戰情看板</a>
       <a class="btn-link" href="IR招生預測對策系統.html">⬅ 返回 IR 預測對策系統</a>
@@ -709,6 +710,55 @@ tr.highlight-red td { background: #fef2f2; }
     </div>
   </section>
 
+
+  <!-- SECTION 6: 進階 IR 四大決策引擎運作邏輯與公式 (F13-F16) -->
+  <section id="sec6" class="section-card eli5-sec" style="border:2px solid #38bdf8;">
+    <div class="sec-header">
+      <div class="sec-title">
+        <span>🚀 模組六：進階 IR 四大決策引擎運作邏輯與公式（外部人口變數 ‧ 事中動態預警 ‧ 流失質化歸因 ‧ 系主任分眾行動單）</span>
+      </div>
+      <span class="sec-tag" style="background:#e0f2fe;color:#0369a1;">Formulas F13 – F16</span>
+    </div>
+    <div class="grid-2">
+      <div class="fix-box" style="border-color:#bae6fd;">
+        <h3 style="color:#0369a1;">① 整合外部環境變數與人口結構 (Formula F13)</h3>
+        <p style="font-size:12.5px;color:#475569;">納入教育部「高中職應屆畢業生少子化年減率 $\alpha_{\text{demo}}$」、縣市適齡人口係數 $\beta_{\text{reg}}$ 與周邊競校名額磁吸壓力 $\gamma_{\text{comp}}$，避免斷崖式下跌時模型過度樂觀：</p>
+        <div class="formula-block" style="border-left-color:#0284c7;">
+          B_116,adj = B_115 × (1 + α_demo) × (1 + β_reg)<br>
+          R̂_116,adj = clamp( R̂_116,hist × (1 + γ_comp), 5%, 100% )<br>
+          Ŷ_116,adj = round( B_116,adj × R̂_116,adj )
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#fde68a;">
+        <h3 style="color:#b45309;">② 招生期間「事中監控」動態預警機制 (Formula F14)</h3>
+        <p style="font-size:12.5px;color:#475569;">在二階報名或繳費期間（D-14 至 D-0），對照歷年同期每日累積進度曲線 $P_{\text{hist}}(d)$ 計算進度達成比 Pacing Index：</p>
+        <div class="formula-block" style="border-left-color:#d97706;">
+          PI_i(d) = C_i,curr(d) ÷ [ Target_i × P_hist(d) ] × 100%<br>
+          ● PI &lt; 80%：🔴 紅燈危急預警 (立即啟動電話催繳 + 針對性廣告投放)<br>
+          ● 80% ≤ PI &lt; 95%：🟡 黃燈觀望預警 ｜ ● PI ≥ 95%：🟢 綠燈正常
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#e9d5ff;">
+        <h3 style="color:#6d28d9;">③ 流失節點質化歸因與放棄理由標籤化 (Formula F15)</h3>
+        <p style="font-size:12.5px;color:#475569;">結合電訪與問卷將流失原因標準化為 6 大標籤（TAG-1 國立磁吸 31.8%、TAG-2 交通住宿 22.4%、TAG-3 選系轉移 19.2%、TAG-4 獎學金挖角 13.0%、TAG-5 備審撞期 8.8%、TAG-6 實習負荷 4.8%）：</p>
+        <div class="formula-block" style="border-left-color:#7c3aed;">
+          W_tag(k) = N_drop(k) ÷ Σ N_drop × 100%<br>
+          School_Pain_Index(s, k) = Drop_Cnt(s) × W_tag(s, k)
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#a7f3d0;">
+        <h3 style="color:#047857;">④ 依決策角色的分眾行動清單與系主任儀表板 (Formula F16)</h3>
+        <p style="font-size:12.5px;color:#475569;">針對系主任、院長、校長與第一線人員自動轉譯數據為行動清單，直接產出各系「急需拜訪 5 所潛力校」與「高報名低轉換觀望校」：</p>
+        <div class="formula-block" style="border-left-color:#059669;">
+          Visit_Priority = 0.5 × Lookalike_Similarity + 0.5 × Geo_Accessibility<br>
+          Rescue_Priority = Apply_5yr × (1 - Conv_Rate)
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script>

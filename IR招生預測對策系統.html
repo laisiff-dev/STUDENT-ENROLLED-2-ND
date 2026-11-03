@@ -149,15 +149,23 @@
   <button class="nav-btn" id="tab-p3" onclick="switchPage('p3')"><i class="fa-solid fa-microscope"></i> 報到率模型驗證</button>
   <button class="nav-btn" id="tab-p4" onclick="switchPage('p4')"><i class="fa-solid fa-map"></i> 區域生源與院系Top5</button>
   <button class="nav-btn" id="tab-p5" onclick="switchPage('p5')"><i class="fa-solid fa-chess-knight"></i> 招生對策</button>
-  <button class="nav-btn" id="tab-p6" onclick="switchPage('p6')" style="border-color:#f87171;color:#fca5a5"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f87171"></i> ELI5 邏輯與公式圖解</button>
+  <button class="nav-btn" id="tab-p6" onclick="switchPage('p6')" style="border-color:#f87171;color:#fca5a5"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f87171"></i> ELI5 邏輯與公式</button>
+  <button class="nav-btn" id="tab-p7" onclick="switchPage('p7')" style="border-color:#38bdf8;color:#7dd3fc"><i class="fa-solid fa-earth-asia"></i> 1.外部人口與競校變數</button>
+  <button class="nav-btn" id="tab-p8" onclick="switchPage('p8')" style="border-color:#fbbf24;color:#fde047"><i class="fa-solid fa-bell"></i> 2.招生期動態預警</button>
+  <button class="nav-btn" id="tab-p9" onclick="switchPage('p9')" style="border-color:#c084fc;color:#d8b4fe"><i class="fa-solid fa-tags"></i> 3.流失節點質化歸因</button>
+  <button class="nav-btn" id="tab-p10" onclick="switchPage('p10')" style="border-color:#34d399;color:#6ee7b7"><i class="fa-solid fa-user-check"></i> 4.分眾決策與系主任清單</button>
   <select class="sel-dark" id="globalPageSelect" onchange="switchPage(this.value)" style="margin-left:auto;padding:6px 12px;font-size:12px;">
-    <option value="p0">🔽 下拉快速切換畫面：0. 全院系報到率總表</option>
-    <option value="p1">🔽 下拉快速切換畫面：1. 報到率趨勢圖表</option>
-    <option value="p2">🔽 下拉快速切換畫面：2. 116年報到率推估</option>
-    <option value="p3">🔽 下拉快速切換畫面：3. 報到率模型驗證</option>
-    <option value="p4">🔽 下拉快速切換畫面：4. 區域生源與院系Top5</option>
-    <option value="p5">🔽 下拉快速切換畫面：5. 分層招生策略(含院資源與同類校開發)</option>
-    <option value="p6">🔽 下拉快速切換畫面：6. ELI5 系統邏輯與12大公式圖解(含紅字數據修正)</option>
+    <option value="p0">🔽 下拉切換：0. 全院系報到率總表</option>
+    <option value="p1">🔽 下拉切換：1. 報到率趨勢圖表</option>
+    <option value="p2">🔽 下拉切換：2. 116年報到率推估</option>
+    <option value="p3">🔽 下拉切換：3. 報到率模型驗證</option>
+    <option value="p4">🔽 下拉切換：4. 區域生源與院系Top5</option>
+    <option value="p5">🔽 下拉切換：5. 分層招生策略(含院資源與同類校開發)</option>
+    <option value="p6">🔽 下拉切換：6. ELI5 系統邏輯與16大公式圖解(含紅字修正)</option>
+    <option value="p7">🔽 ★新功能 1：整合外部環境變數與人口結構(少子化/縣市/競校模型)</option>
+    <option value="p8">🔽 ★新功能 2：建立招生期間動態預警機制(事中監控與紅燈預警)</option>
+    <option value="p9">🔽 ★新功能 3：流失節點質化歸因分析(放棄理由標籤×生源校痛點)</option>
+    <option value="p10">🔽 ★新功能 4：依決策角色的分眾行動清單(系主任專屬待辦儀表板)</option>
   </select>
 </nav>
 
@@ -678,10 +686,400 @@
           <tr><td><b class="rd">F06 ★</b></td><td class="tl"><b class="rd">申請二階➔報到轉換率(人次)</b></td><td class="tl"><code class="rd">最終已報到人數 ÷ 二階報名總人次 × 100%</code></td><td class="tl">二階報名表人次最終轉化報到比率</td><td class="tl"><b class="rd">114年: 135÷395=34.2% ｜ 115年: 155÷401=38.7% ｜ 5年: 757÷2,339=32.4%</b></td></tr>
           <tr><td><b>F07</b></td><td class="tl"><b>各系年度報到率 R(t)</b></td><td class="tl"><code>R(t) = 該系第t年報到人數 Y_t ÷ 二階甄試基數 B_t × 100%</code></td><td class="tl">消除各年名額變動之標準化系所報到率</td><td class="tl">如115職安甄選: 21÷34=<b>61.8%</b> ｜ 115護理申請: 84÷180=<b>46.7%</b></td></tr>
           <tr><td><b>F08</b></td><td class="tl"><b>116加權趨勢與半程修正 R̂₁₁₆</b></td><td class="tl"><code>R̂_raw = 0.55×(a_R+b_R×t) + 0.45×μ_R</code><br><code>R̂₁₁₆ = clamp(R̂_raw × (1 + δ_R/2), 0%, 100%)</code></td><td class="tl">55%線性趨勢+45%歷年均值，再以115回測系統偏差 δ_R 做半程修正</td><td class="tl">116全校推估：甄選二階報到率 <b class="rd">~46.2%</b>、申請二階報到率 <b class="rd">~42.1%</b></td></tr>
+          <tr style="background:rgba(56,189,248,.08)"><td class="bl"><b>F09 ★</b></td><td class="tl"><b class="bl">外部少子化人口與競校修正模型</b></td><td class="tl"><code>B₁₁₆_adj = B₁₁₅ × (1 + α_demo) × (1 + β_reg)</code><br><code>R̂₁₁₆_adj = clamp(R̂₁₁₆ × (1 + γ_comp), 5%, 100%)</code></td><td class="tl">納入教育部高中職應屆畢業生年減率(α_demo)、高屏與跨區適齡人口係數(β_reg)與競校名額磁吸壓力(γ_comp)</td><td class="tl">防止在少子化斷崖年過度樂觀依賴校內歷史均值</td></tr>
+          <tr style="background:rgba(251,191,36,.08)"><td class="yw"><b>F10 ★</b></td><td class="tl"><b class="yw">招生期事中動態預警指標 (Pacing Index)</b></td><td class="tl"><code>PI_i(d) = C_i,curr(d) ÷ [ Target_i × P_hist(d) ] × 100%</code></td><td class="tl">對照歷年同期(距截止日d天)累積報名/繳費基準線 P_hist(d)，低於80%發出🔴紅燈預警、80~94%為🟡黃燈、≥95%為🟢綠燈</td><td class="tl">在報名截止前72小時即時啟動電話催繳與精準廣告投放</td></tr>
+          <tr style="background:rgba(192,132,252,.08)"><td class="pk"><b>F11 ★</b></td><td class="tl"><b class="pk">流失節點質化歸因權重 (Churn Attribution)</b></td><td class="tl"><code>W_tag(k) = N_drop(k) ÷ Σ N_drop × 100%</code><br><code>Loss_Impact = Drop_Cnt × W_tag(k)</code></td><td class="tl">將一階未報二階、錄取放棄之電訪/問卷理由歸類為6大標準標籤(TAG-1~TAG-6)並交叉生源學校</td><td class="tl">精準診斷如溪湖高中(距離/住宿48%)、屏女(國立磁吸52%)之核心痛點</td></tr>
+          <tr style="background:rgba(52,211,153,.08)"><td class="gr"><b>F12 ★</b></td><td class="tl"><b class="gr">系主任分眾行動優先序評分 (Action Priority)</b></td><td class="tl"><code>Score_visit = 0.5×Lookalike_Pot + 0.5×Geo_Access</code><br><code>Score_rescue = Apply_Cnt × (1 - Conv_Rate)</code></td><td class="tl">自動篩選各系「急需拜訪5所潛力生源校」與「高報名低轉換觀望搶救校」並轉譯為待辦清單</td><td class="tl">第一線系主任與種子教師登入即可勾選執行，零數據解讀門檻</td></tr>
         </tbody>
       </table>
     </div>
   </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 7 — 新功能 1：整合外部環境變數與人口結構 (少子化基數/縣市人口/競校模型)
+═══════════════════════════════════════════════════════ -->
+<section id="p7" class="page">
+  <div class="notice warn">
+    <i class="fa-solid fa-earth-asia" style="font-size:16px;margin-top:2px"></i>
+    <div>
+      <b>模組一：整合外部環境變數與人口結構（防範少子化斷崖過度樂觀模型）</b><br>
+      將教育部「全國高中職應屆畢業生人數預測（少子化基數變化 $lpha_{	ext{demo}}$）」、各縣市適齡人口結構（高屏核心區 vs 中南部跨區 $eta_{	ext{reg}}$）及周邊同儕與國立競校招生名額增減磁吸效應（$\gamma_{	ext{comp}}$）納入 116 預測推估引擎，可即時下拉切換預設情境或微調參數！
+    </div>
+  </div>
+
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-sliders"></i> 1. 外部環境預設情境：</span>
+      <select class="sel-dark" id="p7ScenarioSelect" onchange="onP7ScenarioChange()">
+        <option value="moe_base">📊 情境 A：教育部 116 基準預測 (技高母數 -6.2% / 普高 -3.8% / 競校磁吸 -2.5%)</option>
+        <option value="cliff_stress">🚨 情境 B：少子化斷崖壓力測試 (技高 -11.5% / 普高 -8.0% / 競校強磁吸 -6.5%)</option>
+        <option value="comp_intense">⚔️ 情境 C：周邊醫護同儕競校擴招與獎學金激戰 (報到率競爭衝擊 -8.0%)</option>
+        <option value="internal_only">🏛️ 情境 D：純校內歷史趨勢模型 (不納入外部少子化與競校參數 = 0%)</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-building-columns"></i> 2. 篩選學院：</span>
+      <select class="sel-dark" id="p7CollegeSelect" onchange="renderP7MacroModel()">
+        <option value="all">🏫 全部四大學院</option>
+        <option value="護理學院">🩺 護理學院</option>
+        <option value="醫學與健康學院">🧬 醫學與健康學院</option>
+        <option value="環境與生命學院">🌱 環境與生命學院</option>
+        <option value="人文與管理學院">💼 人文與管理學院</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 互動參數微調器 -->
+  <div class="g4">
+    <div class="card" style="border-top:3px solid #38bdf8">
+      <div class="card-t"><i class="fa-solid fa-user-graduate" style="color:#38bdf8"></i> 教育部技高畢業生年減率 (α_技高)</div>
+      <input type="range" id="p7AlphaZ" min="-20" max="5" step="0.5" value="-6.2" oninput="renderP7MacroModel()" style="width:100%;accent-color:#38bdf8">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+        <span style="color:#94a3b8">少子化衝擊</span>
+        <b class="bl" id="p7AlphaZVal">-6.2%</b>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #34d399">
+      <div class="card-t"><i class="fa-solid fa-school" style="color:#34d399"></i> 教育部普高畢業生年減率 (α_普高)</div>
+      <input type="range" id="p7AlphaS" min="-20" max="5" step="0.5" value="-3.8" oninput="renderP7MacroModel()" style="width:100%;accent-color:#34d399">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+        <span style="color:#94a3b8">普高母數變動</span>
+        <b class="gr" id="p7AlphaSVal">-3.8%</b>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #a78bfa">
+      <div class="card-t"><i class="fa-solid fa-map-location-dot" style="color:#a78bfa"></i> 高屏與中南部區域人口調整 (β_reg)</div>
+      <input type="range" id="p7BetaReg" min="-15" max="5" step="0.5" value="-4.1" oninput="renderP7MacroModel()" style="width:100%;accent-color:#a78bfa">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+        <span style="color:#94a3b8">區域適齡基數</span>
+        <b style="color:#a78bfa" id="p7BetaRegVal">-4.1%</b>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #f87171">
+      <div class="card-t"><i class="fa-solid fa-bolt" style="color:#f87171"></i> 競校名額與國立磁吸衝擊 (γ_comp)</div>
+      <input type="range" id="p7GammaComp" min="-15" max="5" step="0.5" value="-2.5" oninput="renderP7MacroModel()" style="width:100%;accent-color:#f87171">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+        <span style="color:#94a3b8">報到率競爭折減</span>
+        <b class="rd" id="p7GammaCompVal">-2.5%</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頂部比較 KPI -->
+  <div class="g4">
+    <div class="kpi kb">
+      <div class="kpi-l">純校內歷史模型 116 預估總報到</div>
+      <div class="kpi-v bl" id="p7KpiInternalCnt">—</div>
+      <div class="kpi-s" id="p7KpiInternalRate">未考慮外部少子化基數縮減</div>
+    </div>
+    <div class="kpi kr">
+      <div class="kpi-l">納入外部人口與競校修正後預估</div>
+      <div class="kpi-v rd" id="p7KpiMacroCnt">—</div>
+      <div class="kpi-s" id="p7KpiMacroRate">已扣除人口基數與競校磁吸</div>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-l">少子化與競校潛在流失缺口</div>
+      <div class="kpi-v yw" id="p7KpiGapCnt">—</div>
+      <div class="kpi-s">若過度樂觀依賴歷史均值之高估風險</div>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-l">建議同類校拓源與獎學金回補目標</div>
+      <div class="kpi-v gr" id="p7KpiRecoverCnt">—</div>
+      <div class="kpi-s">需透過新開發5所潛力生源校補足</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-column" style="color:#38bdf8"></i> 各系 116「純校內歷史推估報到率」vs「納入外部環境修正後報到率 (%)」</div>
+      <div class="ch-md"><canvas id="chartP7RateCompare"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-bar" style="color:#f87171"></i> 各系 116「純校內模型預估人數」vs「納入少子化人口基數修正後人數」</div>
+      <div class="ch-md"><canvas id="chartP7CountCompare"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card fw">
+    <div class="card-t"><i class="fa-solid fa-table" style="color:#34d399"></i> 116 學年度各系「校內歷史模型 vs 外部人口與競校修正模型」對照明細表</div>
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>管道</th>
+            <th class="tl">學系（所屬學院）</th>
+            <th>115實際二階母數</th>
+            <th>116外部人口修正母數<br><small>(B₁₁₆_adj)</small></th>
+            <th>115實際報到率</th>
+            <th>校內歷史推估報到率<br><small>(R̂₁₁₆_hist)</small></th>
+            <th style="background:rgba(248,113,113,.15);color:#f87171">外部修正後報到率<br><small>(R̂₁₁₆_adj)</small></th>
+            <th>純校內推估人數</th>
+            <th style="background:rgba(248,113,113,.15);color:#f87171">外部修正後推估人數</th>
+            <th>少子化/競校風險差額</th>
+          </tr>
+        </thead>
+        <tbody id="tbP7Macro"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 8 — 新功能 2：建立招生期間的動態預警機制 (事中監控與紅燈預警)
+═══════════════════════════════════════════════════════ -->
+<section id="p8" class="page">
+  <div class="notice danger">
+    <i class="fa-solid fa-bell" style="font-size:16px;margin-top:2px"></i>
+    <div>
+      <b>模組二：招生期間「事中監控 (In-Flight Monitoring)」動態預警機制</b><br>
+      在二階報名或書審繳費期間（D-14 至 D-0 截止日），即時比對各系「每日累積報名/繳費進度」與「111–115 歷年同期基準線 $P_{	ext{hist}}(d)$」。當進度達成比 $	ext{PI} < 80\%$ 跌破安全區間時，系統立即亮起 🔴 <b>紅燈預警</b>，讓招生團隊在截止期限前緊急啟動電話關懷與針對性廣告投放！
+    </div>
+  </div>
+
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-clock"></i> 1. 選擇事中監控時間點 (距報名截止日)：</span>
+      <select class="sel-dark" id="p8DaySelect" onchange="renderP8Monitoring()">
+        <option value="6" selected>⏰ D-3（距離截止剩 3 天：黃金搶救 72 小時！）</option>
+        <option value="5">⏰ D-5（距離截止剩 5 天：中期催繳預警）</option>
+        <option value="4">⏰ D-7（距離截止剩 7 天：滿一週檢核點）</option>
+        <option value="2">⏰ D-10（距離截止剩 10 天：初期報名監控）</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-traffic-light"></i> 2. 預警燈號篩選：</span>
+      <select class="sel-dark" id="p8AlertFilter" onchange="renderP8Monitoring()">
+        <option value="all">🚥 顯示全部燈號系所 (紅燈 + 黃燈 + 綠燈)</option>
+        <option value="紅燈">🔴 僅顯示【紅燈危急預警 (PI &lt; 80%)】需立即電訪搶救系所</option>
+        <option value="黃燈">🟡 僅顯示【黃燈觀望預警 (80% ≤ PI &lt; 95%)】需推播提醒系所</option>
+        <option value="綠燈">🟢 僅顯示【綠燈進度正常 (PI ≥ 95%)】達標系所</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-graduation-cap"></i> 3. 選擇特定學系檢視每日累積曲線：</span>
+      <select class="sel-dark" id="p8DeptCurveSelect" onchange="renderP8CurveChart()"></select>
+    </div>
+  </div>
+
+  <div class="g4">
+    <div class="kpi kr">
+      <div class="kpi-l">🔴 紅燈危急預警系所數 (PI &lt; 80%)</div>
+      <div class="kpi-v rd" id="p8KpiRed">6 個系組</div>
+      <div class="kpi-s">跌破歷年同期安全區間下界，需24hr內緊急電訪</div>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-l">🟡 黃燈觀望預警系所數 (80%~94%)</div>
+      <div class="kpi-v yw" id="p8KpiYellow">4 個系組</div>
+      <div class="kpi-s">微幅落後歷年均值，建議發送LINE與簡訊催繳</div>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-l">🟢 綠燈進度達標系所數 (≥ 95%)</div>
+      <div class="kpi-v gr" id="p8KpiGreen">6 個系組</div>
+      <div class="kpi-s">符合或超前歷年同期累積報名速度</div>
+    </div>
+    <div class="kpi kb">
+      <div class="kpi-l">一階過篩「尚未繳費報名二階」可搶救池</div>
+      <div class="kpi-v bl" id="p8KpiUnpaid">443 人</div>
+      <div class="kpi-s">截止前電訪關懷與針對性廣告投放精準母數</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t" id="p8CurveTitle"><i class="fa-solid fa-chart-line" style="color:#fbbf24"></i> 每日累積二階報名/繳費進度曲線 vs 歷年同期基準線 & 安全區間</div>
+      <div class="ch-md"><canvas id="chartP8PacingCurve"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-gauge-high" style="color:#f87171"></i> 各系組即時進度達成比 Pacing Index (%) 紅黃綠燈排行</div>
+      <div class="ch-md"><canvas id="chartP8DeptPI"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card fw">
+    <div class="card-t"><i class="fa-solid fa-tower-broadcast" style="color:#f87171"></i> 事中監控動態預警明細表 & 截止前緊急介入指令（電話關懷名單／針對性廣告投放）</div>
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>預警燈號</th>
+            <th>管道</th>
+            <th class="tl">學系（所屬學院）</th>
+            <th>本屆目標基數</th>
+            <th>歷年同期應達人數</th>
+            <th>本屆目前累積人數</th>
+            <th>進度達成比 (PI)</th>
+            <th style="color:#38bdf8">一階過篩未繳費可催繳人數</th>
+            <th class="tl">期限前緊急啟動應變對策（電話關懷 / 針對性廣告投放指令）</th>
+          </tr>
+        </thead>
+        <tbody id="tbP8Alerts"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 9 — 新功能 3：流失節點的質化歸因分析 (放棄理由標籤×生源校痛點)
+═══════════════════════════════════════════════════════ -->
+<section id="p9" class="page">
+  <div class="notice">
+    <i class="fa-solid fa-tags" style="font-size:16px;margin-top:2px"></i>
+    <div>
+      <b>模組三：流失節點的質化歸因分析（電話訪談與問卷放棄理由標籤化 × 生源學校交叉診斷）</b><br>
+      將後續電訪與問卷回收之考生放棄就讀真實原因標準化為 <b>6 大質化標籤 (TAG-1 ~ TAG-6)</b>，分別剖析「節點 A：一階過篩未報二階」與「節點 B：錄取/分發後放棄報到」，並結合主力生源學校診斷核心流失痛點，據以動態調整獎學金、交通住宿補貼與招生策略！
+    </div>
+  </div>
+
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-filter"></i> 1. 選擇漏斗流失節點：</span>
+      <select class="sel-dark" id="p9NodeSelect" onchange="renderP9Churn()">
+        <option value="overall">🔄 全流程綜合流失歸因 (一階未報二階 + 錄取未報到)</option>
+        <option value="stage1">📉 節點 A：一階篩選通過 ➔ 未報名二階 (全校流失約 54%~62%)</option>
+        <option value="stage2">🏃 節點 B：二階錄取/統一分發 ➔ 最終放棄報到 (正備取流失)</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-school"></i> 2. 篩選重點高流失生源學校：</span>
+      <select class="sel-dark" id="p9SchoolSelect" onchange="renderP9Churn()">
+        <option value="all">🏫 顯示全部重點流失診斷生源校 (7大代表校)</option>
+        <option value="道明高中">📍 道明高中 (5年報名190➔就讀25，轉換率13.2%)</option>
+        <option value="國立溪湖高中">📍 國立溪湖高中 (5年報名118➔就讀8，轉換率6.8%)</option>
+        <option value="國立屏東女中">📍 國立屏東女中 (5年報名96➔就讀13，轉換率13.5%)</option>
+        <option value="高雄左營高中">📍 高雄左營高中 (5年報名135➔就讀21，轉換率15.6%)</option>
+        <option value="巨人高中">📍 巨人高中 (5年報名131➔就讀18，轉換率13.7%)</option>
+        <option value="國立屏東高中">📍 國立屏東高中 (5年報名90➔就讀12，轉換率13.3%)</option>
+        <option value="中山工商">📍 中山工商 (5年報名400➔就讀101，轉換率25.3%)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-pie" style="color:#c084fc"></i> 考生放棄就讀 6 大質化理由標籤佔比分佈 (%)</div>
+      <div class="ch-md"><canvas id="chartP9TagShare"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-chart-bar" style="color:#38bdf8"></i> 兩大流失節點（一階未報二階 vs 錄取放棄）之質化原因差異對比</div>
+      <div class="ch-md"><canvas id="chartP9NodeCompare"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 六大標籤與精準制度調整對策卡片 -->
+  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-tags"></i></span>六大放棄理由質化標籤定義與全校制度／獎學金調整對策</div>
+  <div class="g3" id="p9TagCardsGrid"></div>
+
+  <!-- 生源學校 × 質化流失歸因交叉診斷表 -->
+  <div class="st"><span class="ico ico-o"><i class="fa-solid fa-magnifying-glass-location"></i></span>高報名低轉換生源學校 × 質化流失標籤 × 精準破冰與獎學金策略表</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th class="tl">生源學校</th>
+            <th>區域與屬性</th>
+            <th>主要報考學院</th>
+            <th>5年報名➔就讀 (轉換率)</th>
+            <th>最主要流失節點</th>
+            <th class="tl">電訪/問卷歸因 Top 3 理由標籤</th>
+            <th class="tl">該校考生屬性特徵 (Persona)</th>
+            <th class="tl">針對性招生與獎學金調整策略</th>
+          </tr>
+        </thead>
+        <tbody id="tbP9SchoolChurn"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 10 — 新功能 4：依決策角色的分眾行動清單 (系主任專屬行動化儀表板)
+═══════════════════════════════════════════════════════ -->
+<section id="p10" class="page">
+  <div class="notice" style="background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#6ee7b7">
+    <i class="fa-solid fa-user-check" style="font-size:16px;margin-top:2px"></i>
+    <div>
+      <b>模組四：依決策角色的分眾行動清單（系主任專屬「零解讀門檻」行動化儀表板）</b><br>
+      將複雜的統計圖表直接轉譯為不同管理層級（校長/招生處長、學院院長、<b>14系系主任</b>、第一線招生人員）的<b>「立即可執行待辦清單 (Actionable To-Do List)」</b>。系主任登入選擇本系後，直接呈現：① 本系急需拜訪的 5 所潛力生源校、② 高報名低轉換觀望校搶救名單與破冰話術、③ 本週可勾選執行之待辦清單！
+    </div>
+  </div>
+
+  <div class="ctrl-bar">
+    <div class="ctrl-group">
+      <span class="ctrl-lbl"><i class="fa-solid fa-id-badge"></i> 1. 切換決策者角色視角：</span>
+      <select class="sel-dark" id="p10RoleSelect" onchange="onP10RoleChange()">
+        <option value="chair" selected>🎯 角色 A：【系主任 / 系招生召集人】專屬行動化待辦儀表板</option>
+        <option value="dean">🏛️ 角色 B：【四大學院院長】跨系資源整合與名額調度清單</option>
+        <option value="president">🏫 角色 C：【校長 / 招生處長】全校宏觀風險控管與策略聯盟清單</option>
+        <option value="frontline">📞 角色 D：【第一線招生種子教師 / 電訪中心】即刻執行話術清單</option>
+      </select>
+    </div>
+    <div class="ctrl-group" id="p10DeptGroup">
+      <span class="ctrl-lbl"><i class="fa-solid fa-graduation-cap"></i> 2. 選擇學系（系主任專屬視角）：</span>
+      <select class="sel-dark" id="p10DeptSelect" onchange="renderP10RoleDashboard()">
+        <option value="護理系">🩺 護理學院 — 護理系</option>
+        <option value="健康事業管理系">🩺 護理學院 — 健康事業管理系</option>
+        <option value="高齡及長期照護事業系">🩺 護理學院 — 高齡及長期照護事業系</option>
+        <option value="物理治療系">🧬 醫學與健康學院 — 物理治療系</option>
+        <option value="保健營養系">🧬 醫學與健康學院 — 保健營養系</option>
+        <option value="健康美容系">🧬 醫學與健康學院 — 健康美容系</option>
+        <option value="醫學檢驗生物技術系">🧬 醫學與健康學院 — 醫學檢驗生物技術系</option>
+        <option value="環境工程與科學系">🌱 環境與生命學院 — 環境工程與科學系</option>
+        <option value="職業安全衛生系">🌱 環境與生命學院 — 職業安全衛生系</option>
+        <option value="應用化學及材料科學系">🌱 環境與生命學院 — 應用化學及材料科學系</option>
+        <option value="生物科技與綠色產業系">🌱 環境與生命學院 — 生物科技與綠色產業系</option>
+        <option value="幼兒保育暨產業系">💼 人文與管理學院 — 幼兒保育暨產業系</option>
+        <option value="休閒與遊憩事業管理系">💼 人文與管理學院 — 休閒與遊憩事業管理系</option>
+        <option value="資訊科技與管理系">💼 人文與管理學院 — 資訊科技與管理系</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 角色定位橫幅 -->
+  <div id="p10RoleBanner" class="card fw" style="background:linear-gradient(135deg,#1e293b,#0f172a);border-left:4px solid #34d399;padding:14px 18px;margin-bottom:18px"></div>
+
+  <!-- 系主任專屬三大行動區塊 -->
+  <div id="p10ChairContainer">
+    <div class="g2">
+      <!-- 區塊 A: 急需拜訪的 5 所潛力生源校 -->
+      <div class="card" style="border-top:3px solid #38bdf8">
+        <div class="card-t" id="p10Urgent5Title"><i class="fa-solid fa-route" style="color:#38bdf8"></i> 🚀 一、本系急需拜訪的 5 所潛力生源校（高相似度拓源清單）</div>
+        <div class="tw">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>優先序</th>
+                <th class="tl">目標潛力生源校</th>
+                <th>屬性</th>
+                <th class="tl">入選理由與對口潛力</th>
+                <th class="tl">建議拜訪窗口與入班宣講賣點</th>
+              </tr>
+            </thead>
+            <tbody id="tbP10Urgent5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 區塊 B: 高報名低轉換觀望校搶救名單 -->
+      <div class="card" style="border-top:3px solid #fbbf24">
+        <div class="card-t" id="p10WatchTitle"><i class="fa-solid fa-hand-holding-heart" style="color:#fbbf24"></i> 🔍 二、本系「高報名、低轉換」觀望生源校搶救名單與破冰話術</div>
+        <div id="p10WatchCards" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+    </div>
+
+    <!-- 區塊 C: 可勾選互動待辦清單 -->
+    <div class="card fw" style="border-top:3px solid #34d399">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div class="card-t" id="p10TodoTitle" style="margin-bottom:0"><i class="fa-solid fa-list-check" style="color:#34d399"></i> ✅ 三、本系第一線招生團隊「登入即執行」待辦行動清單 (點擊可勾選完成度)</div>
+        <span class="badge bu" id="p10TodoProgress" style="font-size:12px;padding:5px 12px">已完成 0 / 4 項 (0%)</span>
+      </div>
+      <div id="p10TodoList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+
+  <!-- 院長 / 校長 / 第一線視角總覽容器 -->
+  <div id="p10OtherRoleContainer" style="display:none"></div>
 </section>
 
 <footer style="text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid var(--border2);margin-top:8px">
@@ -1658,6 +2056,365 @@ function switchPage(id) {
   if (gSel) gSel.value = id;
 }
 
+
+const IR_4MODULES_DATA = {"macro_scenarios": {"moe_base": {"name": "教育部 116 基準預測 (虎年尾/少子化溫和下修)", "alpha_demo_z": -6.2, "alpha_demo_s": -3.8, "beta_kaoping": -4.1, "beta_central_south": -5.4, "gamma_comp": -2.5, "desc": "依據教育部高教司/技職司高中職應屆畢業生推估，116學年技高群科母數約縮減 6.2%、普高約縮減 3.8%，且國立科大維持名額產生約 2.5% 向上磁吸效應。"}, "cliff_stress": {"name": "少子化斷崖壓力測試 (生源基數驟降 + 競校擴大搶人)", "alpha_demo_z": -11.5, "alpha_demo_s": -8.0, "beta_kaoping": -7.5, "beta_central_south": -10.2, "gamma_comp": -6.5, "desc": "模擬生源基數發生斷崖式下跌（技高 -11.5%、普高 -8.0%），且周邊同儕校祭出高額獎學金與國立大學擴招導致報到率下修 6.5%，防止模型過度樂觀。"}, "comp_intense": {"name": "周邊競校擴招與獎學金激戰情境 (高屏醫護同儕競爭加劇)", "alpha_demo_z": -7.5, "alpha_demo_s": -4.5, "beta_kaoping": -5.0, "beta_central_south": -6.8, "gamma_comp": -8.0, "desc": "模擬高屏與南部醫護同儕校（義守、屏科大、美和、樹人、中華醫事等）針對重疊生源校加碼早鳥獎學金，導致二階轉換率承受 -8.0% 競爭壓力。"}, "internal_only": {"name": "純校內歷史趨勢模型 (未納入外部少子化與競校參數)", "alpha_demo_z": 0.0, "alpha_demo_s": 0.0, "beta_kaoping": 0.0, "beta_central_south": 0.0, "gamma_comp": 0.0, "desc": "僅依校內 111–115 歷史數據外推（假設外部人口母數與競校環境不變，易在少子化斷崖年產生高估風險）。"}}, "in_flight_monitoring": {"days_labels": ["D-14(開跑)", "D-12", "D-10", "D-8", "D-7(滿一週)", "D-5(催繳期)", "D-3(黃金72hr)", "D-2", "D-1(截止前夕)", "D-0(截止日)"], "hist_baseline_pct": [8.5, 16.2, 26.8, 39.5, 51.0, 66.4, 81.2, 89.5, 96.0, 100.0], "safe_band_low_pct": [6.8, 13.0, 21.4, 31.6, 40.8, 53.1, 65.0, 71.6, 76.8, 80.0], "depts_pacing": [{"dept": "護理系", "college": "護理學院", "channel": "申請", "target_b": 180, "curr_d3": 141, "hist_d3": 146, "status": "🟢 綠燈正常", "curve": [15, 29, 47, 69, 89, 116, 141, null, null, null], "unpaid_Pass1": 112, "action": "進度達標(96.6%)，針對小港/潮州/屏女已過一階未繳費之 112 人發送臨床模擬病房歡迎簡訊。"}, {"dept": "護理系", "college": "護理學院", "channel": "甄選", "target_b": 18, "curr_d3": 11, "hist_d3": 15, "status": "🔴 紅燈預警", "curve": [1, 2, 3, 5, 6, 8, 11, null, null, null], "unpaid_Pass1": 24, "action": "【緊急紅燈】落後歷史同期 -26.7%！立即由護理系種子教師致電中山工商/育英/敏惠過篩未報考生(24人)，提供二階書審範例急救包。"}, {"dept": "健康事業管理系", "college": "護理學院", "channel": "申請", "target_b": 33, "curr_d3": 24, "hist_d3": 27, "status": "🟡 黃燈觀望", "curve": [2, 4, 7, 11, 14, 19, 24, null, null, null], "unpaid_Pass1": 38, "action": "進度 88.9%(黃燈)，針對文山/左營/小港高中過篩考生推播「非臨床智慧醫療管理師」3分鐘短影音與 LINE 諮詢。"}, {"dept": "高齡及長期照護事業系", "college": "護理學院", "channel": "甄選", "target_b": 10, "curr_d3": 6, "hist_d3": 8, "status": "🔴 紅燈預警", "curve": [0, 1, 2, 3, 4, 5, 6, null, null, null], "unpaid_Pass1": 15, "action": "【緊急紅燈】進度僅 75.0%，跌破安全區間！立即聯繫中山工商、樹德家商、民生家商帶班老師協助催繳二階報名費。"}, {"dept": "物理治療系", "college": "醫學與健康學院", "channel": "申請", "target_b": 36, "curr_d3": 27, "hist_d3": 29, "status": "🟡 黃燈觀望", "curve": [3, 5, 9, 13, 17, 22, 27, null, null, null], "unpaid_Pass1": 45, "action": "進度 93.1%，針對道明/鳳新/小港過篩考生啟動學長姐電訪，強調國考物治師高薪與運動防護中心資源。"}, {"dept": "物理治療系", "college": "醫學與健康學院", "channel": "甄選", "target_b": 12, "curr_d3": 7, "hist_d3": 10, "status": "🔴 紅燈預警", "curve": [1, 1, 2, 3, 4, 5, 7, null, null, null], "unpaid_Pass1": 19, "action": "【緊急紅燈】中部巨人高中考生觀望中(進度 70.0%)！立即啟動跨區考生交通住宿補助通知與電話關懷。"}, {"dept": "保健營養系", "college": "醫學與健康學院", "channel": "甄選", "target_b": 18, "curr_d3": 15, "hist_d3": 15, "status": "🟢 綠燈正常", "curve": [2, 3, 5, 7, 10, 12, 15, null, null, null], "unpaid_Pass1": 16, "action": "進度 100.0% 符合預期，持續鞏固中山工商、樹德家商與三信家商報名學生。"}, {"dept": "健康美容系", "college": "醫學與健康學院", "channel": "甄選", "target_b": 19, "curr_d3": 16, "hist_d3": 15, "status": "🟢 綠燈正常", "curve": [2, 4, 6, 8, 11, 13, 16, null, null, null], "unpaid_Pass1": 14, "action": "進度超前(106.7%)，寄發醫學美容 SPA 實習會館體驗邀請函鎖定就讀意願。"}, {"dept": "醫學檢驗生物技術系", "college": "醫學與健康學院", "channel": "申請", "target_b": 28, "curr_d3": 20, "hist_d3": 23, "status": "🟡 黃燈觀望", "curve": [2, 4, 6, 9, 12, 16, 20, null, null, null], "unpaid_Pass1": 31, "action": "進度 87.0%(黃燈)，針對小港/潮州/屏中自然組考生投放「國考醫檢師＋精準基因檢測」數位廣告。"}, {"dept": "環境工程與科學系", "college": "環境與生命學院", "channel": "申請", "target_b": 28, "curr_d3": 23, "hist_d3": 23, "status": "🟢 綠燈正常", "curve": [2, 5, 8, 11, 15, 19, 23, null, null, null], "unpaid_Pass1": 22, "action": "進度 100.0%，持續跟進小港高中、林園高中過篩考生之二階書審上傳進度。"}, {"dept": "職業安全衛生系", "college": "環境與生命學院", "channel": "甄選", "target_b": 34, "curr_d3": 29, "hist_d3": 28, "status": "🟢 綠燈正常", "curve": [3, 6, 10, 15, 19, 24, 29, null, null, null], "unpaid_Pass1": 21, "action": "進度超前(103.6%)，針對中山工商、中正高工、雄工考生發送半導體廠務工安實習保證說明。"}, {"dept": "應用化學及材料科學系", "college": "環境與生命學院", "channel": "申請", "target_b": 18, "curr_d3": 12, "hist_d3": 15, "status": "🟡 黃燈觀望", "curve": [1, 2, 4, 6, 8, 10, 12, null, null, null], "unpaid_Pass1": 19, "action": "進度 80.0%(臨界黃燈)，立即聯繫林園高中化工班與小港高中考生，強調半導體特用材料就業高薪。"}, {"dept": "生物科技與綠色產業系", "college": "環境與生命學院", "channel": "申請", "target_b": 18, "curr_d3": 10, "hist_d3": 15, "status": "🔴 紅燈預警", "curve": [1, 2, 3, 4, 6, 8, 10, null, null, null], "unpaid_Pass1": 26, "action": "【緊急紅燈】進度僅 66.7%！立即啟動全系教師責任區電訪（潮州/小港/岡山農工共26名未繳費考生）。"}, {"dept": "幼兒保育暨產業系", "college": "人文與管理學院", "channel": "申請", "target_b": 17, "curr_d3": 14, "hist_d3": 14, "status": "🟢 綠燈正常", "curve": [1, 3, 5, 7, 9, 12, 14, null, null, null], "unpaid_Pass1": 15, "action": "進度 100.0%，持續追蹤樹德家商、中山工商、三信家商考生備審上傳。"}, {"dept": "休閒與遊憩事業管理系", "college": "人文與管理學院", "channel": "甄選", "target_b": 6, "curr_d3": 3, "hist_d3": 5, "status": "🔴 紅燈預警", "curve": [0, 0, 1, 1, 2, 2, 3, null, null, null], "unpaid_Pass1": 14, "action": "【緊急紅燈】進度 60.0% 嚴重落後！立即由系主任率隊電訪中山工商/樹德家商 14 名過篩生，提供免面試交通費與運動指導證照獎助。"}, {"dept": "資訊科技與管理系", "college": "人文與管理學院", "channel": "甄選", "target_b": 7, "curr_d3": 4, "hist_d3": 6, "status": "🔴 紅燈預警", "curve": [0, 1, 1, 2, 2, 3, 4, null, null, null], "unpaid_Pass1": 12, "action": "【緊急紅燈】進度 66.7%，立即電訪中山工商、立志高中過篩考生(12人)，主打智慧醫院 AI 資訊工程師帶薪實習。"}]}, "qualitative_churn": {"tags_summary": [{"id": "TAG-1", "name": "錄取國立科大/普大或醫大 (國立與名校磁吸)", "stage1_pct": 28.5, "stage2_pct": 36.2, "overall_pct": 31.8, "color": "#ef4444", "countermeasure": "設立「第一志願早鳥優秀獎學金」與「五年一貫碩士＋附設醫院保障就業公費班」，對沖國立中後段非醫護科系吸引力。"}, {"id": "TAG-2", "name": "跨區通勤距離與大寮交通住宿顧慮", "stage1_pct": 21.0, "stage2_pct": 24.5, "overall_pct": 22.4, "color": "#f97316", "countermeasure": "針對中部(溪湖/巨人)、台南、屏南考生提供「跨區新生首年住宿費全免/減半」與「高鐵左營/捷運大寮站專車接駁」。"}, {"id": "TAG-3", "name": "選系不選校 / 跨領域志願轉移 (非醫護興趣)", "stage1_pct": 22.4, "stage2_pct": 14.8, "overall_pct": 19.2, "color": "#eab308", "countermeasure": "對一階同時填報商管/資訊/環工之普高生，主動引導分流至本院「健管系、職安系、環工系、資管系」等非臨床高薪科系。"}, {"id": "TAG-4", "name": "學雜費考量與同儕私校高額獎學金挖角", "stage1_pct": 11.5, "stage2_pct": 15.0, "overall_pct": 13.0, "color": "#8b5cf6", "countermeasure": "整合行政院減免學雜費 3.5萬＋大專弱勢助學＋輔英企業認養帶薪實習，製作「實質負擔低於國立大學」財務試算單給家長。"}, {"id": "TAG-5", "name": "二階備審資料負荷過重或面試時間撞期", "stage1_pct": 12.6, "stage2_pct": 3.5, "overall_pct": 8.8, "color": "#06b6d4", "countermeasure": "一階放榜當日提供「各系備審資料 30 分鐘快速模組範本」，並開放二階面試上下午彈性梯次預約，消除撞期棄考。"}, {"id": "TAG-6", "name": "臨床實習/國考壓力與職涯認知落差", "stage1_pct": 4.0, "stage2_pct": 6.0, "overall_pct": 4.8, "color": "#10b981", "countermeasure": "舉辦「家長暨新生臨床與OSCE智慧病房實境參訪日」，展示國考輔導高通過率與畢業起薪 4.5~6 萬元實證數據。"}], "school_churn_matrix": [{"school": "道明高中", "region": "高雄市(私高)", "college_focus": "護理學院 / 醫學與健康學院", "apply_5yr": 190, "enroll_5yr": 25, "conv_rate": "13.2%", "drop_node": "一階過篩未報二階 (流失 64%)", "top_tags": ["TAG-1 國立/高醫/義守磁吸 (42%)", "TAG-3 選系不選校轉商管 (28%)", "TAG-5 備審撞期 (18%)"], "persona": "高雄市區天主教私高，家境中上、升學資訊豐富，常將輔英護理/物治作為安全保底志願。", "action": "入校舉辦「物治/醫技/護理國考菁英講座」，針對一階過篩生提供第一志願獎學金與高醫/輔英臨床資源差異化溝通。"}, {"school": "國立溪湖高中", "region": "彰化縣(中部普高)", "college_focus": "護理學院 (護理系)", "apply_5yr": 118, "enroll_5yr": 8, "conv_rate": "6.8%", "drop_node": "一階過篩未報二階 & 正取放棄 (流失 93%)", "top_tags": ["TAG-2 中部跨區距離與住宿 (48%)", "TAG-4 中部弘光/中台獎學金攔截 (31%)", "TAG-5 南下面試交通成本 (21%)"], "persona": "彰化綜合型高中，對護理系高度有興趣（5年報名118人次），但因南下距離與中部私校攔截而大量流失。", "action": "提供溪湖高中專享「二階南下面試高鐵交通補助」＋「中部新生四年保障現代化宿舍＆首年住宿費減免」，由中部校友學長姐一對一認養。"}, {"school": "國立屏東女中", "region": "屏東縣(明星普高)", "college_focus": "護理學院 / 醫學與健康學院", "apply_5yr": 96, "enroll_5yr": 13, "conv_rate": "13.5%", "drop_node": "二階正取後放棄流向國立 (流失 58%)", "top_tags": ["TAG-1 國北護/長庚/國立普大磁吸 (52%)", "TAG-6 家長對私校科大品牌迷思 (27%)", "TAG-3 轉填藥學/普通大學 (21%)"], "persona": "屏東第一志願女中，學測成績中上，多將輔英護理、物治、醫技列為第三~四志願備援。", "action": "主打「離家最近（屏東火車站➔大寮捷運25分鐘）＋五年一貫碩士＋附設醫院儲備幹部公費」，直接向家長展示免北漂高CP值優勢。"}, {"school": "高雄左營高中", "region": "高雄市(北高公立普高)", "college_focus": "護理學院 / 環境與生命學院", "apply_5yr": 135, "enroll_5yr": 21, "conv_rate": "15.6%", "drop_node": "一階過篩未報二階 (流失 61%)", "top_tags": ["TAG-2 北高雄至大寮通勤考量 (35%)", "TAG-1 高雄科大/國立大學磁吸 (33%)", "TAG-3 自然組轉填理工科系 (22%)"], "persona": "北高雄公立普高，115年報名逆勢成長至32人次，學生對護理、健管、環工、應化皆有興趣。", "action": "強化「捷運紅線轉橘線大寮站直達接駁」宣導，並針對自然組考生強力推薦「環工ESG碳盤查」與「應化半導體材料」高薪出路。"}, {"school": "巨人高中", "region": "雲林縣(中部醫護技高)", "college_focus": "醫學與健康學院 / 護理學院", "apply_5yr": 131, "enroll_5yr": 18, "conv_rate": "13.7%", "drop_node": "甄選分發志願序排後段 (流失 62%)", "top_tags": ["TAG-1 國北護/中科/長庚優先分發 (46%)", "TAG-2 雲林北港南下距離考量 (32%)", "TAG-4 補習班集體志願填報導向 (22%)"], "persona": "全國知名衛生護理類技高專班，統測成績優異，為物治、護理、醫技、保營甄選重要生源。", "action": "於統測後、甄選志願選填前，由物治系與護理系主任親赴巨人高中舉辦「模擬面試與志願序分析會」，爭取將輔英填列前二志願。"}, {"school": "國立屏東高中", "region": "屏東縣(明星普高)", "college_focus": "醫學與健康學院 / 環境與生命學院", "apply_5yr": 90, "enroll_5yr": 12, "conv_rate": "13.3%", "drop_node": "一階過篩未報二階 (流失 63%)", "top_tags": ["TAG-1 國立科大/普大理工磁吸 (44%)", "TAG-3 選系轉填資訊/工程類 (34%)", "TAG-5 二階備審放棄 (22%)"], "persona": "屏東男生為主力之公立普高，偏好物理治療、醫技、職安、環工、應化等實務與工程科系。", "action": "鎖定屏中自然組主打「物理治療運動防護師」、「半導體廠務職安工程師」與「醫檢師」三大國考高薪男學生職涯典範。"}, {"school": "中山工商", "region": "高雄市(大寮在地技高)", "college_focus": "全校四大院系核心底盤", "apply_5yr": 400, "enroll_5yr": 101, "conv_rate": "25.3%", "drop_node": "一階過篩未報二階 & 分發流向國立 (流失 48%)", "top_tags": ["TAG-1 前段班流向高科/屏科 (38%)", "TAG-4 同儕私校搶人與打工考量 (34%)", "TAG-5 申請與甄選雙軌重複報名 (28%)"], "persona": "本校最大生源校（5年報名400人次、就讀101人），地處同區大寮，涵蓋照顧服務、美容、幼保、資訊、化工、餐飲各群科。", "action": "啟動「大寮在地深耕3+4攜手專班」與「中山工商專屬早鳥入學獎助金」，由各系認養對應科別班級導師，將轉換率由 25.3% 推升至 32% 以上。"}]}, "role_action_dashboards": {"roles_overview": {"chair": "🎯 系主任 / 系招生召集人（聚焦：本系5所急需拜訪潛力校、高報名低轉換觀望校搶救、本週電訪與體驗營待辦清單）", "dean": "🏛️ 學院院長（聚焦：院級共享實驗室/臨床場域整合、院內系所差異化防互搶、跨系聯合入校宣講與名額流用調度）", "president": "🏫 校長 / 招生處長（聚焦：116少子化人口斷崖風險控管、全校紅燈預警系所資源支援、高屏與跨區重點高中職校長聯盟簽約）", "frontline": "📞 第一線招生種子教師 / 電訪團隊（聚焦：二階未繳費考生名單催繳、放榜黃金72hr正取生固本話術、備審急救包發送與家長交通住宿解惑）"}, "dept_chair_playbooks": {"護理系": {"college": "護理學院", "s_rate_115": "46.7%", "z_rate_115": "27.8%", "target_116_rate": "申請 45.0% / 甄選 32.0%", "urgent_5_schools": [{"school": "高雄市立鳳山高中", "type": "高屏公立普高", "reason": "與小港/文山同級，自然組與社會組醫護傾向生源龐大，目前滲透率偏低", "contact": "教務處升學輔導組 / 高三自然組導師", "pitch": "輔英附設醫院公費保障＋智慧模擬病房(OSCE)＋高國考通過率"}, {"school": "高雄市立瑞祥高中", "type": "南高雄公立普高", "reason": "距離大寮僅15分鐘車程，學生素質穩定，具備小港高中(5年37人)同等轉換潛力", "contact": "輔導室主任 / 生物科教師社群", "pitch": "南高雄在地醫學健康大學、五年一貫碩士與臨床護理師高起薪"}, {"school": "國立台南家齊高中", "type": "台南指標普高/技高", "reason": "女學生比例高、對護理與健康照護接受度極高，可補足南部跨區生源", "contact": "輔導室 / 衛生護理社團指導老師", "pitch": "捷運直達校區＋台南新生首年住宿優惠＋國考證照衝刺班"}, {"school": "嘉義華南高商", "type": "雲嘉技高", "reason": "照顧服務與家政相關群科學生多，可複製巨人高中模式擴大技高甄選底盤", "contact": "實習處 / 照顧服務科主任", "pitch": "四技甄選二階書審輔導＋護理臨床實習津貼"}, {"school": "高雄市立楠梓高中", "type": "北高雄公立普高", "reason": "北高雄人口成長區，鄰近捷運紅線，115年中山高中已回溫，楠梓具同等潛力", "contact": "輔導室升學組", "pitch": "捷運紅轉橘直達大寮、護理師國考保證班與海外實習機會"}], "watch_schools": [{"school": "國立溪湖高中", "stats": "5年報名 118人次 ➔ 就讀 8人 (轉換率 6.8%)", "profile": "中部跨區普高生，對護理有高度興趣但受限距離與中部私校攔截", "tag": "TAG-2 跨區距離與住宿 / TAG-4 競校獎學金", "script": "提供「中部新生首年住宿費減免＋面試高鐵補助」，安排溪湖畢業學姐直接加 LINE 分享宿舍生活。"}, {"school": "國立屏東女中", "stats": "5年報名 96人次 ➔ 就讀 13人 (轉換率 13.5%)", "profile": "屏東明星女中，多將本校列為國北護/長庚之後的備援志願", "tag": "TAG-1 國立與名校磁吸", "script": "向家長強調「屏東通勤25分鐘免北漂高房租＋附設醫院儲備幹部公費每月補助」，降低北漂放棄率。"}, {"school": "道明高中", "stats": "5年報名 190人次 ➔ 就讀 25人 (轉換率 13.2%)", "profile": "高雄市區私高，常跨填高醫/義守/長庚與非醫護科系", "tag": "TAG-1 同儕磁吸 / TAG-3 選系轉移", "script": "一階放榜48小時內邀請參加「OSCE智慧病房VIP體驗日」，以第一志願獎學金提前鎖定。"}], "todos": ["【本週急件】針對 116 甄選二階未完成報名之 24 名過篩生（中山工商、巨人高中為主），指派專任教師於週五前完成第一輪電話關懷。", "【生源拜訪】預約 11–12 月親訪「鳳山高中、瑞祥高中、小港高中、潮州高中」輔導室，洽談寒假「一日護理臨床體驗營」包班名額。", "【觀望搶救】建立「溪湖高中、屏東女中、道明高中」一階過篩名單專屬 LINE 社群，由該校畢業之大二/大三績優學姐擔任駐群學伴。", "【家長固本】更新「護理系畢業起薪 5.2萬+ 暨附設醫院公費生保障方案」一頁式圖卡，於二階報名期間推播予全體過篩考生家長。"]}, "健康事業管理系": {"college": "護理學院", "s_rate_115": "42.4%", "z_rate_115": "50.0%", "target_116_rate": "申請 43.5% / 甄選 50.0%", "urgent_5_schools": [{"school": "高雄市立仁武高中", "type": "高屏公立普高", "reason": "社區普高社會組/自然組學生多，對醫療產業有興趣但不想走臨床抽血", "contact": "輔導室主任", "pitch": "「不見血的醫療高薪白領」：智慧醫院行政管理師＋健保大數據分析師"}, {"school": "高雄市立鼓山高中", "type": "高屏公立普高", "reason": "近年就讀人數穩定上升(5年17人)，具擴大轉化為健管系主力校潛力", "contact": "教務處升學組", "pitch": "醫療大數據＋長照機構經營管理雙核心證照"}, {"school": "高雄市立前鎮高中", "type": "南高雄公立普高", "reason": "與小港高中地緣相近，可複製文山高中(18人)/左營高中(16人)成功模式", "contact": "輔導室", "pitch": "結合輔英附設醫院實習之醫療企劃與病歷資訊管理師"}, {"school": "國立鳳山商工", "type": "高屏指標技高", "reason": "商管群與資處科學生極適合跨域結合醫療健康管理，避開純商科紅海", "contact": "實習處 / 商業經營科主任", "pitch": "商管技能×醫療產業＝不怕AI取代的醫院管理人才"}, {"school": "國立屏北高中", "type": "屏東公立普高", "reason": "綜合高中學制多元，適合推廣醫療行政與健康產業管理", "contact": "輔導室", "pitch": "高屏大型教學醫院行政實習直通車"}], "watch_schools": [{"school": "高雄左營高中", "stats": "全校報名 135人次 ➔ 健管就讀 16人", "profile": "北高雄公立普高社會組考生多，常在一般企管系與醫管系之間猶豫", "tag": "TAG-3 選系不選校(轉一般商管)", "script": "強調「一般企管系畢業競爭激烈，健管系具備醫院專責管理師門檻與高穩定度」。"}, {"school": "高雄文山高中", "stats": "健管系第一大生源校(5年18人)，但一階未報二階仍達 52%", "profile": "鳳山/鳥松區公立普高，重視通勤便利與實習出路", "tag": "TAG-5 二階備審負荷", "script": "提供文山高中專屬「健管系備審資料檢核表」，由文山校友學長姐協助模擬面試。"}], "todos": ["【定位區隔】製作「護理系(臨床護理師) vs 健管系(智慧醫院行政與健保大數據企劃)」對照懶人包，發送予高屏公立普高社會組班級。", "【生源拜訪】本學期完成「文山高中、左營高中、仁武高中、鳳山商工」4 校入班職涯宣講。", "【二階催繳】針對申請入學一階過篩未繳費之 38 名考生，發送「醫院管理師實習場域與薪資前景」短片。"]}, "高齡及長期照護事業系": {"college": "護理學院", "s_rate_115": "—(建議增設)", "z_rate_115": "40.0%", "target_116_rate": "甄選 45.0% / 推動申請名額", "urgent_5_schools": [{"school": "國立曾文家商", "type": "台南技高(家政/幼保群)", "reason": "家政群學生規模大，對高齡福祉與長照機構管理具高度對口性", "contact": "家政科 / 照顧服務科主任", "pitch": "培養「長照機構主任與高齡個管師」（非基層照服員）之高階管理定位"}, {"school": "嘉義東吳高職", "type": "雲嘉技高", "reason": "具備照顧服務與家政相關科別，可拓展雲嘉技高生源", "contact": "實習處主任", "pitch": "超高齡社會黃金產業、帶薪機構實習與畢業即任長照個管師"}, {"school": "台南光華高中", "type": "台南綜合/技高", "reason": "家政群與銀髮福祉課程完善，可與幼保/健美系聯合入校宣講", "contact": "家政群科主任", "pitch": "高齡健康促進指導員＋樂齡俱樂部營運管理"}, {"school": "屏東日新工商", "type": "屏東技高", "reason": "地緣鄰近大寮，適合發展技高甄選與帶薪實習產學銜接", "contact": "教務處", "pitch": "就學期間連結高屏長照機構帶薪實習，減輕就學貸款壓力"}, {"school": "高雄市立林園高中", "type": "高屏公立普高", "reason": "若增設四技申請名額，林園/小港社區普高社會組學生具就讀潛力", "contact": "輔導室", "pitch": "政府長照3.0政策核心管理人才、起薪4.2萬以上之長照個管師"}], "watch_schools": [{"school": "中山工商 (照顧服務/家政群)", "stats": "5年就讀 13人，但一階過篩流失約 55%", "profile": "學生與家長常誤以為高齡長照系等於基層勞力照服員", "tag": "TAG-6 職涯認知落差 / TAG-4 打工經濟考量", "script": "明確溝通本系培育「長照機構經營者、居服督導員與高齡個管師」，並提供產學合作帶薪實習。"}, {"school": "樹德家商", "stats": "5年就讀 9人，部分學生轉填幼保或美容", "profile": "家政群學生選擇多元，需突顯銀髮健康促進之高薪優勢", "tag": "TAG-3 跨科系志願轉移", "script": "邀請樹德畢業現任職長照中心督導之系友返校演講。"}], "todos": ["【緊急紅燈】針對目前甄選二階未完成報名之 15 名過篩生（中山工商、樹德、民生家商），今日內完成導師與考生雙向聯繫。", "【破除迷思】印製「長照個管師／居服督導（月薪4.5萬+）vs 一般照服員」職涯進階圖解，寄送予過篩生家長。", "【拓源行動】與幼保系、健美系組成「家政群聯合招生團」，赴曾文家商、光華高中、三信家商舉辦體驗工作坊。"]}, "物理治療系": {"college": "醫學與健康學院", "s_rate_115": "41.7%", "z_rate_115": "25.0%", "target_116_rate": "申請 43.0% / 甄選 35.0%", "urgent_5_schools": [{"school": "高雄市私立正義高中", "type": "高屏私高(自然組)", "reason": "與道明、復華屬性相近，醫農生物傾向明確，適合開發為申請入學新主力", "contact": "教務處 / 輔導室", "pitch": "國家物理治療師證照＋職業運動隊隨隊運動防護師"}, {"school": "台南市私立長榮中學", "type": "台南私高", "reason": "具備普通科與職科，可複製道明高中(12人)與鳳新高中(11人)模式", "contact": "升學輔導組", "pitch": "南部物治國考重鎮、自費物理治療所創業高薪前景"}, {"school": "彰化縣私立達德商工", "type": "中部技高(照顧/衛護類)", "reason": "繼巨人高中(18人)後，擴大中部衛護類與運動防護生源池", "contact": "照顧服務科 / 實習處", "pitch": "運動傷害防護實作體驗＋跨區考生住宿與交通獎助"}, {"school": "雲林縣私立大成商工", "type": "中部技高", "reason": "與巨人高中同屬雲林地區，可順道聯合拜訪拓展技高甄選母數", "contact": "實習處主任", "pitch": "物理治療國考輔導專班＋附設醫院復健科臨床實習"}, {"school": "國立鳳新高中", "type": "高屏指標公立普高", "reason": "5年已就讀11人，為公立明星普高中轉換度極佳之學校，值得倍增深耕", "contact": "輔導室 / 體育運動社團", "pitch": "結合精準科技復健與運動醫學之物理治療師職涯"}], "watch_schools": [{"school": "巨人高中 (中部醫護技高)", "stats": "5年報名 131人次 ➔ 物治就讀 18人 (115甄選報到率降至 25%)", "profile": "統測衛護類高分群，同時錄取多校物治/護理系，甄選分發志願序易排在長庚/弘光之後", "tag": "TAG-1 競校分發排序 / TAG-2 中部南下距離", "script": "統測放榜後立即赴巨人高中舉辦「一對一模擬面試與選填輔導」，承諾中部新生保障優等宿舍與首年交通津貼。"}, {"school": "道明高中", "stats": "物治系申請主力(5年就讀12人)，但一階過篩未報二階約 55%", "profile": "高雄市區自然組考生，同時報考高醫、義守、慈濟物治", "tag": "TAG-1 同儕醫大/普大競爭", "script": "二階面試當日開放「運動傷害防護中心與精準復健設備」家長實地參訪，展現不輸醫大之實作設備。"}], "todos": ["【甄選搶救】針對甄選二階目前進度紅燈（巨人高中、中山工商未報考生共 19 人），由系主任與專任教師親自致電說明跨區面試補助與住宿優惠。", "【申請固本】針對申請入學過篩考生（道明、鳳新、小港、屏中），寄發「物理治療師國考高通過率與自費治療所薪資藍圖」。", "【中部拓源】規劃 11 月中旬雲彰投三日拜訪行程（巨人高中、大成商工、達德商工、溪湖高中）。"]}, "保健營養系": {"college": "醫學與健康學院", "s_rate_115": "—(建議增設)", "z_rate_115": "50.0%", "target_116_rate": "甄選 52.0% / 推動申請名額", "urgent_5_schools": [{"school": "國立佳冬高農", "type": "屏東國立技高(食品加工科)", "reason": "食品群專業對口，學生具備食品化學基礎，極適合報考營養師國考", "contact": "食品加工科主任", "pitch": "從食品加工升級「國家高考營養師」與醫院臨床營養師"}, {"school": "國立岡山農工", "type": "北高雄國立技高(食品加工科)", "reason": "公立農工食品科學生素質佳，可減少對單一私校餐飲群之依賴", "contact": "食品科主任 / 實習處", "pitch": "精準保健食品研發＋團膳營養師雙證照出路"}, {"school": "國立台南海事", "type": "台南國立技高(水產食品科)", "reason": "水產食品科對口食品群甄選，跨區至高雄捷運車程便利", "contact": "水產食品科主任", "pitch": "高考營養師證照輔導＋醫院與大型團膳企業保證實習"}, {"school": "國立曾文農工", "type": "台南國立技高(食品/家政)", "reason": "食品群與家政群兼具，適合開發為穩定技高生源校", "contact": "實習處", "pitch": "運動營養諮詢師＋機能性保健食品開發實作"}, {"school": "屏東縣私立民生家商", "type": "屏東技高(餐飲/家政)", "reason": "與屏榮、華南同屬南部技高，可強化屏東餐旅群轉型營養師生源", "contact": "餐飲管理科主任", "pitch": "餐飲手藝結合臨床營養師證照，擺脫純廚房高工時、晉升營養管理師"}], "watch_schools": [{"school": "中山工商 / 樹德家商 (餐飲與家政群)", "stats": "兩校5年合計就讀 32人，但一階過篩至二階仍流失約 48%", "profile": "餐旅群考生常在「純餐飲烘焙科系」與「保健營養系」間搖擺，擔心化學與生理學難度", "tag": "TAG-6 國考科目難度顧慮 / TAG-3 轉填純餐旅系", "script": "強調本系設有「基礎化學與營養學大一銜接微課程」，且營養師國考證照起薪與職涯壽命遠優於一般餐飲。"}], "todos": ["【綠燈固本】目前甄選二階進度 100% 達標，針對已報名之 15 名考生寄發面試題庫方向與「機能性食品實驗室」介紹。", "【國立農工拓源】鎖定「佳冬高農、岡山農工、台南海事、曾文農工」四所國立職校食品科，寄送國考營養師榜單與專題合作邀請。", "【制度爭取】向教務處提案於 116/117 學年增撥「四技申請入學（普高）」名額，吸納小港、潮州、林園高中生物/化學傾向考生。"]}, "健康美容系": {"college": "醫學與健康學院", "s_rate_115": "40.0%", "z_rate_115": "52.6%", "target_116_rate": "申請 42.0% / 甄選 54.0%", "urgent_5_schools": [{"school": "台南市私立光華高中", "type": "台南技高(時尚設計/美容群)", "reason": "台南家政美容群指標學校，可複製樹德家商(22人)/中山工商(19人)高轉換模式", "contact": "時尚設計科 / 美容科主任", "pitch": "「醫學健康學院背景的科技醫美系」：醫美諮詢師＋皮膚科學管理（非傳統純美髮）"}, {"school": "嘉義市私立東吳高職", "type": "嘉義技高(美容時尚科)", "reason": "雲嘉地區大型美容科職校，學生實作強、升學意願高", "contact": "時尚造型科主任", "pitch": "醫學美容 SPA 實習會館＋醫美診所帶薪實習與高抽成職涯"}, {"school": "台中市私立明德高中", "type": "中部技高(美容科)", "reason": "拓展中部家政群技高生源，建立跨區指標據點", "contact": "美容科主任", "pitch": "化粧品有效性評估實驗室＋國際醫美芳療雙證照"}, {"school": "屏東縣私立華洲工家", "type": "屏東技高(美容科)", "reason": "地緣鄰近大寮，適合簽訂技高策略聯盟與專題指導", "contact": "教務處 / 美容科", "pitch": "大寮捷運直達、大四全學年醫美產業帶薪實習"}, {"school": "高雄市立林園高中", "type": "高屏公立普高", "reason": "普高申請入學對化粧品科學與醫美產業有興趣之學生逐年增加", "contact": "輔導室", "pitch": "無需美髮基礎亦可修讀之「化粧品配方研發與醫學美容管理」"}], "watch_schools": [{"school": "樹德家商 / 三信家商", "stats": "5年就讀合計 34人，但部分正取生受同儕影響考慮正修/台南應大/屏科時尚", "profile": "高屏家政美容群主力生源，重視實習場域質感、競賽資源與同儕揪團", "tag": "TAG-1 國立屏科/南應大競爭 / TAG-4 同儕揪團效應", "script": "啟動「樹德/中山/三信同班揪團入學專案」，開放醫學美容 SPA 會館實境體驗，突顯醫學健康學院獨有之醫美診所實習通路。"}], "todos": ["【超前鎖定】甄選二階報名進度達 106.7%，立即邀請已報名之 16 名考生加入「健美系醫美體驗 VIP 群組」。", "【差異化宣傳】針對普高申請入學過篩考生，強調「化粧品科技與醫美諮詢」組別（免美容乙丙級基礎亦可跨域就讀）。", "【跨區拜訪】安排赴台南光華高中、嘉義東吳高職舉辦「頭皮檢測與科技醫美工作坊」。"]}, "醫學檢驗生物技術系": {"college": "醫學與健康學院", "s_rate_115": "41.2%", "z_rate_115": "45.0%", "target_116_rate": "申請 44.0% / 甄選 48.0%", "urgent_5_schools": [{"school": "高雄市立文山高中", "type": "高屏公立普高", "reason": "自然組考生多，喜歡醫學實驗室勝過第一線臨床照護，極契合醫技系", "contact": "教務處 / 生物化學科教師", "pitch": "國家高考醫事檢驗師證照＋精準醫學基因檢測與癌症伴隨診斷"}, {"school": "高雄市立新莊高中", "type": "北高雄公立普高", "reason": "已為護理系Top5生源(24人)，自然組二階分流至醫技系潛力極大", "contact": "輔導室主任", "pitch": "醫學中心檢驗科與生技藥廠研發工程師雙軌出路"}, {"school": "國立屏東高中", "type": "屏東指標普高", "reason": "屏中男生對精密儀器與實驗室醫學檢驗接受度高", "contact": "輔導室 / 生物研習社", "pitch": "國考醫檢師穩定高薪＋分子診斷實驗室專題實作"}, {"school": "高雄市私立復華高中", "type": "高屏私高", "reason": "普通科自然組學生穩定，可強化申請入學轉換率", "contact": "升學輔導組", "pitch": "醫檢師國考衝刺體系＋附設醫院檢驗科臨床實習"}, {"school": "國立岡山高中", "type": "北高雄公立普高", "reason": "5年全校就讀26人，自然組考生適合推廣醫技與物治", "contact": "輔導室", "pitch": "精準醫療時代核心人才：國家醫檢師證照保障"}], "watch_schools": [{"school": "高雄小港高中 / 潮州高中", "stats": "醫技系核心普高生源，但一階過篩考生常同時填報高醫/中醫大/中山醫", "profile": "公立普高自然組中前段學生，目標明確鎖定國考醫事人員證照", "tag": "TAG-1 醫大磁吸 / TAG-5 二階面試撞期", "script": "強調本系「國考醫檢師證照與醫學大學完全具同等法律效力，且享高屏教學醫院就近實習與高額入學獎學金」，並提供彈性面試時段。"}], "todos": ["【黃燈催繳】針對申請入學過篩未繳費之 31 名考生（小港、潮州、屏中、文山），發送「精準醫學分子檢驗實驗室」3分鐘導覽影片。", "【入校實驗】與高屏公立普高（小港、林園、潮州、文山）生物科老師合作舉辦「PCR 分子檢測與血型基因鑑定」半日微課程。"]}, "環境工程與科學系": {"college": "環境與生命學院", "s_rate_115": "50.0%", "z_rate_115": "69.2%", "target_116_rate": "申請 48.0% / 甄選 60.0%", "urgent_5_schools": [{"school": "高雄市立仁武高中", "type": "高屏公立普高(石化環保專班)", "reason": "位處仁大工業區旁，設有石化與環境相關特色課程，與環工系100%契合", "contact": "教務處 / 特色班導師", "pitch": "ESG 企業碳盤查管理師＋半導體廠務水氣環境工程師"}, {"school": "高雄市立楠梓高中", "type": "北高雄公立普高", "reason": "鄰近台積電高雄廠與楠梓園區，學生與家長對半導體環安衛與再生水工程高度關注", "contact": "輔導室", "pitch": "對接南台灣半導體 S 廊帶：高科技廠務環工與綠能工程師"}, {"school": "高雄市立路竹高中", "type": "北高雄公立普高", "reason": "鄰近路竹科學園區，自然組學生適合投入環境工程與碳管理", "contact": "輔導室升學組", "pitch": "企業永續 ESG 碳稽核師＋甲級廢水/空污處理專責人員證照"}, {"school": "國立岡山農工", "type": "高屏國立技高(化工/機械/建築)", "reason": "工科學生實作能力強，可複製中正高工(9人)模式擴大甄選入學", "contact": "實習處 / 化工科主任", "pitch": "環境檢測中心帶薪實習＋國考環工技師/甲級環保證照輔導"}, {"school": "國立台南高工", "type": "台南指標國立技高", "reason": "化工與土木環境相關科別學生多，具跨區報考潛力", "contact": "化工科主任", "pitch": "半導體廠務環工高薪就業直通車"}], "watch_schools": [{"school": "高雄小港高中 / 林園高中", "stats": "兩校5年合計就讀 28人（環工系雙核心），但一階過篩仍有約 45% 流向國立科大", "profile": "南高雄工業區周邊公立普高，高度重視畢業能否進入中油、台電、台積電供應鏈或考取環保證照", "tag": "TAG-1 高雄科大/屏科大競爭", "script": "展示輔英「環境檢測中心（勞動部與環境部認證實驗室）」實戰資源，強調在校即考取甲級空水廢毒證照並對接大發/林園/楠梓園區大廠。"}], "todos": ["【乘勝追擊】115年雙管道報到率飆升（申請50.0%、甄選69.2%），立即將「ESG碳盤查＋半導體水處理工程師」就業案例製作成海報寄送小港、林園、仁武、楠梓高中。", "【企業獎學金】聯合職安系、應化系拜訪林園與大發工業區廠商，擴增「環生學院企業認養帶薪實習名額」。"]}, "職業安全衛生系": {"college": "環境與生命學院", "s_rate_115": "—(建議增設)", "z_rate_115": "61.8%", "target_116_rate": "甄選 60.0% / 強烈建議增設申請名額", "urgent_5_schools": [{"school": "國立岡山農工", "type": "北高雄國立技高", "reason": "工科群（機械、電機、化工、建築）皆可報考職安系，複製中正高工(17人)/雄工(14人)高轉換奇蹟", "contact": "實習處主任 / 各工科主任", "pitch": "全校技高第1大系！半導體與營造科技廠務「甲級職安衛管理師」百萬年薪起點"}, {"school": "國立鳳山商工", "type": "高屏國立技高", "reason": "機械、室設與工科學生多，距離大寮極近，轉化率預期極高", "contact": "實習處", "pitch": "法令強制每家科技廠必備之職安衛工程師、大四全薪實習即留任"}, {"school": "國立台南高工", "type": "台南指標技高", "reason": "南科半導體擴廠帶動職安衛人才極度缺工，工科生對職安出路接受度高", "contact": "實習處 / 化工與機械科", "pitch": "對接南科與高雄半導體 S 廊帶廠務安全工程師"}, {"school": "國立新營高工", "type": "台南國立技高", "reason": "工科學生純樸務實，以國家職安證照與穩定高薪最能打動家長", "contact": "實習處", "pitch": "在校考取乙級/甲級職業安全衛生管理員證照，畢業100%就業媒合"}, {"school": "高雄市立小港高中 / 林園高中", "type": "南高雄公立普高", "reason": "爭取增撥四技申請名額後，可立即吸納小港/林園/仁武高中自然組學生", "contact": "輔導室", "pitch": "科技大廠環安衛(EHS)工程師搖籃"}], "watch_schools": [{"school": "中正高工 / 高雄高工 / 屏東高工", "stats": "三所公立指標工科職校5年合計就讀 40人（極罕見高公立技高佔比！）", "profile": "公立工科職校學生，看重證照考取率與科技廠(台積電/日月光/中鋼/中油)實習管道", "tag": "TAG-1 高雄科大/嘉藥職安競爭", "script": "以「中正高工/雄工畢業學長在台積電與大型科技廠擔任 EHS 工程師」實例進行學長姐返校座談，鞏固公立技高第一品牌地位。"}], "todos": ["【綠燈超前】目前甄選二階進度 103.6%（29/28人），針對尚未完成報名之 21 名過篩生（雄工、中正高工、中山工商）發送甲級職安證照輔導班資訊。", "【公立技高深耕】安排系主任與校友代表赴「中正高工、高雄高工、屏東高工、岡山農工」舉辦半導體廠務工安職涯講座。"]}, "應用化學及材料科學系": {"college": "環境與生命學院", "s_rate_115": "44.4%", "z_rate_115": "57.1%", "target_116_rate": "申請 45.0% / 甄選 55.0%", "urgent_5_schools": [{"school": "高雄市立仁武高中 (石化專班)", "type": "高屏公立普高", "reason": "設有仁大石化專班，與林園高中化工班(15人)屬性完全一致，為最佳複製標的", "contact": "教務處 / 石化專班導師", "pitch": "半導體製程特用電子化學品＆精密儀器分析工程師"}, {"school": "國立台南高工 (化工科)", "type": "台南國立技高", "reason": "延續高雄高工化工科(10人)與中正高工化工科(9人)模式，向北拓展台南化工群", "contact": "化工科主任", "pitch": "動手操作 GC-MS/HPLC 精密儀器、直通半導體材料供應鏈"}, {"school": "國立屏東高工 (化工科)", "type": "屏東國立技高", "reason": "屏東唯一公立化工科，大寮捷運/火車轉乘便利", "contact": "化工科主任", "pitch": "化學乙級證照＋半導體特用材料研發實習"}, {"school": "國立嘉義高工 (化工科)", "type": "雲嘉指標國立技高", "reason": "化工群大校，學生實作基礎扎實", "contact": "化工科主任", "pitch": "南台灣精密化學分析中心實戰培訓＋科技廠帶薪實習"}, {"school": "高雄市立左營高中", "type": "北高雄公立普高", "reason": "鄰近楠梓台積電園區，自然組考生對半導體材料科系興趣濃厚", "contact": "輔導室 / 化學科教師", "pitch": "台積電高雄廠周邊最實務的電子化學材料人才基地"}], "watch_schools": [{"school": "高雄林園高中 (化工班) / 小港高中", "stats": "兩校5年就讀 26人，為本系絕對核心，但部分學生受普通大學化學系吸引", "profile": "在地公立普高自然組，期望畢業進入中油、台積電供應鏈或長興材料等化工大廠", "tag": "TAG-1 國立科大/普大化學系競爭", "script": "強調本系「一人一機操作百萬級精密分析儀器（非大班旁觀）」且與林園/大發/楠梓園區簽有企業獎學金與優先錄用通道。"}], "todos": ["【黃燈催繳】目前申請二階進度 80.0%（12/15人），今日內電訪林園高中、小港高中、岡山高中尚未繳費之 19 名過篩生。", "【專班對接】拜訪仁武高中石化專班與林園高中化工班，舉辦「半導體電子化學品分析實作營」。"]}, "生物科技與綠色產業系": {"college": "環境與生命學院", "s_rate_115": "38.9%", "z_rate_115": "33.3%", "target_116_rate": "申請 40.0% / 甄選 40.0%", "urgent_5_schools": [{"school": "國立旗山農工", "type": "高雄國立技高(農業/食品/園藝)", "reason": "農業群與食品群對口，延續岡山農工(8人)與佳冬高農(6人)模式", "contact": "實習處 / 農藝與食品科主任", "pitch": "智慧農業生技萃取＋微生物發酵與綠色低碳產業"}, {"school": "國立內埔農工", "type": "屏東國立技高(農工/食品/野生動物)", "reason": "屏東農業與生物資源群科齊全，地緣鄰近大寮", "contact": "實習處主任", "pitch": "機能性天然物萃取、化妝品與保健生技研發"}, {"school": "國立曾文農工", "type": "台南國立技高", "reason": "拓展台南地區農業群與化工/食品群生源", "contact": "實習處", "pitch": "綠色循環經濟與生技製劑實務"}, {"school": "國立屏北高中", "type": "屏東公立普高", "reason": "學生對生態、生物科技與綠色永續議題接受度高", "contact": "輔導室 / 生物科教師", "pitch": "從分子生物到淨零碳排綠色生物科技"}, {"school": "高雄市立旗美高中", "type": "東高雄公立普高", "reason": "具備自然組與農村生態背景，適合推廣智慧農業與生技研發", "contact": "輔導室", "pitch": "結合國家生技園區與綠色農業科技之跨域出路"}], "watch_schools": [{"school": "潮州高中 / 小港高中", "stats": "兩校5年就讀 22人，但 116 申請二階進度目前落後(66.7% 紅燈)", "profile": "公立普高生物興趣考生，常擔心傳統生技系畢業出路不明確", "tag": "TAG-3 選系轉填醫護或農院 / TAG-6 職涯出路疑慮", "script": "明確展示本系更名升級「生物科技與綠色產業系」後，結合「ESG綠色減碳生技＋保健食品發酵＋環境生物製劑」之三大高薪就業出口。"}], "todos": ["【緊急紅燈】目前申請入學二階繳費進度僅 66.7%（10/15人），立即啟動全系教師責任分配，3日內電訪完畢 26 名一階過篩未繳費考生！", "【農工串聯】建立「岡山農工、佳冬高農、旗山農工、內埔農工」四校農業與食品群科主任聯繫網，推動專題共同指導。"]}, "幼兒保育暨產業系": {"college": "人文與管理學院", "s_rate_115": "41.2%", "z_rate_115": "50.0%", "target_116_rate": "申請 42.5% / 甄選 52.0%", "urgent_5_schools": [{"school": "台南市私立光華高中 (幼保科)", "type": "台南技高(家政幼保群)", "reason": "台南幼保科重點學校，可複製樹德家商(20人)/中山工商(17人)成功經驗", "contact": "幼保科主任", "pitch": "教育部認證合格教保員資格＋輔英附設幼兒園實習優先留任"}, {"school": "國立曾文家商 (幼保科)", "type": "台南國立技高", "reason": "公立家商幼保科學生素質穩定、重視教保員證照與公幼/準公幼就業", "contact": "幼保科主任", "pitch": "準公共化幼兒園高穩定薪資（起薪3.8~4.3萬）＋STEAM蒙特梭利特色教學"}, {"school": "國立台南家齊高中 (家政群)", "type": "台南指標高中職", "reason": "家政群學生升學意願強，適合推廣嬰幼兒全方位產業管理", "contact": "家政科主任", "pitch": "結合醫護大學優勢之「嬰幼兒健康照護＋STEAM幼兒教育」"}, {"school": "高雄市立林園高中", "type": "高屏公立普高", "reason": "社區普高社會組對幼兒教育與心理陪伴有興趣之學生穩定", "contact": "輔導室", "pitch": "普高生免技職背景亦可修畢32學分取得國家合格教保員資格"}, {"school": "嘉義市私立東吳高職 (幼保科)", "type": "雲嘉技高", "reason": "擴大雲嘉地區家政幼保群技高生源", "contact": "幼保科主任", "pitch": "全國唯一具醫學健康背景支撐之嬰幼兒照護與早療教育系所"}], "watch_schools": [{"school": "樹德家商 / 中山工商 / 三信家商", "stats": "三校5年合計就讀 49人（佔本系 71%），為絕對核心命脈", "profile": "高屏技高幼保/家政科學生，部分受屏科大幼保或台南應大吸引", "tag": "TAG-1 國立屏科大競爭 / TAG-4 同儕揪團", "script": "強化「輔英附設幼兒園校內直接實習＋醫護早療跨域優勢」，並舉辦三校專屬幼兒戲劇與繪本成果聯展。"}], "todos": ["【綠燈穩定】目前申請與甄選進度均達 100%，持續由系學會學長姐追蹤 15 名過篩生完成二階書審上傳。", "【主場優勢】邀請樹德、中山、三信、旗美、屏榮高三學生蒞校參訪「附設幼兒園與蒙特梭利教具工坊」。"]}, "休閒與遊憩事業管理系": {"college": "人文與管理學院", "s_rate_115": "—(建議增設)", "z_rate_115": "16.7%", "target_116_rate": "甄選 30.0% / 強烈建議增設申請名額", "urgent_5_schools": [{"school": "國立恆春工商 (觀光事業科)", "type": "屏東國立技高(餐旅群)", "reason": "墾丁國家公園在地觀光科，對水域活動、生態導覽與休閒運動管理高度契合", "contact": "觀光科主任 / 實習處", "pitch": "水域與戶外冒險運動指導員證照＋星級渡假飯店帶薪實習"}, {"school": "高雄市私立普門高中 (觀光餐旅)", "type": "高雄技高", "reason": "餐旅群學生規模大，可轉化對運動休閒與活動企劃有興趣之生源", "contact": "觀光餐飲科主任", "pitch": "「不限於端盤子」：健康養生療癒旅遊策展人＋無人機空拍與運動指導"}, {"school": "台南市私立亞洲餐旅學校", "type": "台南專業餐旅技高", "reason": "餐旅群專門學校，適合推廣健康休閒與旅遊俱樂部管理", "contact": "實習處主任", "pitch": "結合大健康產業之高端養生渡假村與健身俱樂部營運管理"}, {"school": "國立東港海事", "type": "屏東國立技高", "reason": "鄰近大鵬灣與小琉球水域觀光圈，距大寮僅25分鐘", "contact": "實習處 / 航運與水產相關科", "pitch": "水域遊憩活動經營＋救生員/立槳(SUP)/潛水指導員證照"}, {"school": "高雄市立小港高中 / 林園高中", "type": "南高雄公立普高", "reason": "增設四技申請名額後，可吸引喜愛運動健身、領隊導遊與活動企劃之普高生", "contact": "輔導室 / 體育組", "pitch": "運動健身教練證照＋國際領隊導遊＋休閒產業管理"}], "watch_schools": [{"school": "中山工商 / 樹德家商 (觀光餐飲群)", "stats": "兩校5年就讀 26人，但 115 甄選二階報到率驟降至 16.7% (1/6人)", "profile": "餐旅群考生同時報考高餐大、屏科大、正修或直接就業打工", "tag": "TAG-1 高餐/國立科大磁吸 / TAG-4 提前就業打工", "script": "主打本系獨有「健康養生療癒觀光＋運動健身指導員＋彈性排課安心帶薪實習」，讓學生兼顧工作收入與大學文憑。"}], "todos": ["【最高級別紅燈搶救】目前甄選二階僅 3 人完成報名（尚有 14 名過篩生未報名），系主任與全體導師於 48 小時內逐一致電關懷！", "【課程轉型宣傳】以「運動健身俱樂部教練＋無人機觀光空拍＋森林/水域療癒旅遊」三大亮點重塑招生簡章視覺。"]}, "資訊科技與管理系": {"college": "人文與管理學院", "s_rate_115": "—(建議增設)", "z_rate_115": "28.6%", "target_116_rate": "甄選 36.0% / 強烈建議增設申請名額", "urgent_5_schools": [{"school": "國立鳳山商工 (資料處理科)", "type": "高屏指標國立技高(商管資處)", "reason": "距離大寮極近，資處科學生程式與商管兼具，極適合定位為智慧醫療資管人才", "contact": "資料處理科主任", "pitch": "「全台最懂醫療健康的 AI 資管系」：智慧醫院 HIS 工程師＋AIoT 健康大數據"}, {"school": "國立屏東高工 (資訊科/電子科)", "type": "屏東指標國立技高", "reason": "電資群學生可結合 AI 物聯網與智慧照護系統開發", "contact": "資訊科主任", "pitch": "AI 醫療影像與健康物聯網(AIoT)實戰開發、附設醫院資訊室帶薪實習"}, {"school": "高雄市立海青工商 (資訊科/資處科)", "type": "高雄公立技高", "reason": "公立技高資處與資訊科兼具，具高度開發潛力", "contact": "實習處 / 資處科主任", "pitch": "跨足「醫療資訊系統(HIS)＋企業ERP＋AI生成式應用」之高薪藍海工程師"}, {"school": "高雄市私立高英工商 (資訊科)", "type": "大寮在地技高", "reason": "同在大寮區，5年已就讀3人，可透過地利之便簽訂專題攜手計畫", "contact": "資訊科主任", "pitch": "大寮在地就讀、大四進入醫療科技與軟體公司帶薪實習"}, {"school": "高雄市立林園高中 / 小港高中", "type": "南高雄公立普高", "reason": "增設四技申請名額後，可吸引對 AI 應用與資訊管理有興趣之社區普高生", "contact": "資訊科技教師 / 輔導室", "pitch": "不需頂尖數學也能學會的「AI 智慧醫療應用與數位轉型管理」"}], "watch_schools": [{"school": "中山工商 / 立志高中 (資訊与資處群)", "stats": "兩校5年就讀 17人，但 115 甄選二階報到率僅 28.6% (2/7人)", "profile": "商管群與資處科考生常被一般綜合科大資管系分流", "tag": "TAG-3 一般科大資管分流 / TAG-1 國立科大磁吸", "script": "突顯差異化：「一般資管系畢業面臨軟體紅海，輔英資管系獨霸『全台各大醫院資訊室(HIS)與智慧醫療科技廠』專屬職缺！」"}], "todos": ["【緊急紅燈催繳】目前甄選二階僅 4 人完成報名（尚有 12 名中山、立志、樹德過篩生未繳費），立即啟動專人電訪與 LINE 備審輔導。", "【藍海定位】製作「智慧醫院 AI 資訊工程師職涯地圖」，主動拜訪鳳山商工、海青工商、高英工商、中山工商資處科。"]}}}};
+
+let p7RateChart = null, p7CountChart = null;
+let p8CurveChart = null, p8BarChart = null;
+let p9PieChart = null, p9BarChart = null;
+
+function onP7ScenarioChange() {
+  const key = document.getElementById('p7ScenarioSelect').value;
+  const sc = IR_4MODULES_DATA.macro_scenarios[key];
+  if (!sc) return;
+  document.getElementById('p7AlphaZ').value = sc.alpha_demo_z;
+  document.getElementById('p7AlphaS').value = sc.alpha_demo_s;
+  document.getElementById('p7BetaReg').value = sc.beta_kaoping;
+  document.getElementById('p7GammaComp').value = sc.gamma_comp;
+  renderP7MacroModel();
+}
+
+function renderP7MacroModel() {
+  const alphaZ = parseFloat(document.getElementById('p7AlphaZ').value || 0);
+  const alphaS = parseFloat(document.getElementById('p7AlphaS').value || 0);
+  const betaReg = parseFloat(document.getElementById('p7BetaReg').value || 0);
+  const gammaComp = parseFloat(document.getElementById('p7GammaComp').value || 0);
+  const colFilter = document.getElementById('p7CollegeSelect').value;
+
+  document.getElementById('p7AlphaZVal').textContent = (alphaZ>=0?'+':'') + alphaZ.toFixed(1) + '%';
+  document.getElementById('p7AlphaSVal').textContent = (alphaS>=0?'+':'') + alphaS.toFixed(1) + '%';
+  document.getElementById('p7BetaRegVal').textContent = (betaReg>=0?'+':'') + betaReg.toFixed(1) + '%';
+  document.getElementById('p7GammaCompVal').textContent = (gammaComp>=0?'+':'') + gammaComp.toFixed(1) + '%';
+
+  const dZ = computeRateDelta(ZDEPTS, [1,2,3,4], 5);
+  const dS = computeRateDelta(SDEPTS, [1,2,3,4], 5);
+
+  const tb = document.getElementById('tbP7Macro');
+  if (!tb) return;
+  tb.innerHTML = '';
+
+  let sumIntCnt = 0, sumMacroCnt = 0, sumB115 = 0, sumBAdj = 0;
+  const labels = [], histRates = [], adjRates = [], intCnts = [], adjCnts = [];
+
+  const processList = (list, ch, alphaDemo, deltaR, badgeCls) => {
+    list.filter(d => colFilter === 'all' || d.college === colFilter).forEach(d => {
+      const rawR = predictRate(d, [1,2,3,4,5], 6).pred;
+      const histRate116 = clampRate(rawR * (1 + deltaR / 2 / 100));
+      const adjRate116 = clampRate(histRate116 * (1 + gammaComp / 100));
+      const bAdj = Math.max(3, Math.round(d.b115 * (1 + alphaDemo / 100) * (1 + betaReg * 0.45 / 100)));
+      const intCnt = Math.round(d.b115 * histRate116 / 100);
+      const macroCnt = Math.round(bAdj * adjRate116 / 100);
+      const diffCnt = macroCnt - intCnt;
+
+      sumIntCnt += intCnt;
+      sumMacroCnt += macroCnt;
+      sumB115 += d.b115;
+      sumBAdj += bAdj;
+
+      labels.push(`${ch}-${d.dept.slice(0,4)}`);
+      histRates.push(parseFloat(histRate116.toFixed(1)));
+      adjRates.push(parseFloat(adjRate116.toFixed(1)));
+      intCnts.push(intCnt);
+      adjCnts.push(macroCnt);
+
+      tb.innerHTML += `<tr>
+        <td><span class="badge ${badgeCls}">${ch}</span></td>
+        <td class="tl"><b>${d.dept}</b><br><small style="color:#64748b">${d.college}</small></td>
+        <td>${d.b115}人</td>
+        <td><b class="bl">${bAdj}人</b></td>
+        <td>${d.r115.toFixed(1)}%</td>
+        <td>${histRate116.toFixed(1)}%</td>
+        <td style="background:rgba(248,113,113,.1);color:#f87171;font-weight:900">${adjRate116.toFixed(1)}%</td>
+        <td><b>${intCnt}人</b></td>
+        <td style="background:rgba(248,113,113,.1);color:#f87171;font-weight:900">${macroCnt}人</td>
+        <td class="${diffCnt>=0?'gr':'rd'}"><b>${diffCnt>=0?'+':''}${diffCnt}人</b></td>
+      </tr>`;
+    });
+  };
+
+  processList(ZDEPTS, '甄選', alphaZ, dZ, 'bb');
+  processList(SDEPTS, '申請', alphaS, dS, 'bu');
+
+  const gap = sumMacroCnt - sumIntCnt;
+  document.getElementById('p7KpiInternalCnt').textContent = sumIntCnt + ' 人';
+  document.getElementById('p7KpiInternalRate').textContent = `以115母數(${sumB115}人)未折減推估`;
+  document.getElementById('p7KpiMacroCnt').textContent = sumMacroCnt + ' 人';
+  document.getElementById('p7KpiMacroRate').textContent = `外部修正後二階母數約 ${sumBAdj} 人`;
+  document.getElementById('p7KpiGapCnt').textContent = (gap>=0?'+':'') + gap + ' 人';
+  document.getElementById('p7KpiRecoverCnt').textContent = '+' + Math.abs(gap) + ' 人';
+
+  if (p7RateChart) p7RateChart.destroy();
+  p7RateChart = makeChart('chartP7RateCompare', 'bar', labels, [
+    {label:'校內歷史推估報到率(%)', data:histRates, backgroundColor:'rgba(56,189,248,.55)', borderColor:'#38bdf8', borderWidth:1},
+    {label:'納入外部人口/競校修正報到率(%)', data:adjRates, backgroundColor:'rgba(248,113,113,.75)', borderColor:'#f87171', borderWidth:1.5}
+  ], {unit:'%'});
+
+  if (p7CountChart) p7CountChart.destroy();
+  p7CountChart = makeChart('chartP7CountCompare', 'bar', labels, [
+    {label:'純校內推估報到人數', data:intCnts, backgroundColor:'rgba(52,211,153,.55)', borderColor:'#34d399', borderWidth:1},
+    {label:'外部少子化修正後推估人數', data:adjCnts, backgroundColor:'rgba(251,146,60,.8)', borderColor:'#fb923c', borderWidth:1.5}
+  ], {unit:'人'});
+}
+
+function initP8Dropdown() {
+  const sel = document.getElementById('p8DeptCurveSelect');
+  if (!sel) return;
+  sel.innerHTML = '';
+  IR_4MODULES_DATA.in_flight_monitoring.depts_pacing.forEach((d, idx) => {
+    const opt = document.createElement('option');
+    opt.value = idx;
+    opt.textContent = `${d.status.slice(0,2)} [${d.channel}] ${d.dept} (目前 ${d.curr_d3}/${d.hist_d3}人)`;
+    sel.appendChild(opt);
+  });
+  sel.value = 1; // 預設顯示護理系甄選紅燈範例
+}
+
+function renderP8Monitoring() {
+  const dayIdx = parseInt(document.getElementById('p8DaySelect')?.value || '6', 10);
+  const filterAlert = document.getElementById('p8AlertFilter')?.value || 'all';
+  const mon = IR_4MODULES_DATA.in_flight_monitoring;
+  const histPct = mon.hist_baseline_pct[dayIdx] / 100;
+
+  let redCnt = 0, yelCnt = 0, grnCnt = 0, unpaidSum = 0;
+  const tb = document.getElementById('tbP8Alerts');
+  if (tb) tb.innerHTML = '';
+
+  const barLabels = [], barPIs = [], barColors = [];
+
+  mon.depts_pacing.forEach((d, idx) => {
+    const currVal = d.curve[dayIdx] !== null ? d.curve[dayIdx] : d.curr_d3;
+    const expVal = Math.max(1, Math.round(d.target_b * histPct));
+    const pi = (currVal / expVal * 100);
+    let light = '🟢 綠燈正常', badgeCls = 'bu', barClr = '#34d399';
+    if (pi < 80) { light = '🔴 紅燈預警'; badgeCls = 'bd'; barClr = '#f87171'; redCnt++; }
+    else if (pi < 95) { light = '🟡 黃燈觀望'; badgeCls = 'bw'; barClr = '#fbbf24'; yelCnt++; }
+    else { grnCnt++; }
+
+    unpaidSum += d.unpaid_Pass1;
+    barLabels.push(`${d.channel}-${d.dept.slice(0,4)}`);
+    barPIs.push(parseFloat(pi.toFixed(1)));
+    barColors.push(barClr);
+
+    if (filterAlert === 'all' || light.includes(filterAlert)) {
+      tb.innerHTML += `<tr>
+        <td><span class="badge ${badgeCls}">${light}</span></td>
+        <td><span class="badge ${d.channel==='甄選'?'bb':'bu'}">${d.channel}</span></td>
+        <td class="tl"><b>${d.dept}</b><br><small style="color:#64748b">${d.college}</small></td>
+        <td>${d.target_b}人</td>
+        <td>${expVal}人 <small style="color:#64748b">(${(histPct*100).toFixed(0)}%)</small></td>
+        <td><b style="color:${barClr}">${currVal}人</b></td>
+        <td><b style="color:${barClr}">${pi.toFixed(1)}%</b></td>
+        <td><b class="bl">${d.unpaid_Pass1}人</b></td>
+        <td class="tl" style="font-size:11.5px;color:#e2e8f0">${d.action}</td>
+      </tr>`;
+    }
+  });
+
+  document.getElementById('p8KpiRed').textContent = redCnt + ' 個系組';
+  document.getElementById('p8KpiYellow').textContent = yelCnt + ' 個系組';
+  document.getElementById('p8KpiGreen').textContent = grnCnt + ' 個系組';
+  document.getElementById('p8KpiUnpaid').textContent = unpaidSum + ' 人';
+
+  if (p8BarChart) p8BarChart.destroy();
+  p8BarChart = makeChart('chartP8DeptPI', 'bar', barLabels, [
+    {label:'進度達成比 PI (%) [低於80%為紅燈]', data:barPIs, backgroundColor:barColors, borderRadius:4}
+  ], {unit:'%', datalabels:{display:true, color:'#fff', anchor:'end', align:'top', font:{size:9,weight:'bold'}, formatter:v=>v+'%'}});
+
+  renderP8CurveChart();
+}
+
+function renderP8CurveChart() {
+  const sel = document.getElementById('p8DeptCurveSelect');
+  const idx = parseInt(sel?.value || '1', 10);
+  const mon = IR_4MODULES_DATA.in_flight_monitoring;
+  const d = mon.depts_pacing[idx] || mon.depts_pacing[0];
+
+  document.getElementById('p8CurveTitle').innerHTML = `<i class="fa-solid fa-chart-line" style="color:#fbbf24"></i> 【${d.channel} — ${d.dept}】每日累積報名進度 vs 歷年同期基準線 & 80%安全底線`;
+
+  const histCurve = mon.hist_baseline_pct.map(p => Math.round(d.target_b * p / 100));
+  const safeCurve = mon.safe_band_low_pct.map(p => Math.round(d.target_b * p / 100));
+
+  if (p8CurveChart) p8CurveChart.destroy();
+  p8CurveChart = makeChart('chartP8PacingCurve', 'line', mon.days_labels, [
+    {label:'本屆即時累積人數 (D-14至D-3)', data:d.curve, borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,.2)', borderWidth:3, pointRadius:5, tension:0.3},
+    {label:'歷年同期基準線 (100%正常進度)', data:histCurve, borderColor:'#38bdf8', borderDash:[5,4], borderWidth:2, pointRadius:3, tension:0.3},
+    {label:'安全區間底線 (80%紅燈預警門檻)', data:safeCurve, borderColor:'#fbbf24', borderDash:[3,3], backgroundColor:'rgba(251,191,36,.08)', fill:true, borderWidth:1.5, pointRadius:2, tension:0.3}
+  ], {unit:'人', datalabels:{display:true, color:ctx=>ctx.dataset.borderColor, anchor:'end', align:'top', font:{size:10,weight:'bold'}, formatter:v=>v===null?'':v+'人'}});
+}
+
+function renderP9Churn() {
+  const nodeMode = document.getElementById('p9NodeSelect')?.value || 'overall';
+  const schoolFilter = document.getElementById('p9SchoolSelect')?.value || 'all';
+  const qData = IR_4MODULES_DATA.qualitative_churn;
+
+  const labels = qData.tags_summary.map(t => t.id + ' ' + t.name.slice(0,10));
+  const values = qData.tags_summary.map(t => nodeMode==='stage1' ? t.stage1_pct : (nodeMode==='stage2' ? t.stage2_pct : t.overall_pct));
+  const colors = qData.tags_summary.map(t => t.color);
+
+  if (p9PieChart) p9PieChart.destroy();
+  p9PieChart = makeChart('chartP9TagShare', 'doughnut', labels, [
+    {data:values, backgroundColor:colors}
+  ], {datalabels:{display:true, color:'#fff', font:{weight:'bold',size:11}, formatter:(v,ctx)=>ctx.chart.data.labels[ctx.dataIndex].slice(0,5)+'\n'+v+'%'}});
+
+  if (p9BarChart) p9BarChart.destroy();
+  p9BarChart = makeChart('chartP9NodeCompare', 'bar', labels, [
+    {label:'節點A：一階過篩未報二階 (%)', data:qData.tags_summary.map(t=>t.stage1_pct), backgroundColor:'rgba(56,189,248,.7)', borderColor:'#38bdf8', borderWidth:1},
+    {label:'節點B：二階錄取/分發放棄報到 (%)', data:qData.tags_summary.map(t=>t.stage2_pct), backgroundColor:'rgba(244,114,182,.7)', borderColor:'#f472b6', borderWidth:1}
+  ], {unit:'%', datalabels:{display:true, color:'#e2e8f0', anchor:'end', align:'top', font:{size:9,weight:'bold'}, formatter:v=>v+'%'}});
+
+  const grid = document.getElementById('p9TagCardsGrid');
+  if (grid) {
+    grid.innerHTML = '';
+    qData.tags_summary.forEach(t => {
+      grid.innerHTML += `
+        <div class="card" style="border-left:4px solid ${t.color}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span class="badge" style="background:${t.color}33;color:${t.color};font-size:11px">${t.id}</span>
+            <b style="color:${t.color};font-size:15px">綜合佔比 ${t.overall_pct}%</b>
+          </div>
+          <div style="font-weight:800;color:#fff;font-size:13px;margin-bottom:6px">${t.name}</div>
+          <div style="font-size:11.5px;color:#94a3b8;margin-bottom:8px">節點A(一階未報)：<b>${t.stage1_pct}%</b> ｜ 節點B(錄取放棄)：<b>${t.stage2_pct}%</b></div>
+          <div style="background:rgba(15,23,42,.6);padding:8px 10px;border-radius:8px;font-size:11.5px;color:#cbd5e1;border:1px solid var(--border2)">
+            <b style="color:#34d399">🎯 制度與獎學金調整對策：</b>${t.countermeasure}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  const tb = document.getElementById('tbP9SchoolChurn');
+  if (tb) {
+    tb.innerHTML = '';
+    qData.school_churn_matrix.filter(s => schoolFilter === 'all' || s.school === schoolFilter).forEach(s => {
+      tb.innerHTML += `<tr>
+        <td class="tl"><b style="color:#38bdf8">${s.school}</b></td>
+        <td><span class="badge bn">${s.region}</span></td>
+        <td>${s.college_focus}</td>
+        <td><b>${s.apply_5yr}人次 ➔ ${s.enroll_5yr}人</b><br><span class="rd">(${s.conv_rate})</span></td>
+        <td><span class="badge bd">${s.drop_node}</span></td>
+        <td class="tl" style="font-size:11.5px;color:#fca5a5">${s.top_tags.map(x=>'• '+x).join('<br>')}</td>
+        <td class="tl" style="font-size:11.5px;color:#cbd5e1">${s.persona}</td>
+        <td class="tl" style="font-size:11.5px;color:#34d399;font-weight:600">${s.action}</td>
+      </tr>`;
+    });
+  }
+}
+
+function onP10RoleChange() {
+  const role = document.getElementById('p10RoleSelect').value;
+  document.getElementById('p10DeptGroup').style.display = (role === 'chair') ? 'flex' : 'none';
+  renderP10RoleDashboard();
+}
+
+function updateP10TodoProgress() {
+  const checks = document.querySelectorAll('.p10-todo-chk');
+  let done = 0;
+  checks.forEach(c => { if (c.checked) done++; });
+  const total = checks.length || 1;
+  const pct = Math.round(done / total * 100);
+  const badge = document.getElementById('p10TodoProgress');
+  if (badge) badge.textContent = `已完成 ${done} / ${checks.length} 項 (${pct}%)`;
+}
+
+function renderP10RoleDashboard() {
+  const role = document.getElementById('p10RoleSelect')?.value || 'chair';
+  const dept = document.getElementById('p10DeptSelect')?.value || '護理系';
+  const rData = IR_4MODULES_DATA.role_action_dashboards;
+
+  const banner = document.getElementById('p10RoleBanner');
+  if (banner) {
+    banner.innerHTML = `<div style="font-size:14px;font-weight:800;color:#34d399"><i class="fa-solid fa-compass"></i> 目前決策角色視角：${rData.roles_overview[role]}</div>`;
+  }
+
+  const chairBox = document.getElementById('p10ChairContainer');
+  const otherBox = document.getElementById('p10OtherRoleContainer');
+
+  if (role === 'chair') {
+    chairBox.style.display = 'block';
+    otherBox.style.display = 'none';
+    const pb = rData.dept_chair_playbooks[dept] || rData.dept_chair_playbooks['護理系'];
+
+    document.getElementById('p10Urgent5Title').innerHTML = `<i class="fa-solid fa-route" style="color:#38bdf8"></i> 🚀 一、【${dept}】急需拜訪的 5 所潛力生源校（115報到率：申請 ${pb.s_rate_115} / 甄選 ${pb.z_rate_115} ➔ 116目標：${pb.target_116_rate}）`;
+    const tbU = document.getElementById('tbP10Urgent5');
+    tbU.innerHTML = '';
+    pb.urgent_5_schools.forEach((s, idx) => {
+      tbU.innerHTML += `<tr>
+        <td><span class="badge bb">優先 #${idx+1}</span></td>
+        <td class="tl"><b style="color:#38bdf8">${s.school}</b></td>
+        <td>${s.type}</td>
+        <td class="tl" style="font-size:11.5px;color:#cbd5e1">${s.reason}</td>
+        <td class="tl" style="font-size:11.5px"><b style="color:#fbbf24">窗口：${s.contact}</b><br><span style="color:#34d399">賣點：${s.pitch}</span></td>
+      </tr>`;
+    });
+
+    document.getElementById('p10WatchTitle').innerHTML = `<i class="fa-solid fa-hand-holding-heart" style="color:#fbbf24"></i> 🔍 二、【${dept}】高報名低轉換「觀望生源校」搶救名單與學生屬性特徵`;
+    const wBox = document.getElementById('p10WatchCards');
+    wBox.innerHTML = '';
+    pb.watch_schools.forEach(w => {
+      wBox.innerHTML += `
+        <div style="background:var(--bg2);border:1px solid var(--border);border-left:4px solid #fbbf24;border-radius:10px;padding:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <b style="color:#fbbf24;font-size:13.5px"><i class="fa-solid fa-school-circle-exclamation"></i> ${w.school}</b>
+            <span class="badge bd">${w.stats}</span>
+          </div>
+          <div style="font-size:12px;color:#cbd5e1;margin-bottom:4px"><b>👤 該校學生屬性特徵：</b>${w.profile}</div>
+          <div style="font-size:12px;color:#fca5a5;margin-bottom:4px"><b>🏷️ 核心流失原因標籤：</b>${w.tag}</div>
+          <div style="font-size:12px;color:#34d399;background:rgba(52,211,153,.08);padding:6px 10px;border-radius:6px"><b>💬 第一線破冰與攔截行動：</b>${w.script}</div>
+        </div>
+      `;
+    });
+
+    document.getElementById('p10TodoTitle').innerHTML = `<i class="fa-solid fa-list-check" style="color:#34d399"></i> ✅ 三、【${dept}】系主任與第一線招生團隊「本週立即可執行」待辦清單`;
+    const tList = document.getElementById('p10TodoList');
+    tList.innerHTML = '';
+    pb.todos.forEach((td, i) => {
+      tList.innerHTML += `
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);padding:11px 14px;border-radius:9px;cursor:pointer;font-size:13px;color:#e2e8f0">
+          <input type="checkbox" class="p10-todo-chk" onchange="updateP10TodoProgress()" style="width:18px;height:18px;accent-color:#34d399;cursor:pointer">
+          <span><b>待辦 #${i+1}：</b>${td}</span>
+        </label>
+      `;
+    });
+    updateP10TodoProgress();
+  } else {
+    chairBox.style.display = 'none';
+    otherBox.style.display = 'block';
+    if (role === 'dean') {
+      otherBox.innerHTML = `<div class="g2">` + P5_COLLEGE_RES.map(c => `
+        <div class="card" style="border-top:3px solid ${c.color}">
+          <div class="card-t" style="color:${c.color};font-size:15px"><i class="fa-solid fa-building-columns"></i> 【${c.college}院長】跨系資源整合與招生待辦清單</div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:8px">轄下學系：${c.depts}</div>
+          <div style="font-size:12.5px;color:#e2e8f0;line-height:1.7">
+            • <b>待辦 1（院級共享場域開放日）：</b>${c.resource}<br>
+            • <b>待辦 2（院內系所防互搶與分流）：</b>${c.diff}<br>
+            • <b>待辦 3（院級聯合入校宣講團）：</b>整合本院各系種子教師，針對高屏 Top 15 高中職進行「一院多系」聯合職涯探索體驗營。
+          </div>
+        </div>
+      `).join('') + `</div>`;
+    } else if (role === 'president') {
+      otherBox.innerHTML = `
+        <div class="card fw" style="border-top:3px solid #38bdf8">
+          <div class="card-t" style="font-size:15px;color:#38bdf8"><i class="fa-solid fa-chess-king"></i> 【校長 / 招生處長】全校宏觀決策待辦清單</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:#e2e8f0">
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #f87171"><b>1. 啟動 116 少子化人口基數動態調節：</b>依據模組一外部人口模型（技高母數 -6.2%、普高 -3.8%），提前將「保健營養、職安、高齡長照、休遊、資管」部分甄選名額流用或增設至「四技申請（普高）」，承接高雄社區公立普高成長生源。</div>
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #fbbf24"><b>2. 督導 6 個紅燈預警系所（事中監控 PI &lt; 80%）：</b>針對甄選護理、高齡、物治、休遊、資管與申請生技系，調派全校招生處電訪工讀生與數位廣告預算優先馳援。</div>
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #34d399"><b>3. 針對六大流失痛點核定精準獎助方案：</b>核撥「跨區新生（中彰投雲/台南/屏南）首年住宿費減免與面試高鐵補助」（解決 TAG-2 距離痛點）及「高屏公立普高/主力技高第一志願早鳥獎學金」（對沖 TAG-1 國立與同儕競爭）。</div>
+          </div>
+        </div>`;
+    } else {
+      otherBox.innerHTML = `
+        <div class="card fw" style="border-top:3px solid #f472b6">
+          <div class="card-t" style="font-size:15px;color:#f472b6"><i class="fa-solid fa-headset"></i> 【第一線招生種子教師 / 電訪中心】黃金 72 小時即刻執行清單</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:#e2e8f0">
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #38bdf8"><b>📞 步驟一（一階放榜當日）：</b>下載各系「一階過篩未繳二階報名費名單（全校共 443 人）」，優先針對紅燈系所發送「30分鐘備審資料快速範本包」與彈性面試時段預約連結（消除 TAG-5 備審負荷與撞期）。</div>
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #34d399"><b>💬 步驟二（電訪破冰話術對齊）：</b>遇到中部/台南考生主動告知「四年保障現代化宿舍＋首年住宿減免＋捷運大寮站接駁」；遇到普高自然組/社會組猶豫考生，依興趣介紹臨床醫護或非臨床高薪系所（健管、職安、環工、資管）。</div>
+            <div style="background:var(--bg2);padding:12px;border-radius:8px;border-left:4px solid #fbbf24"><b>🤝 步驟三（學長姐同校認養）：</b>將道明、溪湖、屏女、小港、林園、中山工商、樹德家商過篩考生拉入「同校畢業學長姐 LINE 專屬諮詢群」，以同儕信任感提升二階報到轉換率。</div>
+          </div>
+        </div>`;
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   const deltaZ=computeRateDelta(ZDEPTS,[1,2,3,4],5);
   const deltaS=computeRateDelta(SDEPTS,[1,2,3,4],5);
@@ -1688,6 +2445,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // All charts
   buildCharts(deltaZ, deltaS, zOut.avgPredRate116, sOut.avgPredRate116);
+
+  // Init 4 New IR Upgrade Modules (Pages 7, 8, 9, 10)
+  initP8Dropdown();
+  renderP7MacroModel();
+  renderP8Monitoring();
+  renderP9Churn();
+  renderP10RoleDashboard();
 });
 </script>
 </body>

@@ -9,7 +9,9 @@
       "admitted": 171,
       "enrolled": 161,
       "p1_to_p2_rate": "58.2%",
-      "admitted_to_enrolled_rate": "94.2%"
+      "admitted_to_enrolled_rate": "94.2%",
+      "p2_to_enrolled_rate": "38.2%",
+      "p1_to_enrolled_rate": "20.3%"
     },
     {
       "year": "112",
@@ -20,7 +22,9 @@
       "admitted": 100,
       "enrolled": 93,
       "p1_to_p2_rate": "47.7%",
-      "admitted_to_enrolled_rate": "93.0%"
+      "admitted_to_enrolled_rate": "93.0%",
+      "p2_to_enrolled_rate": "40.4%",
+      "p1_to_enrolled_rate": "17.5%"
     },
     {
       "year": "113",
@@ -31,7 +35,9 @@
       "admitted": 114,
       "enrolled": 109,
       "p1_to_p2_rate": "53.6%",
-      "admitted_to_enrolled_rate": "95.6%"
+      "admitted_to_enrolled_rate": "95.6%",
+      "p2_to_enrolled_rate": "44.1%",
+      "p1_to_enrolled_rate": "19.6%"
     },
     {
       "year": "114",
@@ -39,10 +45,12 @@
       "p1_pass_people": 360,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 86,
-      "enrolled": 80,
+      "admitted": 152,
+      "enrolled": 86,
       "p1_to_p2_rate": "45.0%",
-      "admitted_to_enrolled_rate": "93.0%"
+      "admitted_to_enrolled_rate": "56.6%",
+      "p2_to_enrolled_rate": "53.1%",
+      "p1_to_enrolled_rate": "21.6%"
     },
     {
       "year": "115",
@@ -50,10 +58,12 @@
       "p1_pass_people": 353,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 85,
+      "admitted": 148,
       "enrolled": 78,
       "p1_to_p2_rate": "45.9%",
-      "admitted_to_enrolled_rate": "91.8%"
+      "admitted_to_enrolled_rate": "52.7%",
+      "p2_to_enrolled_rate": "48.1%",
+      "p1_to_enrolled_rate": "22.1%"
     }
   ],
   "zhenxuan_depts": [
@@ -194,7 +204,10 @@
       "confirmed": 193,
       "joint_enrolled": null,
       "final_enrolled": 193,
-      "p2_to_enrolled_rate": "31.8%"
+      "p2_to_enrolled_rate": "31.8%",
+      "p1_to_p2_rate_people": "49.3%",
+      "p1_to_p2_rate_cnt": "48.6%",
+      "p2_to_enrolled_rate_cnt": "29.4%"
     },
     {
       "year": "112",
@@ -205,7 +218,10 @@
       "confirmed": 148,
       "joint_enrolled": 148,
       "final_enrolled": 148,
-      "p2_to_enrolled_rate": "32.0%"
+      "p2_to_enrolled_rate": "32.0%",
+      "p1_to_p2_rate_people": "41.0%",
+      "p1_to_p2_rate_cnt": "39.4%",
+      "p2_to_enrolled_rate_cnt": "29.3%"
     },
     {
       "year": "113",
@@ -216,7 +232,10 @@
       "confirmed": 126,
       "joint_enrolled": 126,
       "final_enrolled": 126,
-      "p2_to_enrolled_rate": "35.8%"
+      "p2_to_enrolled_rate": "35.8%",
+      "p1_to_p2_rate_people": "36.7%",
+      "p1_to_p2_rate_cnt": "35.2%",
+      "p2_to_enrolled_rate_cnt": "33.0%"
     },
     {
       "year": "114",
@@ -227,7 +246,10 @@
       "confirmed": 135,
       "joint_enrolled": 135,
       "final_enrolled": 135,
-      "p2_to_enrolled_rate": "37.5%"
+      "p2_to_enrolled_rate": "37.5%",
+      "p1_to_p2_rate_people": "37.6%",
+      "p1_to_p2_rate_cnt": "36.5%",
+      "p2_to_enrolled_rate_cnt": "34.2%"
     },
     {
       "year": "115",
@@ -238,7 +260,10 @@
       "confirmed": 155,
       "joint_enrolled": 155,
       "final_enrolled": 155,
-      "p2_to_enrolled_rate": "44.9%"
+      "p2_to_enrolled_rate": "44.9%",
+      "p1_to_p2_rate_people": "37.1%",
+      "p1_to_p2_rate_cnt": "37.8%",
+      "p2_to_enrolled_rate_cnt": "38.7%"
     }
   ],
   "shenqing_depts": [

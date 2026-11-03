@@ -149,6 +149,7 @@
   <button class="nav-btn" id="tab-p3" onclick="switchPage('p3')"><i class="fa-solid fa-microscope"></i> 報到率模型驗證</button>
   <button class="nav-btn" id="tab-p4" onclick="switchPage('p4')"><i class="fa-solid fa-map"></i> 區域生源與院系Top5</button>
   <button class="nav-btn" id="tab-p5" onclick="switchPage('p5')"><i class="fa-solid fa-chess-knight"></i> 招生對策</button>
+  <button class="nav-btn" id="tab-p6" onclick="switchPage('p6')" style="border-color:#f87171;color:#fca5a5"><i class="fa-solid fa-wand-magic-sparkles" style="color:#f87171"></i> ELI5 邏輯與公式圖解</button>
   <select class="sel-dark" id="globalPageSelect" onchange="switchPage(this.value)" style="margin-left:auto;padding:6px 12px;font-size:12px;">
     <option value="p0">🔽 下拉快速切換畫面：0. 全院系報到率總表</option>
     <option value="p1">🔽 下拉快速切換畫面：1. 報到率趨勢圖表</option>
@@ -156,6 +157,7 @@
     <option value="p3">🔽 下拉快速切換畫面：3. 報到率模型驗證</option>
     <option value="p4">🔽 下拉快速切換畫面：4. 區域生源與院系Top5</option>
     <option value="p5">🔽 下拉快速切換畫面：5. 分層招生策略(含院資源與同類校開發)</option>
+    <option value="p6">🔽 下拉快速切換畫面：6. ELI5 系統邏輯與12大公式圖解(含紅字數據修正)</option>
   </select>
 </nav>
 
@@ -174,8 +176,8 @@
     </div>
     <div class="kpi kg">
       <div class="kpi-l">申請 111–115 二階報到率</div>
-      <div class="kpi-v" style="color:#34d399">35.6%<span style="font-size:13px"> (5年均值)</span></div>
-      <div class="kpi-s">111年 31.8% → 115年 44.9% (+13.1pp)</div>
+      <div class="kpi-v" style="color:#f87171">35.6%<span style="font-size:12px;color:#34d399"> (人數)｜32.4%(人次)</span></div>
+      <div class="kpi-s">115年：<b style="color:#f87171">44.9%(155/345人)</b> ｜ <b style="color:#f87171">38.7%(155/401人次)</b></div>
       <span class="badge bu"><i class="fa-solid fa-arrow-trend-up"></i> 連續5年正成長</span>
     </div>
     <div class="kpi ko">
@@ -184,11 +186,11 @@
       <div class="kpi-s" id="p0KpiAllSub">甄選推估 ~48.9% ‧ 申請推估 ~43.9%</div>
       <span class="badge bu"><i class="fa-solid fa-percent"></i> 以報到率建模推估</span>
     </div>
-    <div class="kpi kpk">
-      <div class="kpi-l">甄選分發錄取報到率</div>
-      <div class="kpi-v" style="color:#f472b6">93.7%</div>
-      <div class="kpi-s">115年 91.8% (78/85人) ‧ 116推估 ~92.6%</div>
-      <span class="badge bp"><i class="fa-solid fa-shield-heart"></i> 錄取後高黏著度</span>
+    <div class="kpi kr">
+      <div class="kpi-l">甄選分發/確認報到率 (★紅字修正)</div>
+      <div class="kpi-v" style="color:#f87171">76.9%<span style="font-size:12px"> (527/685人)</span></div>
+      <div class="kpi-s"><b style="color:#f87171">114年 56.6%(86/152人)</b> ‧ <b style="color:#f87171">115年 52.7%(78/148人)</b></div>
+      <span class="badge bd"><i class="fa-solid fa-check-double"></i> 已修正114(152/86)與115(148/78)</span>
     </div>
   </div>
 
@@ -605,6 +607,79 @@
       <div class="sc spk"><div class="sc-t"><i class="fa-solid fa-triangle-exclamation" style="color:#f472b6"></i> 策略四：低報到率系所緊急干預</div><div class="sc-b">針對甄選護理、休遊、物治等報到率偏低系所，強化面試關懷、備取快速遞補與跨區交通住宿補貼。</div></div>
       <div class="sc sp"><div class="sc-t"><i class="fa-solid fa-globe" style="color:#818cf8"></i> 策略五：跨區同類醫護與家政職校拓源</div><div class="sc-b">以中部巨人高中模式拓展彰化達德商工、大成商工，以高屏樹德/中山模式拓展台南曾文家商、光華高中與嘉義東吳高職。</div></div>
       <div class="sc sb"><div class="sc-t"><i class="fa-solid fa-chart-mixed" style="color:#38bdf8"></i> 策略六：IR報到率模型驅動名額動態配置</div><div class="sc-b">以各系二階報到率(%)取代人數外推，每年依據各系推估報到率動態調整甄選與申請名額配比。</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 6 — ELI5 系統運作邏輯與 12 大計算公式視覺化圖解 (含紅字數據勘誤)
+═══════════════════════════════════════════════════════ -->
+<section id="p6" class="page">
+  <div class="notice danger" style="border-width:2px;">
+    <i class="fa-solid fa-wand-magic-sparkles" style="font-size:18px;margin-top:2px;"></i>
+    <div>
+      <b style="font-size:14px;color:#fca5a5;">🧠 ELI5 (Explain Like I'm 5) 視覺化圖解：系統運作邏輯、紅字數據修正與全部計算公式定義</b><br>
+      <span>本頁採用 <b>ELI5 HTML Visual Explainer</b>「大圖塊、少文字、分子/分母色塊拆解」結構，清楚定義全系統每一項指標公式，並以<b style="color:#f87171">醒目紅色</b>標示圖示修正數據。</span>
+      <a href="ELI5_系統運作邏輯與公式視覺化圖解.html" target="_blank" style="color:#38bdf8;font-weight:800;margin-left:8px;text-decoration:underline;">[開啟獨立全螢幕 ELI5 視覺圖解頁 ↗]</a>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico" style="background:rgba(248,113,113,.2);color:#f87171"><i class="fa-solid fa-magnifying-glass-chart"></i></span>🔴 紅字數據勘誤與分子/分母對照拆解 (對應上傳圖示標註)</div>
+  <div class="g3">
+    <div class="card" style="border:1.5px solid #f87171">
+      <div class="card-t" style="color:#fca5a5"><i class="fa-solid fa-circle-exclamation" style="color:#f87171"></i> 修正 ①：115申請轉換率 44.9% vs 38.7%</div>
+      <div style="font-size:12px;color:#cbd5e1;line-height:1.7">
+        • <b>問題根源：</b>普高生可一人填報多系，115二階報名為 <b style="color:#38bdf8">401 人次</b>，歸戶去重後為 <b style="color:#f87171">345 位考生(人)</b>，最終報到 <b style="color:#f87171">155 人</b>。<br>
+        • <b style="color:#f87171">【以不重複人數計】：155人 ÷ 345人 ＝ 44.9%</b><br>
+        • <b style="color:#f87171">【以報名人次計】：155人 ÷ 401人次 ＝ 38.7%</b><br>
+        • 系統已將兩種口徑與對應分母同步並列標示！
+      </div>
+    </div>
+    <div class="card" style="border:1.5px solid #f87171">
+      <div class="card-t" style="color:#fca5a5"><i class="fa-solid fa-circle-exclamation" style="color:#f87171"></i> 修正 ②：115甄選分發 85人 ➔ 148人</div>
+      <div style="font-size:12px;color:#cbd5e1;line-height:1.7">
+        • <b>問題根源：</b>115甄選「分發/確認人數」原誤植為 85人（78÷85=91.8%），依圖示正確應為 <b style="color:#f87171">148 人</b>，最終報到 <b style="color:#f87171">78 人</b>。<br>
+        • <b style="color:#f87171">① 分發➔報到率：78 ÷ 148 ＝ 52.7%</b><br>
+        • <b style="color:#f87171">② 二階➔報到率：78 ÷ 162 ＝ 48.1%</b><br>
+        • <b style="color:#f87171">③ 一階➔報到率：78 ÷ 353 ＝ 22.1%</b>
+      </div>
+    </div>
+    <div class="card" style="border:1.5px solid #f87171">
+      <div class="card-t" style="color:#fca5a5"><i class="fa-solid fa-circle-exclamation" style="color:#f87171"></i> 修正 ③：114甄選 152人 / 86人 全表閉環</div>
+      <div style="font-size:12px;color:#cbd5e1;line-height:1.7">
+        • <b>問題根源：</b>114甄選原誤填分發 86人、報到 80人，依圖示修正為：分發/確認 <b style="color:#f87171">152 人</b>（正取136+備取16）、最終報到 <b style="color:#f87171">86 人</b>。<br>
+        • <b style="color:#f87171">① 114分發報到率：86 ÷ 152 ＝ 56.6%</b><br>
+        • <b style="color:#f87171">② 114二階報到率：86 ÷ 162 ＝ 53.1%</b><br>
+        • <b style="color:#f87171">③ 5年甄選報到合計：161+93+109+86+78 ＝ 527人</b>（與各系報到表 100% 吻合！）
+      </div>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-square-root-variable"></i></span>📐 全系統核心計算公式與定義總表 (Formula & Definition Dictionary)</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>代碼</th>
+            <th class="tl">指標名稱</th>
+            <th class="tl">計算公式 (分子 ÷ 分母 × 100%)</th>
+            <th class="tl">定義說明</th>
+            <th class="tl" style="color:#f87171">114 / 115 / 5年實例驗算 (紅字為修正值)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>F01</b></td><td class="tl"><b>甄選一階➔二階報名率</b></td><td class="tl"><code>二階報名人數 ÷ 一階篩選通過人數 × 100%</code></td><td class="tl">統測過篩考生實際報名二階複試比率</td><td class="tl">114年: 162÷360=<b>45.0%</b> ｜ 115年: 162÷353=<b>45.9%</b></td></tr>
+          <tr><td><b class="rd">F02 ★</b></td><td class="tl"><b class="rd">甄選分發/確認➔報到率</b></td><td class="tl"><code class="rd">最終已報到人數 ÷ 分發/確認人數 × 100%</code></td><td class="tl">正備取分發確認名單最終註冊報到率</td><td class="tl"><b class="rd">114年: 86÷152=56.6% ｜ 115年: 78÷148=52.7% ｜ 5年: 527÷685=76.9%</b></td></tr>
+          <tr><td><b class="rd">F03 ★</b></td><td class="tl"><b class="rd">甄選二階報名➔報到率</b></td><td class="tl"><code class="rd">最終已報到人數 ÷ 二階報名人數 × 100%</code></td><td class="tl">二階複試考生最終報到率 (IR建模核心變數)</td><td class="tl"><b class="rd">114年: 86÷162=53.1% ｜ 115年: 78÷162=48.1% ｜ 5年: 527÷1,223=43.1%</b></td></tr>
+          <tr><td><b>F04</b></td><td class="tl"><b>甄選一階通過➔報到轉換率</b></td><td class="tl"><code>最終已報到人數 ÷ 一階篩選通過人次 × 100%</code></td><td class="tl">一階過篩人次最終轉化為實際新生比率</td><td class="tl"><b class="rd">114年: 86÷399=21.6% ｜ 115年: 78÷353=22.1% ｜ 5年: 527÷2,632=20.0%</b></td></tr>
+          <tr><td><b class="rd">F05 ★</b></td><td class="tl"><b class="rd">申請二階➔報到轉換率(人數)</b></td><td class="tl"><code class="rd">最終已報到人數 ÷ 二階報名不重複人數 × 100%</code></td><td class="tl">二階歸戶獨立考生最終報到本校比率</td><td class="tl"><b class="rd">114年: 135÷360=37.5% ｜ 115年: 155÷345=44.9% ｜ 5年: 757÷2,126=35.6%</b></td></tr>
+          <tr><td><b class="rd">F06 ★</b></td><td class="tl"><b class="rd">申請二階➔報到轉換率(人次)</b></td><td class="tl"><code class="rd">最終已報到人數 ÷ 二階報名總人次 × 100%</code></td><td class="tl">二階報名表人次最終轉化報到比率</td><td class="tl"><b class="rd">114年: 135÷395=34.2% ｜ 115年: 155÷401=38.7% ｜ 5年: 757÷2,339=32.4%</b></td></tr>
+          <tr><td><b>F07</b></td><td class="tl"><b>各系年度報到率 R(t)</b></td><td class="tl"><code>R(t) = 該系第t年報到人數 Y_t ÷ 二階甄試基數 B_t × 100%</code></td><td class="tl">消除各年名額變動之標準化系所報到率</td><td class="tl">如115職安甄選: 21÷34=<b>61.8%</b> ｜ 115護理申請: 84÷180=<b>46.7%</b></td></tr>
+          <tr><td><b>F08</b></td><td class="tl"><b>116加權趨勢與半程修正 R̂₁₁₆</b></td><td class="tl"><code>R̂_raw = 0.55×(a_R+b_R×t) + 0.45×μ_R</code><br><code>R̂₁₁₆ = clamp(R̂_raw × (1 + δ_R/2), 0%, 100%)</code></td><td class="tl">55%線性趨勢+45%歷年均值，再以115回測系統偏差 δ_R 做半程修正</td><td class="tl">116全校推估：甄選二階報到率 <b class="rd">~46.2%</b>、申請二階報到率 <b class="rd">~42.1%</b></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
@@ -1455,7 +1530,7 @@ function buildCharts(deltaZ, deltaS, zPredAvg116, sPredAvg116) {
   makeChart('chartRates','line',['111','112','113','114','115','116推估'],[
     {label:'申請二階→報到率(%)',data:[31.8,32.0,35.8,37.5,44.9,parseFloat(sPredAvg116.toFixed(1))],borderColor:'#34d399',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
     {label:'甄選二階→報到率(%)',data:[38.2,40.4,44.1,53.1,48.1,parseFloat(zPredAvg116.toFixed(1))],borderColor:'#38bdf8',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
-    {label:'甄選分發錄取→報到率(%)',data:[94.2,93.0,95.6,93.0,91.8,92.6],borderColor:'#f472b6',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
+    {label:'甄選分發/確認→報到率(% ★紅字修正)',data:[94.2,93.0,95.6,56.6,52.7,54.8],borderColor:'#f87171',tension:.4,pointRadius:5,segment:{borderDash:ctx=>ctx.p0DataIndex===4?[5,3]:undefined}},
   ],{unit:'%', yOpts:{max:105}, datalabels:{display:true,color:ctx=>ctx.dataset.borderColor,anchor:'end',align:'top',font:{size:9,weight:'bold'},formatter:v=>v+'%'}});
 
   // 115 vs 116 報到率比較

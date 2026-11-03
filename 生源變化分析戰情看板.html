@@ -770,17 +770,17 @@
                 <span class="stat-title" id="kpiTitle3">申請入學就讀轉換率</span>
                 <div class="stat-icon" style="color:#059669"><i class="fa-solid fa-arrow-trend-up"></i></div>
             </div>
-            <div class="stat-value" id="kpiValue3">32.8%</div>
-            <div class="stat-desc" id="kpiDesc3">二階報名 2,310人 ➔ 報到 757人</div>
+            <div class="stat-value" id="kpiValue3"><span style="color:#dc2626">35.6%</span> <span style="font-size:14px;color:#059669;font-weight:800">(人數)｜<b style="color:#dc2626">32.4%</b>(人次)</span></div>
+            <div class="stat-desc" id="kpiDesc3">二階 <b style="color:#dc2626">2,126人</b>(2,339人次) ➔ 報到 <b style="color:#dc2626">757人</b></div>
         </div>
 
         <div class="stat-card amber" id="cardKpi4">
             <div class="stat-header">
-                <span class="stat-title" id="kpiTitle4">甄選入學分發報到率</span>
+                <span class="stat-title" id="kpiTitle4">甄選分發/二階報到率</span>
                 <div class="stat-icon" style="color:#d97706"><i class="fa-solid fa-award"></i></div>
             </div>
-            <div class="stat-value" id="kpiValue4">95.6%</div>
-            <div class="stat-desc" id="kpiDesc4">分發即確定就讀 ‧ 高黏著強意願</div>
+            <div class="stat-value" id="kpiValue4"><span style="color:#dc2626">76.9%</span> <span style="font-size:14px;color:#b45309;font-weight:800">(分發)｜<b style="color:#dc2626">43.1%</b>(二階)</span></div>
+            <div class="stat-desc" id="kpiDesc4">分發 <b style="color:#dc2626">685人</b>(二階1,223人) ➔ 報到 <b style="color:#dc2626">527人</b></div>
         </div>
 
         <div class="stat-card rose" id="cardKpi5">
@@ -796,7 +796,7 @@
     <!-- Navigation Tabs for Logical Workflow Stages -->
     <nav class="stage-nav">
         <button class="stage-tab active" data-stage="stage0" onclick="switchStage('stage0')">
-            <i class="fa-solid fa-sitemap"></i> 系統流程架構圖與邏輯說明
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#dc2626"></i> (0) ELI5 系統運作邏輯與公式視覺圖解
         </button>
         <button class="stage-tab" data-stage="stage1" onclick="switchStage('stage1')">
             <i class="fa-solid fa-filter-circle-dollar"></i> (1) 招生管道漏斗與階段歷程
@@ -812,73 +812,409 @@
         </button>
     </nav>
 
-    <!-- STAGE 0: System Architecture & Workflow Logic -->
+    <!-- STAGE 0: ELI5 HTML Visual Explainer — System Logic & Complete Formula Definitions -->
     <div id="stage0" class="stage-content active">
-        <div class="architecture-diagram">
-            <div class="card-header" style="border-bottom:none; padding-bottom:0;">
-                <div class="card-title"><i class="fa-solid fa-diagram-next"></i> 系統數據處理與邏輯順序架構 (System Architecture Workflow)</div>
-                <div class="tag-pill emerald"><i class="fa-solid fa-check-double"></i> 依據指定(1)+(2)前後邏輯重構</div>
+
+        <!-- ELI5 Visual Explainer Control Bar -->
+        <div class="component-card" style="background:linear-gradient(135deg,#fff1f2 0%,#eff6ff 55%,#ecfdf5 100%);border:2px solid #fca5a5;margin-bottom:24px;padding:22px 26px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#dc2626,#e11d48);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 12px rgba(220,38,38,0.28);"><i class="fa-solid fa-lightbulb"></i></span>
+                    <div>
+                        <div style="font-size:20px;font-weight:900;color:#991b1b;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <span>ELI5 視覺化圖解：全系統運作邏輯、指標定義與計算公式總覽</span>
+                            <span style="background:#dc2626;color:#fff;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:800;">已修正圖示紅字數據</span>
+                        </div>
+                        <div style="font-size:13.5px;color:#475569;margin-top:2px;">採用 <b>ELI5 (Explain Like I'm 5 — HTML Visual Explainer)</b>「大圖塊、少文字、分步驟、分子分母色塊拆解」設計，讓任何人 30 秒內看懂系統資料流與每一條公式！</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <a href="ELI5_系統運作邏輯與公式視覺化圖解.html" target="_blank" style="background:#dc2626;color:#fff;text-decoration:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:800;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(220,38,38,0.25);"><i class="fa-solid fa-up-right-from-square"></i> 開啟獨立全螢幕 ELI5 圖解頁</a>
+                </div>
             </div>
-            <p style="color:var(--text-muted); font-size:15px; margin-top:10px;">
-                本系統將招生數據處理拆解為四個連續階段，選擇上方「學年度」切換時，全頁數據、KPI卡片與圖表均即時連動過濾：
-            </p>
 
-            <div class="flow-steps-grid">
-                <div class="flow-node" onclick="switchStage('stage1')">
-                    <div class="step-num">1</div>
-                    <h4>入學管道階段勾稽</h4>
-                    <p>甄選(一階→二階→錄取→報到)<br>申請(一階→二階→報到狀態過濾)</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;align-items:end;">
+                <div>
+                    <label for="eli5ViewSelect" style="display:block;font-size:13px;font-weight:800;color:#991b1b;margin-bottom:6px;"><i class="fa-solid fa-eye"></i> 下拉選擇 ELI5 圖解章節：</label>
+                    <select id="eli5ViewSelect" onchange="onEli5FilterChange()" style="width:100%;padding:10px 14px;border-radius:10px;border:2px solid #dc2626;background:#fff;color:#0f172a;font-size:14px;font-weight:800;cursor:pointer;outline:none;">
+                        <option value="all">📑 完整圖解全覽 (架構圖 ＋ 紅字數據勘誤 ＋ 12大公式字典 ＋ 116報到率預測模型)</option>
+                        <option value="red_fix">🔴 重點必看：圖示標註錯誤之「紅字數據修正」與分子/分母對照圖解</option>
+                        <option value="arch_flow">🗺️ 步驟 1：一張圖秒懂系統 4 大階段運作邏輯 (Data Pipeline)</option>
+                        <option value="formula_dict">📐 步驟 2：全系統 12 大計算公式、分子/分母定義與實例驗算</option>
+                        <option value="ir_model">🤖 步驟 3：IR 116 學年度「報到率 (%)」預測模型 5 步視覺拆解</option>
+                    </select>
+                </div>
+                <div style="background:#fff;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:13px;color:#7f1d1d;line-height:1.5;">
+                    <i class="fa-solid fa-circle-check" style="color:#dc2626"></i> <b>紅字數據已全系統同步校正：</b><br>
+                    ① 甄選 114學年：分發/確認 <b style="color:#dc2626">152人</b>、最終報到 <b style="color:#dc2626">86人</b>（分發報到率 <b style="color:#dc2626">56.6%</b>、二階報到率 <b style="color:#dc2626">53.1%</b>）<br>
+                    ② 甄選 115學年：分發/確認 <b style="color:#dc2626">148人</b>、最終報到 <b style="color:#dc2626">78人</b>（分發報到率 <b style="color:#dc2626">52.7%</b>、二階報到率 <b style="color:#dc2626">48.1%</b>、一階轉換率 <b style="color:#dc2626">22.1%</b>）<br>
+                    ③ 申請 115學年：報到 <b style="color:#dc2626">155人</b> ÷ 二階 <b style="color:#dc2626">345人(人數) = 44.9%</b> ｜ ÷ 二階 <b style="color:#dc2626">401人次 = 38.7%</b>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             ELI5 SECTION A: 圖示標註數據錯誤之「紅字修正」與分子/分母視覺拆解
+        ═══════════════════════════════════════════════════════════════ -->
+        <div id="eli5SecRedFix" class="component-card" style="border:2px solid #ef4444;background:linear-gradient(180deg,#ffffff 0%,#fff5f5 100%);">
+            <div class="card-header" style="border-bottom:2px solid #fecaca;">
+                <div class="card-title" style="color:#b91c1c;"><i class="fa-solid fa-magnifying-glass-chart" style="color:#dc2626"></i> 🔴 圖示標註疑問與數據錯誤 — 紅字修正與公式視覺拆解 (ELI5 零誤差對照)</div>
+                <span style="background:#fef2f2;color:#dc2626;border:1px solid #f87171;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:900;">全部以紅色粗體標示修正值</span>
+            </div>
+
+            <!-- 概念先修：人次 vs 人數 3秒圖解 -->
+            <div style="background:#ffffff;border:2px dashed #f87171;border-radius:16px;padding:18px 22px;margin-bottom:22px;">
+                <div style="font-size:16px;font-weight:900;color:#991b1b;margin-bottom:10px;"><i class="fa-solid fa-users-viewfinder"></i> 先懂這 2 個詞，所有百分比疑問瞬間解開：「人次」vs「不重複人數」</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+                    <div style="background:#eff6ff;border-left:5px solid #2563eb;padding:14px 16px;border-radius:10px;">
+                        <div style="font-size:15px;font-weight:900;color:#1e40af;">🎟️ 報名「人次」 (Applications, N<sub>cnt</sub>) ＝ 幾張報名表</div>
+                        <div style="font-size:13.5px;color:#334155;margin-top:6px;">一位普通高中生在「四技申請入學」最多可同時填報本校多個學系（例如同時報護理系＋物治系＝<b>1 個人算 2 人次</b>）。<br>👉 115學年申請二階共收到 <b style="color:#2563eb">401 人次</b> 報名表。</div>
+                    </div>
+                    <div style="background:#fef2f2;border-left:5px solid #dc2626;padding:14px 16px;border-radius:10px;">
+                        <div style="font-size:15px;font-weight:900;color:#b91c1c;">🧑 不重複「人數」 (Unique Headcount, N<sub>people</sub>) ＝ 幾個真人</div>
+                        <div style="font-size:13.5px;color:#334155;margin-top:6px;">把身分證字號去重歸戶後，真正有來報名二階的獨立考生人數（因為最後 1 個真人只能去 1 個系註冊報到！）。<br>👉 115學年申請二階實際為 <b style="color:#dc2626">345 位考生 (人)</b>，最終報到 <b style="color:#dc2626">155 人</b>。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三大紅字修正視覺卡片 -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;">
+
+                <!-- 修正卡片 1: 圖1左圈 44.9% ? -->
+                <div style="background:#fff;border:2px solid #fca5a5;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(220,38,38,0.08);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <span style="background:#dc2626;color:#fff;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:900;">修正 ①：圖1 KPI 卡片「44.9% ?」</span>
+                        <span style="font-size:12px;color:#dc2626;font-weight:800;">分母單位不一致已修正</span>
+                    </div>
+                    <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:10px;">115學年「申請入學」二階就讀轉換率</div>
+                    <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;font-size:13px;color:#881337;margin-bottom:12px;">
+                        <b>❌ 原畫面為何讓人疑惑？</b><br>
+                        原卡片大字顯示 <code>44.9%</code>，但下方小字卻寫 <code>二階報名 401人 ➔ 報到 155人</code>。若拿 <code>155 ÷ 401</code> 會算出 <code>38.7%</code>，導致數字與下方文字分母對不起來！
+                    </div>
+                    <div style="background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:14px;">
+                        <div style="font-size:13px;font-weight:900;color:#dc2626;margin-bottom:8px;">✅ 正確雙重定義與紅字公式（同時並列、分母清楚標明）：</div>
+                        <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #fecaca;margin-bottom:8px;font-size:13.5px;">
+                            <b>【公式 A：以不重複人數計】</b>（1人最終僅能報到1系）：<br>
+                            <span style="font-size:16px;font-weight:900;color:#dc2626;">155 人 (最終報到) ÷ 345 人 (二階人數) ＝ 44.9%</span>
+                        </div>
+                        <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #fecaca;font-size:13.5px;">
+                            <b>【公式 B：以報名人次計】</b>（原始 Word 報告表2口徑）：<br>
+                            <span style="font-size:16px;font-weight:900;color:#dc2626;">155 人 (最終報到) ÷ 401 人次 (二階人次) ＝ 38.7%</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flow-node" onclick="switchStage('stage2')">
-                    <div class="step-num">2</div>
-                    <h4>生源學校與區域分析</h4>
-                    <p>Top 15 生源學校動態排名<br>6大地理分區空間位移</p>
+                <!-- 修正卡片 2: 圖1右圈 91.8% ? & 圖2 115學年 148人 -->
+                <div style="background:#fff;border:2px solid #fca5a5;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(220,38,38,0.08);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <span style="background:#dc2626;color:#fff;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:900;">修正 ②：圖1「91.8% ?」與圖2「115甄選 148人」</span>
+                        <span style="font-size:12px;color:#dc2626;font-weight:800;">分發人數 85 ➔ 148人</span>
+                    </div>
+                    <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:10px;">115學年「甄選入學 (技高)」各階段人數與報到率</div>
+                    <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;font-size:13px;color:#881337;margin-bottom:12px;">
+                        <b>❌ 原畫面錯誤原因：</b><br>
+                        1. 115甄選「分發/確認人數」原誤植為 <code>85人</code>（算出 <code>78÷85=91.8%</code>），依圖2手寫標註正確應為 <b style="color:#dc2626">148人</b>！<br>
+                        2. 原卡片小字寫 <code>篩選通過 353人次 ➔ 報到 78人</code>，卻放上分發報到率，分母完全錯位！
+                    </div>
+                    <div style="background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:14px;">
+                        <div style="font-size:13px;font-weight:900;color:#dc2626;margin-bottom:8px;">✅ 115學年甄選入學正確紅字數據與三階段比率：</div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;margin-bottom:6px;font-size:13.5px;">
+                            ① <b>分發/確認 ➔ 報到率</b>：<b style="color:#dc2626;font-size:16px;">78 人 ÷ 148 人 ＝ 52.7%</b> <small style="color:#64748b">(原誤植 85人/91.8%)</small>
+                        </div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;margin-bottom:6px;font-size:13.5px;">
+                            ② <b>二階報名 ➔ 報到率</b>：<b style="color:#dc2626;font-size:16px;">78 人 ÷ 162 人 ＝ 48.1%</b>
+                        </div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;font-size:13.5px;">
+                            ③ <b>一階通過 ➔ 報到轉換率</b>：<b style="color:#dc2626;font-size:16px;">78 人 ÷ 353 人次 ＝ 22.1%</b>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flow-node" onclick="switchStage('stage2')">
-                    <div class="step-num">3</div>
-                    <h4>漏斗轉換與矩陣定位</h4>
-                    <p>報名人次 vs 就讀人數轉換率<br>BCG 矩陣定位明星與觀望區</p>
+                <!-- 修正卡片 3: 圖2 114學年 甄選 86->152人, 80->86人 -->
+                <div style="background:#fff;border:2px solid #fca5a5;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(220,38,38,0.08);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <span style="background:#dc2626;color:#fff;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:900;">修正 ③：圖2「114甄選 152人 / 86人」</span>
+                        <span style="font-size:12px;color:#dc2626;font-weight:800;">全表勾稽 100% 吻合</span>
+                    </div>
+                    <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:10px;">114學年「甄選入學 (技高)」欄位錯位修正與勾稽</div>
+                    <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;font-size:13px;color:#881337;margin-bottom:12px;">
+                        <b>❌ 原畫面錯誤原因：</b><br>
+                        原表將 114 甄選「分發/確認人數」誤填為 <code>86人</code>、「最終報到人數」誤填為 <code>80人</code>（導致 5 年甄選總報到變成 521 人，與各系報到加總 <b>527 人</b> 相差 6 人！）。
+                    </div>
+                    <div style="background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:14px;">
+                        <div style="font-size:13px;font-weight:900;color:#dc2626;margin-bottom:8px;">✅ 依圖2手寫標示修正後（全校各表 100% 完美閉環）：</div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;margin-bottom:6px;font-size:13.5px;">
+                            ① <b>分發/確認人數 (正取136+備取16)</b>：<b style="color:#dc2626;font-size:16px;">152 人</b> <small style="color:#64748b">(原誤植 86人)</small>
+                        </div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;margin-bottom:6px;font-size:13.5px;">
+                            ② <b>最終已報到人數 (14系加總)</b>：<b style="color:#dc2626;font-size:16px;">86 人</b> <small style="color:#64748b">(原誤植 80人)</small>
+                        </div>
+                        <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;font-size:13.5px;">
+                            ③ <b>114分發報到率</b>：<b style="color:#dc2626;font-size:15px;">86 ÷ 152 ＝ 56.6%</b> ｜ <b>二階報到率</b>：<b style="color:#dc2626;font-size:15px;">86 ÷ 162 ＝ 53.1%</b><br>
+                            ④ <b>5年甄選報到總計</b>：<b style="color:#dc2626">161+93+109+86+78 ＝ 527人</b>（全校合計 <b style="color:#dc2626">527+757 ＝ 1,284人</b> 完全吻合！）
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flow-node" onclick="switchStage('stage3')">
-                    <div class="step-num">4</div>
-                    <h4>分層 IR 策略與行動導出</h4>
-                    <p>學院 / 重點系所 / 全校整體策略<br>圖/表 PNG 與 CSV 多格式導出</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             ELI5 SECTION B: 一張圖秒懂系統 4 大階段運作邏輯 (Big Picture Pipeline)
+        ═══════════════════════════════════════════════════════════════ -->
+        <div id="eli5SecArchFlow" class="architecture-diagram">
+            <div class="card-header" style="border-bottom:2px solid #e2e8f0; padding-bottom:14px;">
+                <div class="card-title"><i class="fa-solid fa-diagram-next" style="color:#2563eb"></i> 🗺️ ELI5 步驟 1：一張圖看懂整個系統的運作邏輯 (4-Stage Data Pipeline)</div>
+                <div class="tag-pill emerald"><i class="fa-solid fa-bolt"></i> 點擊任一階段方塊可直接跳轉該戰情畫面</div>
+            </div>
+
+            <!-- 視覺化水平資料流管線 -->
+            <div style="background:#f8fafc;border:2px solid #cbd5e1;border-radius:16px;padding:20px;margin-top:16px;">
+                <div style="font-size:14px;font-weight:800;color:#1e3a8a;margin-bottom:14px;text-align:center;">
+                    📥 【輸入端 Input】111～115 學年度「四技甄選 (技高 2,632人次/報到527人)」＋「四技申請 (普高 5,860人次/報到757人)」原始報名檔與學籍報到名冊（合計 8,492 人次 ➔ 1,284 人就讀）
+                </div>
+
+                <div class="flow-steps-grid" style="margin-top:10px;">
+                    <div class="flow-node" onclick="switchStage('stage1')" style="border-top:5px solid #2563eb;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <div class="step-num" style="margin:0;flex-shrink:0;">1</div>
+                            <h4 style="margin:0;color:#1e40af;">階段一：雙管道招生漏斗勾稽</h4>
+                        </div>
+                        <p style="font-size:13px;color:#334155;line-height:1.6;">
+                            <b>做什麼？</b>追蹤考生從「一階篩選通過 ➔ 二階複試報名 ➔ 分發/確認 ➔ 最終註冊報到」每一步留存多少人、流失多少人。<br>
+                            <span style="color:#dc2626;font-weight:800;">★ 關鍵邏輯：</span>嚴格區分「人次」與「不重複人數」，並過濾申請入學每年 60~100 名「報到後放棄」考生。
+                        </p>
+                    </div>
+
+                    <div class="flow-node" onclick="switchStage('stage2')" style="border-top:5px solid #059669;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <div class="step-num" style="margin:0;flex-shrink:0;background:linear-gradient(135deg,#059669,#10b981);">2</div>
+                            <h4 style="margin:0;color:#065f46;">階段二：生源學校與區域空間位移</h4>
+                        </div>
+                        <p style="font-size:13px;color:#334155;line-height:1.6;">
+                            <b>做什麼？</b>把 8,492 報名人次與 1,284 就讀學生對應回「畢業高中職」與「六大地理區」，結合官網 <b>4 大學院 16 系所</b> 繪製各系 Top 5 生源校條狀圖與 <b>BCG 四象限矩陣</b>（找出鐵票校 vs 高報名低轉換觀望校）。
+                        </p>
+                    </div>
+
+                    <div class="flow-node" onclick="switchStage('stage3')" style="border-top:5px solid #d97706;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <div class="step-num" style="margin:0;flex-shrink:0;background:linear-gradient(135deg,#d97706,#f59e0b);">3</div>
+                            <h4 style="margin:0;color:#92400e;">階段三：分層 IR 對策與同類校開發</h4>
+                        </div>
+                        <p style="font-size:13px;color:#334155;line-height:1.6;">
+                            <b>做什麼？</b>串聯「4 大學院整體資源共享池」＋「院內各系專業差異化區隔」＋「各系雙管道報到率診斷」，並依據各系現有 Top 5 生源校之群科屬性，自動配對推薦 <b>同類潛力生源校 (Lookalike Schools)</b>。
+                        </p>
+                    </div>
+
+                    <div class="flow-node" onclick="switchStage('stage4')" style="border-top:5px solid #7c3aed;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <div class="step-num" style="margin:0;flex-shrink:0;background:linear-gradient(135deg,#7c3aed,#9333ea);">4</div>
+                            <h4 style="margin:0;color:#5b21b6;">階段四：116 報到率預測推估引擎</h4>
+                        </div>
+                        <p style="font-size:13px;color:#334155;line-height:1.6;">
+                            <b>做什麼？</b>不以「人數」直接外推（避免受招生名額調整干擾），改以各系歷年<b>「二階報到率 (%)」</b>建立加權線性趨勢模型（111–113訓練 ➔ 114驗證 ➔ 115回測誤差修正 δ<sub>R</sub>/2 ➔ 推估 116 報到率與風險分級）。
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid-2col">
-            <div class="component-card">
-                <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-check"></i> 管道一：四技甄選入學 (技高體系) 階段歷程邏輯</div>
-                </div>
-                <div style="font-size:15px; color:var(--text-muted);">
-                    <ul style="padding-left:22px; line-height:1.8;">
-                        <li><b>一階篩選：</b>採統測成績篩選，5年累計 2,632 人次。近 5 年呈緊縮趨勢 (111年 793人次 降至 115年 353人次)。</li>
-                        <li><b>二階複試：</b>審查與面試。受南部技高少子化減班衝擊。</li>
-                        <li><b>志願錄取：</b>經聯合分發委員會正備取分發至本校。</li>
-                        <li><b>實際報到：</b>通過分發後學生<b>報到黏著度極高 (平均 95.6%)</b>，主要流入職安系、保營系、健美系與幼保系。</li>
-                    </ul>
-                </div>
+        <!-- ═══════════════════════════════════════════════════════════════
+             ELI5 SECTION C: 全系統 12 大計算公式、分子/分母定義與實例驗算字典
+        ═══════════════════════════════════════════════════════════════ -->
+        <div id="eli5SecFormulaDict" class="component-card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-square-root-variable" style="color:#7c3aed"></i> 📐 ELI5 步驟 2：全系統 12 大計算公式、分子/分母定義與紅字實例驗算表</div>
+                <button class="btn-card-action" onclick="exportTableCSVFromElement('tableEli5Formulas', '系統公式與定義總表.csv')"><i class="fa-solid fa-file-csv"></i> 匯出公式定義表 CSV</button>
             </div>
 
-            <div class="component-card">
-                <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-list-check"></i> 管道二：四技申請入學 (普通高中體系) 階段歷程邏輯</div>
+            <div class="table-responsive">
+                <table class="custom-table" id="tableEli5Formulas" style="white-space:normal;">
+                    <thead>
+                        <tr>
+                            <th style="width:50px">編號</th>
+                            <th style="min-width:170px">指標名稱 (所屬階段)</th>
+                            <th style="min-width:260px">數學計算公式 (分子 ÷ 分母 × 100%)</th>
+                            <th style="min-width:220px">白話定義與管理意義 (ELI5)</th>
+                            <th style="min-width:270px;background:#fef2f2;color:#dc2626;">實際數據代入驗算 (紅字為修正重點)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>F01</b></td>
+                            <td><b>甄選一階➔二階報名率</b><br><span class="badge-tag badge-quant">階段一：甄選漏斗</span></td>
+                            <td><code>二階複試報名人數 (P2_people) ÷ 一階篩選通過不重複人數 (P1_people) × 100%</code></td>
+                            <td>通過統測一階篩選的技高考生中，實際繳費並上傳備審參加二階複試的比例（衡量第一階段吸引力）。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 114學年：<code>162人 ÷ 360人 ＝ 45.0%</code><br>
+                                • 115學年：<code>162人 ÷ 353人 ＝ 45.9%</code><br>
+                                • 5年平均(人數)：<code>1,223 ÷ 2,381 ＝ 51.4%</code> (以2,632人次計為 <code>46.5%</code>)
+                            </td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td><b style="color:#dc2626">F02 ★</b></td>
+                            <td><b style="color:#dc2626">甄選分發/確認➔最終報到率</b><br><span class="badge-tag" style="background:#fee2e2;color:#dc2626">階段一：紅字修正核心</span></td>
+                            <td><code style="color:#dc2626;font-weight:900;">最終已報到人數 (Enrolled) ÷ 分發/確認錄取人數 (Admitted) × 100%</code></td>
+                            <td>在二階正備取合格並進入分發確認名單中，最終完成註冊報到的比例。</td>
+                            <td style="background:#fee2e2;color:#dc2626;font-weight:900;">
+                                • 111~113年：<code>161/171=94.2%</code>、<code>93/100=93.0%</code>、<code>109/114=95.6%</code><br>
+                                • ★114學年修正：<code>86人 ÷ 152人 ＝ 56.6%</code> (原誤植80/86=93.0%)<br>
+                                • ★115學年修正：<code>78人 ÷ 148人 ＝ 52.7%</code> (原誤植78/85=91.8%)<br>
+                                • ★5年累計：<code>527人 ÷ 685人 ＝ 76.9%</code>
+                            </td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td><b style="color:#dc2626">F03 ★</b></td>
+                            <td><b style="color:#dc2626">甄選二階報名➔最終報到率</b><br><span class="badge-tag" style="background:#fee2e2;color:#dc2626">階段一 & 階段四建模變數</span></td>
+                            <td><code style="color:#dc2626;font-weight:900;">最終已報到人數 (Enrolled) ÷ 二階報名人數 (P2_apply) × 100%</code></td>
+                            <td>參加二階複試的技高生最終實際就讀本校之轉換率（亦為階段四 IR 預測模型之核心比率變數）。</td>
+                            <td style="background:#fee2e2;color:#dc2626;font-weight:900;">
+                                • 111~113年：<code>161/422=38.2%</code>、<code>93/230=40.4%</code>、<code>109/247=44.1%</code><br>
+                                • ★114學年修正：<code>86人 ÷ 162人 ＝ 53.1%</code> (原以80人計為49.4%)<br>
+                                • ★115學年：<code>78人 ÷ 162人 ＝ 48.1%</code><br>
+                                • ★5年累計：<code>527人 ÷ 1,223人 ＝ 43.1%</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F04</b></td>
+                            <td><b>甄選一階通過➔報到總轉換率</b><br><span class="badge-tag badge-quant">階段一：全漏斗總轉換</span></td>
+                            <td><code>最終已報到人數 (Enrolled) ÷ 一階篩選通過人次 (P1_cnt) × 100%</code></td>
+                            <td>對應圖1右卡小字「篩選通過 353人次 ➔ 報到 78人」之全漏斗總轉換率。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • ★114學年修正：<b style="color:#dc2626">86人 ÷ 399人次 ＝ 21.6%</b> (以360人計為 <b style="color:#dc2626">23.9%</b>)<br>
+                                • ★115學年：<b style="color:#dc2626">78人 ÷ 353人次 ＝ 22.1%</b><br>
+                                • 5年累計：<b style="color:#dc2626">527人 ÷ 2,632人次 ＝ 20.0%</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F05</b></td>
+                            <td><b>申請一階➔二階報名率</b><br><span class="badge-tag badge-strat">階段一：申請漏斗</span></td>
+                            <td><code>【人數口徑】二階不重複人數 ÷ 一階不重複人數 × 100%</code><br><code>【人次口徑】二階報名人次 ÷ 一階通過人次 × 100%</code></td>
+                            <td>普高學測生通過一階後，願意繳費參加本校二階面試/書審之比例。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 115學年(以人數計)：<code>345人 ÷ 929人 ＝ 37.1%</code><br>
+                                • 115學年(以人次計)：<code>401人次 ÷ 1,061人次 ＝ 37.8%</code><br>
+                                • 5年累計：<code>2,126÷5,203＝40.9%(人數)</code> ｜ <code>2,339÷5,860＝39.9%(人次)</code>
+                            </td>
+                        </tr>
+                        <tr style="background:#fef2f2;">
+                            <td><b style="color:#dc2626">F06 ★</b></td>
+                            <td><b style="color:#dc2626">申請二階➔報到就讀轉換率</b><br><span class="badge-tag" style="background:#fee2e2;color:#dc2626">階段一：圖1左卡紅字修正</span></td>
+                            <td><code style="color:#dc2626;font-weight:900;">【A.人數口徑】最終報到人數 ÷ 二階報名不重複人數 × 100%</code><br><code style="color:#dc2626;font-weight:900;">【B.人次口徑】最終報到人數 ÷ 二階報名總人次 × 100%</code></td>
+                            <td>解決圖1「44.9% vs 401人」疑問：因普高生可一人報多系，分母用「345人」得 44.9%，分母用「401人次」得 38.7%，系統現已雙重標示！</td>
+                            <td style="background:#fee2e2;color:#dc2626;font-weight:900;">
+                                • ★115學年(人數口徑)：<code>155人 ÷ 345人 ＝ 44.9%</code><br>
+                                • ★115學年(人次口徑)：<code>155人 ÷ 401人次 ＝ 38.7%</code><br>
+                                • ★5年累計(人數口徑)：<code>757人 ÷ 2,126人 ＝ 35.6%</code><br>
+                                • ★5年累計(人次口徑)：<code>757人 ÷ 2,339人次 ＝ 32.4%</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F07</b></td>
+                            <td><b>單一生源學校就讀轉換率</b><br><span class="badge-tag badge-qual">階段二：生源學校消長</span></td>
+                            <td><code>該高中職 5年累計就讀人數 ÷ 該高中職 5年累計一階報名人次 × 100%</code></td>
+                            <td>衡量特定高中職學生「報了輔英之後，真正來念輔英」的忠誠度（用於 BCG 矩陣縱軸 Y）。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 中山工商：<code>101人 ÷ 400人次 ＝ 25.3%</code> (鐵票主力)<br>
+                                • 小港高中：<code>44人 ÷ 153人次 ＝ 28.8%</code> (普高首選)<br>
+                                • 道明高中：<code>25人 ÷ 190人次 ＝ 13.2%</code> (高報名低轉換，需獎學金攔截)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F08</b></td>
+                            <td><b>地理分區就讀佔比 & 區域轉換率</b><br><span class="badge-tag badge-qual">階段二：六大區域分析</span></td>
+                            <td><code>【區域佔比】該區就讀人數 ÷ 全校總就讀人數(1,284) × 100%</code><br><code>【區域轉換率】該區就讀人數 ÷ 該區一階報名人次 × 100%</code></td>
+                            <td>診斷「報名在中北、就讀留高屏」之地緣落差現象。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 高屏就讀佔比：<code>778 ÷ 1,284 ＝ 60.6%</code>（115年：<code>156 ÷ 233 ＝ 67.0%</code>）<br>
+                                • 高屏區域轉換率：<code>778 ÷ 3,514 ＝ 22.1%</code> vs 北部 <code>83 ÷ 1,037 ＝ 8.0%</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F09</b></td>
+                            <td><b>各系單一學年二階報到率 R(t)</b><br><span class="badge-tag badge-quant">階段四：IR 建模基礎變數</span></td>
+                            <td><code>R(t) = 該系第 t 年實際報到人數 Y(t) ÷ 該系第 t 年二階甄試/名額基數 B(t) × 100%</code></td>
+                            <td>消除各年度招生名額增減干擾，真實反映單一學系對考生的留存競爭力。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 115申請護理系：<code>84 ÷ 175 ＝ 48.0%</code> (獨立版基數180為 <code>46.7%</code>)<br>
+                                • 115甄選職安系：<code>21 ÷ 35 ＝ 60.0%</code> (獨立版基數34為 <code>61.8%</code>)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F10</b></td>
+                            <td><b>OLS 線性回歸與均值加權預測 R̂_raw</b><br><span class="badge-tag badge-quant">階段四：IR 預測模型步驟1~2</span></td>
+                            <td><code>R_lin(t) = a_R + b_R × t</code> (最小平方法)<br><code>R̂_raw(t) = 0.55 × R_lin(t) + 0.45 × μ_R</code></td>
+                            <td>結合「55% 近年成長/下滑趨勢斜率」與「45% 歷年基本盤平均報到率 μ_R」，避免單一年度暴衝或暴跌造成過度外推。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 若某系線性外推 <code>R_lin(116) = 50.0%</code>，5年均值 <code>μ_R = 40.0%</code>：<br>
+                                • <code>R̂_raw(116) = 0.55×50.0% + 0.45×40.0% ＝ 45.5%</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F11</b></td>
+                            <td><b>模型驗證誤差 MAPE_R 與回測偏差 δ_R</b><br><span class="badge-tag badge-quant">階段四：114驗證 & 115回測</span></td>
+                            <td><code>MAPE_R = (1/n) Σ |R_實際 - R̂_預測| ÷ R_實際 × 100%</code><br><code>δ_R = (1/n) Σ [(R_115實際 - R̂_115預測) ÷ R̂_115預測 × 100%]</code></td>
+                            <td>用 111–113 預測 114 檢驗準確度 (MAPE)，再用 111–114 預測 115 計算模型整體低估或高估的系統偏差率 δ_R。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 若 115 實際報到率高於模型預測（<code>δ_R &gt; 0</code>），代表全管道報到動能強於歷史均值，需向上修正 116 預測值。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>F12</b></td>
+                            <td><b>116 推估報到率 R̂_116 與信賴區間</b><br><span class="badge-tag badge-quant">階段四：半程修正與人數換算</span></td>
+                            <td><code>R̂_116 = clamp( R̂_raw(116) × (1 + δ_R / 2), 5%, 98% )</code><br><code>預測區間 = [ R̂_116 × 0.88 , R̂_116 × 1.12 ]</code><br><code>116參考人數 = round( B_115 × R̂_116 )</code></td>
+                            <td>採取穩健的「半程誤差修正 (δ_R / 2)」推估 116 報到率，並以 ±12% 給出上下限區間，最後乘上 115 基數換算參考人數。</td>
+                            <td style="background:#fff5f5;color:#991b1b;font-weight:700;">
+                                • 全校 116 推估：甄選二階報到率約 <b style="color:#dc2626">~45.9%</b>、申請二階報到率約 <b style="color:#dc2626">~41.0%</b>，全校綜合二階報到率約 <b style="color:#dc2626">~42.5%</b>。
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             ELI5 SECTION D: IR 116 學年度「報到率 (%)」預測模型 5 步視覺拆解
+        ═══════════════════════════════════════════════════════════════ -->
+        <div id="eli5SecIrModel" class="component-card" style="background:linear-gradient(135deg,#faf5ff 0%,#eff6ff 100%);border:2px solid #c4b5fd;">
+            <div class="card-header" style="border-bottom:2px solid #ddd6fe;">
+                <div class="card-title" style="color:#5b21b6;"><i class="fa-solid fa-brain" style="color:#7c3aed"></i> 🤖 ELI5 步驟 3：為什麼不用「人數」預測，而用「報到率 (%)」建模？（5 步圖解）</div>
+                <span class="tag-pill purple">Rate-Based Time-Series Model</span>
+            </div>
+
+            <div style="background:#fff;border-left:5px solid #7c3aed;padding:14px 18px;border-radius:10px;margin-bottom:18px;font-size:14px;color:#334155;">
+                <b>💡 ELI5 一句話秒懂：</b>如果某系今年招生名額從 50 人調降為 25 人，就算「報到率 100%」也只有 25 人報到！如果直接拿「歷年報到人數」畫直線外推，模型會誤以為該系招生崩盤。因此必須先將各系轉換為<b>「報到率 R(t) = 報到人數 ÷ 二階甄試基數 × 100%」</b>，才能真正衡量學生就讀意願！
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;">
+                <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;padding:16px;">
+                    <div style="font-size:12px;font-weight:900;color:#7c3aed;margin-bottom:4px;">STEP 1 ‧ 比率標準化</div>
+                    <div style="font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:6px;">計算 111–115 報到率</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.55;">將各系歷年實際報到人數 <code>Y(t)</code> 除以二階基數 <code>B(t)</code>，轉為 0%~100% 的標準化報到率序列 <code>R(t)</code>。</div>
                 </div>
-                <div style="font-size:15px; color:var(--text-muted);">
-                    <ul style="padding-left:22px; line-height:1.8;">
-                        <li><b>一階篩選：</b>採學測成績篩選，規模穩定維持在 1,000 人次以上。</li>
-                        <li><b>二階複試：</b>考生可多校選填與獲多重正備取資格。</li>
-                        <li><b>報到狀態過濾：</b>精準勾稽「已確認」與「聯合會已報到」，<b>排除「報到後放棄」(每年 60~100 人)</b>。</li>
-                        <li><b>就讀轉換：</b>就讀轉換率從 111年 <b>29.4% 躍升至 115年 41.7% (155人)</b>，護理系 (413人) 與健管系 (86人) 為主力。</li>
-                    </ul>
+                <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;padding:16px;">
+                    <div style="font-size:12px;font-weight:900;color:#2563eb;margin-bottom:4px;">STEP 2 ‧ 趨勢＋均值加權</div>
+                    <div style="font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:6px;">0.55×趨勢 + 0.45×均值</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.55;">以最小平方法 (OLS) 算出報到率斜率 <code>b_R</code>，取 <b>55% 線性趨勢 + 45% 歷年平均</b>，防止單年異常值過度發散。</div>
+                </div>
+                <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;padding:16px;">
+                    <div style="font-size:12px;font-weight:900;color:#059669;margin-bottom:4px;">STEP 3 ‧ 114 盲測驗證</div>
+                    <div style="font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:6px;">111–113 ➔ 預測 114</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.55;">遮住 114 年資料，僅用前 3 年預測 114 報到率，對比真實 114 報到率計算平均絕對百分比誤差 (<code>MAPE_R</code>)。</div>
+                </div>
+                <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;padding:16px;">
+                    <div style="font-size:12px;font-weight:900;color:#d97706;margin-bottom:4px;">STEP 4 ‧ 115 回測抓偏差</div>
+                    <div style="font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:6px;">計算系統偏差率 δ<sub>R</sub></div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.55;">用 111–114 預測 115，若 115 實際報到率全面高於預測（如申請入學衝上 44.9%），算出系統偏差 <code>δ_R</code>。</div>
+                </div>
+                <div style="background:#fff;border:2px solid #f43f5e;border-radius:14px;padding:16px;">
+                    <div style="font-size:12px;font-weight:900;color:#e11d48;margin-bottom:4px;">STEP 5 ‧ 116 半程修正推估</div>
+                    <div style="font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:6px;">× (1 + δ<sub>R</sub>/2) 輸出對策</div>
+                    <div style="font-size:12.5px;color:#475569;line-height:1.55;">以 5 年完整序列推估 116 並做半程修正 <code>(1+δ_R/2)</code>，自動判定 🔴極高風險(<26%) / 🟡中高風險(<35%) / 🟢穩定。</div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- STAGE 1: Admission Funnel Stages -->
@@ -946,7 +1282,7 @@
                     </div>
                     <div class="analysis-box">
                         <div class="analysis-item"><span class="badge-tag badge-quant">量化</span> 一階篩選通過自 111年 793人次調降至 115年 353人次，實際報到自 161人調整至 78人（二階報到率則自 38.2% 提升至 48.1%）。</div>
-                        <div class="analysis-item"><span class="badge-tag badge-qual">質化</span> 分發錄取後報到意願高達 91.8%~95.6%，顯示學生選填後對本校黏著度極高。</div>
+                        <div class="analysis-item"><span class="badge-tag badge-qual">質化</span> 114與115學年正備取分發確認人數分別修正為 <b style="color:#dc2626">152人(報到86人，分發報到率56.6%)</b> 與 <b style="color:#dc2626">148人(報到78人，分發報到率52.7%)</b>；二階報名報到率則達 <b style="color:#dc2626">53.1%</b> 與 <b style="color:#dc2626">48.1%</b>。</div>
                     </div>
                 </div>
 
@@ -963,7 +1299,7 @@
                         <canvas id="chartShenqingFunnel"></canvas>
                     </div>
                     <div class="analysis-box emerald">
-                        <div class="analysis-item"><span class="badge-tag badge-quant">量化</span> 一階維持千人規模，二階就讀轉換率從 31.8%(以人數計) 攀升至 44.9%，115年報到達 155人。</div>
+                        <div class="analysis-item"><span class="badge-tag badge-quant">量化</span> 一階維持千人規模，115年最終報到 <b style="color:#dc2626">155人</b>：以二階不重複人數(<b style="color:#dc2626">345人</b>)計轉換率達 <b style="color:#dc2626">44.9%</b>；以二階報名人次(<b style="color:#dc2626">401人次</b>)計轉換率為 <b style="color:#dc2626">38.7%</b>。</div>
                         <div class="analysis-item"><span class="badge-tag badge-strat">策略</span> 存在多校重複錄取特性，每年約 60~100 位正取生「報到後放棄」(多流向國北護/長庚科大)，宜加強關懷留存。</div>
                     </div>
                 </div>
@@ -1710,10 +2046,11 @@
       "p1_pass_people": 360,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 86,
-      "enrolled": 80,
+      "admitted": 152,
+      "enrolled": 86,
       "p1_to_p2_rate": "45.0%",
-      "admitted_to_enrolled_rate": "93.0%"
+      "p2_to_enrolled_rate": "53.1%",
+      "admitted_to_enrolled_rate": "56.6%"
     },
     {
       "year": "115",
@@ -1721,10 +2058,11 @@
       "p1_pass_people": 353,
       "p2_apply_cnt": 162,
       "p2_apply_people": 162,
-      "admitted": 85,
+      "admitted": 148,
       "enrolled": 78,
       "p1_to_p2_rate": "45.9%",
-      "admitted_to_enrolled_rate": "91.8%"
+      "p2_to_enrolled_rate": "48.1%",
+      "admitted_to_enrolled_rate": "52.7%"
     }
   ],
   "zhenxuan_depts": [
@@ -2704,6 +3042,21 @@
             initCharts();
         }
 
+        // ELI5 Section Dropdown Filter
+        function onEli5FilterChange() {
+            const sel = document.getElementById('eli5ViewSelect');
+            const mode = sel ? sel.value : 'all';
+            const secRed = document.getElementById('eli5SecRedFix');
+            const secArch = document.getElementById('eli5SecArchFlow');
+            const secForm = document.getElementById('eli5SecFormulaDict');
+            const secIr = document.getElementById('eli5SecIrModel');
+
+            if (secRed) secRed.style.display = (mode === 'all' || mode === 'red_fix') ? 'block' : 'none';
+            if (secArch) secArch.style.display = (mode === 'all' || mode === 'arch_flow') ? 'block' : 'none';
+            if (secForm) secForm.style.display = (mode === 'all' || mode === 'formula_dict') ? 'block' : 'none';
+            if (secIr) secIr.style.display = (mode === 'all' || mode === 'ir_model') ? 'block' : 'none';
+        }
+
         // DYNAMICALLY UPDATE TOP KPI STAT CARDS BASED ON SELECTED YEAR & CHANNEL
         function updateKpiCards() {
             const zf = DASHBOARD_DATA.zhenxuan_funnel;
@@ -2712,20 +3065,20 @@
 
             if (currentYear === 'all') {
                 document.getElementById('kpiTitle1').innerText = '5年總一階通過人數';
-                document.getElementById('kpiValue1').innerHTML = '8,492 <span style="font-size:16px">人次</span>';
-                document.getElementById('kpiDesc1').innerText = '甄選 2,632 人次 ‧ 申請 5,860 人次';
+                document.getElementById('kpiValue1').innerHTML = '8,492 <span style="font-size:16px">人次 (7,584人)</span>';
+                document.getElementById('kpiDesc1').innerText = '甄選 2,632 人次(2,381人) ‧ 申請 5,860 人次(5,203人)';
 
                 document.getElementById('kpiTitle2').innerText = '5年總正式報到人數';
-                document.getElementById('kpiValue2').innerHTML = '1,284 <span style="font-size:16px">人</span>';
-                document.getElementById('kpiDesc2').innerText = '甄選 527 人 ‧ 申請 757 人';
+                document.getElementById('kpiValue2').innerHTML = '<span style="color:#dc2626">1,284</span> <span style="font-size:16px">人</span>';
+                document.getElementById('kpiDesc2').innerHTML = '甄選 <b style="color:#dc2626">527 人</b> (114修正為86人) ‧ 申請 <b>757 人</b>';
 
-                document.getElementById('kpiTitle3').innerText = '申請入學就讀轉換率';
-                document.getElementById('kpiValue3').innerText = '32.8%';
-                document.getElementById('kpiDesc3').innerHTML = '二階報名 2,310人 ➔ 報到 757人';
+                document.getElementById('kpiTitle3').innerText = '5年申請二階就讀轉換率';
+                document.getElementById('kpiValue3').innerHTML = '<span style="color:#dc2626">35.6%</span> <span style="font-size:14px;color:#059669;font-weight:800">(人數)｜<b style="color:#dc2626">32.4%</b>(人次)</span>';
+                document.getElementById('kpiDesc3').innerHTML = '二階 <b style="color:#dc2626">2,126人</b>(2,339人次) ➔ 報到 <b style="color:#dc2626">757人</b>';
 
-                document.getElementById('kpiTitle4').innerText = '甄選入學分發報到率';
-                document.getElementById('kpiValue4').innerText = '95.6%';
-                document.getElementById('kpiDesc4').innerText = '分發即確定就讀 ‧ 高黏著強意願';
+                document.getElementById('kpiTitle4').innerText = '5年甄選分發/二階報到率';
+                document.getElementById('kpiValue4').innerHTML = '<span style="color:#dc2626">76.9%</span> <span style="font-size:14px;color:#b45309;font-weight:800">(分發)｜<b style="color:#dc2626">43.1%</b>(二階)</span>';
+                document.getElementById('kpiDesc4').innerHTML = '分發 <b style="color:#dc2626">685人</b>(二階1,223人) ➔ 報到 <b style="color:#dc2626">527人</b>';
 
                 document.getElementById('kpiTitle5').innerText = '高屏在地生源就讀比率';
                 document.getElementById('kpiValue5').innerText = '60.6%';
@@ -2748,24 +3101,32 @@
                 const kpEnrolledYr = regKaohsiungPing[keyYear] || 0;
                 const kpPctYr = totalEnrolled > 0 ? ((kpEnrolledYr / totalEnrolled) * 100).toFixed(1) + '%' : '0%';
 
-                const sRateYr = sItem.p2_to_enrolled_rate || '—';
-                const zRateYr = zItem.admitted_to_enrolled_rate !== '—' ? zItem.admitted_to_enrolled_rate : (zItem.p1_to_p2_rate + ' (報名率)');
+                const sP2People = sItem.p2_apply_people || 0;
+                const sP2Cnt = sItem.p2_apply_cnt || 0;
+                const sRatePeople = sP2People > 0 ? ((sEnrolled / sP2People) * 100).toFixed(1) + '%' : '—';
+                const sRateCnt = sP2Cnt > 0 ? ((sEnrolled / sP2Cnt) * 100).toFixed(1) + '%' : '—';
+
+                const zAdmitted = zItem.admitted || 0;
+                const zP2People = zItem.p2_apply_people || 0;
+                const zDistRate = zAdmitted > 0 ? ((zEnrolled / zAdmitted) * 100).toFixed(1) + '%' : '—';
+                const zP2Rate = zP2People > 0 ? ((zEnrolled / zP2People) * 100).toFixed(1) + '%' : '—';
+                const zP1Rate = zPass > 0 ? ((zEnrolled / zPass) * 100).toFixed(1) + '%' : '—';
 
                 document.getElementById('kpiTitle1').innerText = `${currentYear}學年一階通過人數`;
                 document.getElementById('kpiValue1').innerHTML = `${totalPass.toLocaleString()} <span style="font-size:16px">人次</span>`;
                 document.getElementById('kpiDesc1').innerText = `甄選 ${zPass.toLocaleString()} 人次 ‧ 申請 ${sPass.toLocaleString()} 人次`;
 
                 document.getElementById('kpiTitle2').innerText = `${currentYear}學年正式報到人數`;
-                document.getElementById('kpiValue2').innerHTML = `${totalEnrolled} <span style="font-size:16px">人</span>`;
-                document.getElementById('kpiDesc2').innerText = `甄選 ${zEnrolled} 人 ‧ 申請 ${sEnrolled} 人`;
+                document.getElementById('kpiValue2').innerHTML = `<span style="color:#dc2626">${totalEnrolled}</span> <span style="font-size:16px">人</span>`;
+                document.getElementById('kpiDesc2').innerHTML = `甄選 <b style="color:#dc2626">${zEnrolled} 人</b> ‧ 申請 <b style="color:#dc2626">${sEnrolled} 人</b>`;
 
                 document.getElementById('kpiTitle3').innerText = `${currentYear}學年申請就讀轉換率`;
-                document.getElementById('kpiValue3').innerText = sRateYr;
-                document.getElementById('kpiDesc3').innerText = `二階報名 ${sItem.p2_apply_cnt || 0}人 ➔ 報到 ${sEnrolled}人`;
+                document.getElementById('kpiValue3').innerHTML = `<span style="color:#dc2626">${sRatePeople}</span> <span style="font-size:14px;color:#059669;font-weight:800">(人數)｜<b style="color:#dc2626">${sRateCnt}</b>(人次)</span>`;
+                document.getElementById('kpiDesc3').innerHTML = `二階 <b style="color:#dc2626">${sP2People}人</b>(${sP2Cnt}人次) ➔ 報到 <b style="color:#dc2626">${sEnrolled}人</b>`;
 
-                document.getElementById('kpiTitle4').innerText = `${currentYear}學年甄選報到/報名率`;
-                document.getElementById('kpiValue4').innerText = zRateYr;
-                document.getElementById('kpiDesc4').innerText = `篩選通過 ${zPass}人次 ➔ 報到 ${zEnrolled}人`;
+                document.getElementById('kpiTitle4').innerText = `${currentYear}學年甄選分發/二階報到率`;
+                document.getElementById('kpiValue4').innerHTML = `<span style="color:#dc2626">${zDistRate}</span> <span style="font-size:14px;color:#b45309;font-weight:800">(分發)｜<b style="color:#dc2626">${zP2Rate}</b>(二階)</span>`;
+                document.getElementById('kpiDesc4').innerHTML = `分發 <b style="color:#dc2626">${zAdmitted}人</b>(二階${zP2People}人)➔報到 <b style="color:#dc2626">${zEnrolled}人</b>(一階轉換<b style="color:#dc2626">${zP1Rate}</b>)`;
 
                 document.getElementById('kpiTitle5').innerText = `${currentYear}學年高屏在地就讀比率`;
                 document.getElementById('kpiValue5').innerText = kpPctYr;
@@ -2882,44 +3243,107 @@
                 if (currentYear !== 'all' && item.year !== currentYear) return;
                 if (activeCh === 'shenqing') return;
                 const isHl = currentYear !== 'all' && item.year === currentYear;
+                const isFixedYr = (item.year === '114' || item.year === '115');
+                const p2Rate = item.p2_apply_people > 0 ? (item.enrolled / item.p2_apply_people * 100).toFixed(1) + '%' : '—';
+                const p1RateCnt = item.p1_pass_cnt > 0 ? (item.p2_apply_cnt / item.p1_pass_cnt * 100).toFixed(1) + '%' : '—';
+
+                const admCell = isFixedYr
+                    ? `<b style="color:#dc2626;background:#fef2f2;padding:3px 9px;border-radius:6px;border:1px solid #fca5a5;font-size:15px;">${item.admitted} 人 ★修正</b>`
+                    : `${item.admitted} 人`;
+                const enrCell = (item.year === '114')
+                    ? `<b style="color:#dc2626;background:#fef2f2;padding:3px 9px;border-radius:6px;border:1px solid #fca5a5;font-size:15px;">${item.enrolled} 人 ★修正</b>`
+                    : (item.year === '115' ? `<b style="color:#dc2626;font-size:15px;">${item.enrolled} 人</b>` : `<b style="color:#2563eb">${item.enrolled} 人</b>`);
+                const rateCell = isFixedYr
+                    ? `<span style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:4px 10px;border-radius:8px;font-weight:900;">分發報到 ${item.admitted_to_enrolled_rate} (${item.enrolled}/${item.admitted})</span> <span style="font-size:12px;color:#991b1b;font-weight:800;">｜二階報到 ${p2Rate} (${item.enrolled}/${item.p2_apply_people})</span>`
+                    : `<span class="badge-highlight">分發報到 ${item.admitted_to_enrolled_rate}</span> <small style="color:#64748b;font-weight:700">｜二階報到 ${p2Rate}</small>`;
+
                 tbody.innerHTML += `
-                    <tr class="${isHl ? 'row-highlight' : ''}">
+                    <tr class="${isHl ? 'row-highlight' : ''}" style="${isFixedYr ? 'background:#fffafa;' : ''}">
                         <td><span class="badge-tag badge-quant">甄選 (技高)</span></td>
-                        <td><b>${item.year}學年</b></td>
+                        <td><b style="${isFixedYr ? 'color:#dc2626;' : ''}">${item.year}學年</b></td>
                         <td>${item.p1_pass_cnt} 人次</td>
                         <td><b>${item.p1_pass_people} 人</b></td>
-                        <td>${item.p2_apply_cnt ? item.p2_apply_cnt + ' 人次' : '247 人次'}</td>
-                        <td>${item.p2_apply_people ? '<b>' + item.p2_apply_people + ' 人</b>' : '<b>247 人</b>'}</td>
-                        <td>${item.admitted ? item.admitted + ' 人' : '114 人'}</td>
-                        <td><b style="color:#2563eb">${item.enrolled} 人</b></td>
-                        <td>${item.p1_to_p2_rate}</td>
-                        <td><span class="badge-highlight">${item.admitted_to_enrolled_rate}</span></td>
+                        <td>${item.p2_apply_cnt} 人次</td>
+                        <td><b>${item.p2_apply_people} 人</b></td>
+                        <td>${admCell}</td>
+                        <td>${enrCell}</td>
+                        <td><b>${item.p1_to_p2_rate}</b> <small style="color:#64748b">(人次:${p1RateCnt})</small></td>
+                        <td>${rateCell}</td>
                     </tr>
                 `;
             });
+
+            if (currentYear === 'all' && activeCh !== 'shenqing') {
+                tbody.innerHTML += `
+                    <tr style="background:#eff6ff;font-weight:800;border-top:2px solid #93c5fd;border-bottom:2px solid #93c5fd;">
+                        <td><span class="badge-tag badge-quant">甄選 5年累計</span></td>
+                        <td><b>111–115合計</b></td>
+                        <td><b>2,632 人次</b></td>
+                        <td><b>2,381 人</b></td>
+                        <td><b>1,223 人次</b></td>
+                        <td><b>1,223 人</b></td>
+                        <td><b style="color:#dc2626">685 人 ★</b></td>
+                        <td><b style="color:#dc2626">527 人 ★</b></td>
+                        <td><b>51.4%</b> <small>(人次:46.5%)</small></td>
+                        <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:4px 10px;border-radius:8px;font-weight:900;">分發報到 76.9% (527/685) ｜ 二階報到 43.1% (527/1,223)</span></td>
+                    </tr>
+                `;
+            }
 
             sf.forEach(item => {
                 if (currentYear !== 'all' && item.year !== currentYear) return;
                 if (activeCh === 'zhenxuan') return;
                 const isHl = currentYear !== 'all' && item.year === currentYear;
+                const is115 = (item.year === '115');
                 const p1ToP2RatePeople = item.p1_pass_people > 0
                     ? (item.p2_apply_people / item.p1_pass_people * 100).toFixed(1) + '%'
                     : '—';
+                const p1ToP2RateCnt = item.p1_pass_cnt > 0
+                    ? (item.p2_apply_cnt / item.p1_pass_cnt * 100).toFixed(1) + '%'
+                    : '—';
+                const p2ToEnrPeople = item.p2_apply_people > 0
+                    ? (item.final_enrolled / item.p2_apply_people * 100).toFixed(1) + '%'
+                    : '—';
+                const p2ToEnrCnt = item.p2_apply_cnt > 0
+                    ? (item.final_enrolled / item.p2_apply_cnt * 100).toFixed(1) + '%'
+                    : '—';
+
+                const sRateCell = is115
+                    ? `<span style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:4px 10px;border-radius:8px;font-weight:900;">人數轉換 ${p2ToEnrPeople} (${item.final_enrolled}/${item.p2_apply_people}人) ｜ 人次轉換 ${p2ToEnrCnt} (${item.final_enrolled}/${item.p2_apply_cnt}人次)</span>`
+                    : `<span class="badge-highlight">人數轉換 ${p2ToEnrPeople} (${item.final_enrolled}/${item.p2_apply_people}人)</span> <small style="color:#64748b;font-weight:700">｜人次轉換 ${p2ToEnrCnt}</small>`;
+
                 tbody.innerHTML += `
-                    <tr class="${isHl ? 'row-highlight' : ''}">
+                    <tr class="${isHl ? 'row-highlight' : ''}" style="${is115 ? 'background:#fffafa;' : ''}">
                         <td><span class="badge-tag badge-strat">申請 (普高)</span></td>
-                        <td><b>${item.year}學年</b></td>
+                        <td><b style="${is115 ? 'color:#dc2626;' : ''}">${item.year}學年</b></td>
                         <td>${item.p1_pass_cnt} 人次</td>
                         <td><b>${item.p1_pass_people} 人</b></td>
                         <td>${item.p2_apply_cnt} 人次</td>
-                        <td><b>${item.p2_apply_people} 人</b></td>
+                        <td><b style="${is115 ? 'color:#dc2626;' : ''}">${item.p2_apply_people} 人</b></td>
                         <td>${item.confirmed} 人</td>
-                        <td><b style="color:#059669">${item.final_enrolled} 人</b></td>
-                        <td>${p1ToP2RatePeople}</td>
-                        <td><span class="badge-highlight">${item.p2_to_enrolled_rate}</span></td>
+                        <td><b style="color:${is115 ? '#dc2626' : '#059669'}">${item.final_enrolled} 人</b></td>
+                        <td><b>${p1ToP2RatePeople}</b> <small style="color:#64748b">(人次:${p1ToP2RateCnt})</small></td>
+                        <td>${sRateCell}</td>
                     </tr>
                 `;
             });
+
+            if (currentYear === 'all' && activeCh !== 'zhenxuan') {
+                tbody.innerHTML += `
+                    <tr style="background:#ecfdf5;font-weight:800;border-top:2px solid #6ee7b7;border-bottom:2px solid #6ee7b7;">
+                        <td><span class="badge-tag badge-strat">申請 5年累計</span></td>
+                        <td><b>111–115合計</b></td>
+                        <td><b>5,860 人次</b></td>
+                        <td><b>5,203 人</b></td>
+                        <td><b>2,339 人次</b></td>
+                        <td><b>2,126 人</b></td>
+                        <td><b>757 人</b></td>
+                        <td><b style="color:#059669">757 人</b></td>
+                        <td><b>40.9%</b> <small>(人次:39.9%)</small></td>
+                        <td><span style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:4px 10px;border-radius:8px;font-weight:900;">人數轉換 35.6% (757/2,126人) ｜ 人次轉換 32.4% (757/2,339人次)</span></td>
+                    </tr>
+                `;
+            }
 
             // Department tables with Official College Tag & 115 Rate
             const tbodyZ = document.getElementById('tbodyZhenxuanDepts');
@@ -3908,10 +4332,11 @@
             const titleEl = document.getElementById('titleZhenxuanChart');
 
             if (currentYear === 'all') {
-                if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-filter"></i> 四技甄選入學 (技高) 歷年各階段人數消長 (111~115學年)';
-                const labels = ['111學年', '112學年', '113學年', '114學年', '115學年'];
+                if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-filter"></i> 四技甄選入學 (技高) 歷年各階段人數消長 (111~115學年 ‧ 含分發修正)';
+                const labels = ['111學年', '112學年', '113學年', '114學年(★修正)', '115學年(★修正)'];
                 const dataP1 = [793, 531, 556, 399, 353];
                 const dataP2 = [422, 230, 247, 162, 162];
+                const dataAdmitted = [171, 100, 114, 152, 148];
                 const dataEnrolled = [161, 93, 109, 86, 78];
 
                 chartInstances['chartZhenxuanFunnel'] = new Chart(ctx, {
@@ -3921,7 +4346,8 @@
                         datasets: [
                             { label: '一階篩選通過 (人次)', data: dataP1, backgroundColor: '#2563eb', borderRadius: 6 },
                             { label: '二階報名 (人數)', data: dataP2, backgroundColor: '#7c3aed', borderRadius: 6 },
-                            { label: '實際已報到 (人數)', data: dataEnrolled, backgroundColor: '#059669', borderRadius: 6 }
+                            { label: '分發/確認人數 (114:152人, 115:148人)', data: dataAdmitted, backgroundColor: '#dc2626', borderRadius: 6 },
+                            { label: '最終已報到人數 (114:86人, 115:78人)', data: dataEnrolled, backgroundColor: '#059669', borderRadius: 6 }
                         ]
                     },
                     options: {
@@ -3937,10 +4363,11 @@
             } else {
                 if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-filter"></i> 四技甄選入學 (技高) - ${currentYear}學年階段漏斗歷程`;
                 const zItem = DASHBOARD_DATA.zhenxuan_funnel.find(x => x.year === currentYear) || {};
-                const labels = ['一階篩選通過', '二階報名複試', '志願分發/最終報到'];
+                const labels = ['一階篩選通過(人次)', '二階報名複試(人)', '分發/確認人數(人)', '最終已報到人數(人)'];
                 const funnelData = [
                     zItem.p1_pass_cnt || 0,
                     zItem.p2_apply_cnt || 0,
+                    zItem.admitted || 0,
                     zItem.enrolled || 0
                 ];
 
@@ -3949,9 +4376,9 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: `${currentYear}學年階段人數 (人)`,
+                            label: `${currentYear}學年階段人數`,
                             data: funnelData,
-                            backgroundColor: ['#2563eb', '#7c3aed', '#059669'],
+                            backgroundColor: ['#2563eb', '#7c3aed', '#dc2626', '#059669'],
                             borderRadius: 8
                         }]
                     },
@@ -4614,9 +5041,9 @@
           const dlRateAll={display:true,color:ctx=>ctx.dataset.borderColor||ctx.dataset.backgroundColor||'#333',anchor:'end',align:'top',offset:2,font:{weight:'bold',size:10},formatter:v=>v===null||v===undefined?'':Number(v).toFixed(1)+'%'};
           const dlRate116Only={display:ctx=>ctx.dataIndex===5,color:ctx=>ctx.dataset.borderColor||'#7c3aed',anchor:'end',align:'top',offset:4,font:{weight:'bold',size:11},formatter:v=>v===null?'':Number(v).toFixed(1)+'%'};
 
-          const zRateTotals=[38.2, 40.4, 44.1, 49.4, 48.1, parseFloat(zRate116.toFixed(1))];
+          const zRateTotals=[38.2, 40.4, 44.1, 53.1, 48.1, parseFloat(zRate116.toFixed(1))];
           const sRateTotals=[31.8, 32.0, 35.8, 37.5, 44.9, parseFloat(sRate116.toFixed(1))];
-          const zDistRateTotals=[94.2, 93.0, 95.6, 93.0, 91.8, 92.6];
+          const zDistRateTotals=[94.2, 93.0, 95.6, 56.6, 52.7, 54.8];
           makeIRChart('irChartTotal','line',YLBLS,[
             {label:'甄選入學 二階報到率 (%)',data:zRateTotals,borderColor:'#0284c7',backgroundColor:'rgba(2,132,199,.1)',tension:.35,pointRadius:[4,4,4,4,4,7],pointStyle:['circle','circle','circle','circle','circle','triangle'],segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined}},
             {label:'申請入學 二階報到率 (%)',data:sRateTotals,borderColor:'#059669',backgroundColor:'rgba(5,150,105,.1)',tension:.35,pointRadius:[4,4,4,4,4,7],pointStyle:['circle','circle','circle','circle','circle','triangle'],segment:{borderDash:ctx=>ctx.p0DataIndex===4?[6,3]:undefined}},

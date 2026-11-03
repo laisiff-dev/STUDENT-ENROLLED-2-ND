@@ -29,3 +29,4 @@ Explain like the reader is someone who knows nothing about this topic, using an 
 3. **HTML Design Standards**
    - Self-contained responsive HTML/CSS using clean grid layouts (`grid-template-columns`), high-contrast typography (`Noto Sans TC`, `Outfit`), FontAwesome icons, and interactive tabs or accordions.
    - Include a one-glance **"Cheat Sheet / Formula Dictionary"** table summarizing every metric's definition, mathematical formula, data source, and concrete example.
+

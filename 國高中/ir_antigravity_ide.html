@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>輔英科技大學 IR 生源與招生系統整合平台 | Antigravity IDE 架構預覽</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .nav-btn.active {
+      background-color: #1e3a8a;
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.25);
+    }
+    .code-block {
+      font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-lg shadow-inner">
+          FY
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight">輔英科技大學 IR 生源情資與招生漏斗決策系統</h1>
+            <span class="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">Antigravity IDE 專案架構 v2.4</span>
+          </div>
+          <p class="text-xs text-slate-400">中南部及離島 8 縣市國高中職生源庫 × 10月/2月雙週期自動同步引擎 × 四技甄選/申請招生漏斗串接</p>
+        </div>
+      </div>
+
+      <!-- Sync Status Pill -->
+      <div class="flex items-center gap-3">
+        <div class="bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2.5 text-xs">
+          <span id="cron-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div>
+            <span class="text-slate-400">排程狀態：</span>
+            <span id="cron-status-text" class="font-medium text-slate-200">10月學籍定錨 / 2月教育部普查雙軌就緒</span>
+          </div>
+        </div>
+        <button id="btn-trigger-sync" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>立即模擬同步</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-slate-800/60 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto py-2 gap-2">
+        <button data-tab="tab-summary" class="nav-btn active px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          1. 核心統計數據與生源結構摘要
+        </button>
+        <button data-tab="tab-scheduler" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          2. 10月 & 2月雙週期自動更新引擎
+        </button>
+        <button data-tab="tab-admission" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          3. 輔英招生系統串接與漏斗分析
+        </button>
+        <button data-tab="tab-antigravity" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          4. Antigravity IDE 系統藍圖與 Agent 指令
+        </button>
+        <button data-tab="tab-focus-matrix" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-amber-300 hover:text-white transition whitespace-nowrap border border-amber-400/30 bg-amber-500/10">
+          ★ 5. 五專/四技精準招生決策矩陣 (距離×群科×系科對接)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white border border-blue-500/40 rounded-xl shadow-2xl px-4 py-3 max-w-md transition-all">
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
+      <div>
+        <h4 id="toast-title" class="text-xs font-bold text-blue-300">系統訊息</h4>
+        <p id="toast-msg" class="text-xs text-slate-300 mt-0.5"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==========================================
+         TAB 1: 核心統計數據與生源結構摘要 (各縣市國高中職 × 公私立 × 屬性類型分類)
+    =========================================== -->
+    <section id="tab-summary" class="tab-panel space-y-6">
+      <!-- Multi-Dimensional Filter Bar -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-800 rounded-md">多維度生源交叉篩選器</span>
+            <span class="text-xs text-slate-500">可依「縣市 × 國高中學制 × 公私立(含國立/市縣立) × 學校屬性類型 × 學年度」即時連動下方所有圖表、交叉樞紐表與學校名冊</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500">資料基準：<strong class="text-slate-700">教育部統計處 `114_base2` 暨 8 縣市國高中職名冊庫 (439校部)</strong></span>
+            <button id="btn-reset-filters" class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">
+              ↺ 重置篩選
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">① 目標縣市：</label>
+            <select id="filter-county" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="ALL">全部八縣市總覽 (高中職231/國中208)</option>
+              <option value="臺中市">臺中市 (高中職53[公31/私22] / 國中53)</option>
+              <option value="高雄市">高雄市 (高中職55[公40/私15] / 國中41)</option>
+              <option value="臺南市">臺南市 (高中職48[公30/私18] / 國中34)</option>
+              <option value="屏東縣">屏東縣 (高中職19[公15/私4] / 國中19)</option>
+              <option value="嘉義市">嘉義市 (高中職12[公6/私6] / 國中11)</option>
+              <option value="雲林縣">雲林縣 (高中職22[公14/私8] / 國中20)</option>
+              <option value="嘉義縣">嘉義縣 (高中職9[公6/私3] / 國中12)</option>
+              <option value="臺東縣">臺東縣 (高中職11[公9/私2] / 國中10)</option>
+              <option value="澎湖縣">澎湖縣 (高中職2[公2/私0] / 國中8)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">② 國高中職學制層級：</label>
+            <select id="filter-stage" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="ALL">國高中職全貌 (439校部)</option>
+              <option value="HS">僅高級中等學校 (231所—四技池)</option>
+              <option value="JH">僅國民中學 (208所—五專護理/醫技/環工與衛生/應外池)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">③ 公私立與設立主管別：</label>
+            <select id="filter-ownership" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="ALL">全部公私立 (公317 / 私122)</option>
+              <option value="公立">公立學校合計 (國立+市縣立)</option>
+              <option value="私立">私立學校合計 (高中78/附設國中44)</option>
+              <option value="國立">僅國立學校 (高中73 / 國中9)</option>
+              <option value="市縣立">僅市立/縣立/公立學校</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">④ 學校屬性類型分類：</label>
+            <select id="filter-attr-type" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="ALL">全部學校屬性 (高中7類+國中2類)</option>
+              <optgroup label="【高級中等學校 7 大屬性類型】">
+                <option value="普通型高級中等學校">普通型高級中等學校 (103所：公73/私30)</option>
+                <option value="技術型高級中等學校(高職)">技術型高級中等學校/高職 (52所：公29/私23)</option>
+                <option value="普通型高中(設專業群科)">普通型高中(設專業群科) (31所：公14/私17)</option>
+                <option value="技術型高中(設普通科)">技術型高中(設普通科) (19所：公17/私2)</option>
+                <option value="綜合型/技術型高級中等學校">綜合型/技術型高級中等學校 (9所：公7/私2)</option>
+                <option value="實驗/單科型高級中等學校">實驗/單科型高級中等學校 (12所：公10/私2)</option>
+                <option value="綜合型高級中等學校">綜合型高級中等學校 (5所：公3/私2)</option>
+              </optgroup>
+              <optgroup label="【國民中學 2 大屬性類型】">
+                <option value="國民中學">國民中學 - 獨立國中 (105所：全公立)</option>
+                <option value="高級中等學校附設國中部">高中附設國中部 - 完全中學 (103所：公59/私44)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-blue-800 mb-1">⑤ 科別 / 群別差異分類：</label>
+            <select id="filter-cluster" class="w-full text-xs border border-blue-400 rounded-lg px-2 py-1.5 bg-blue-50/50 font-semibold text-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="ALL">全部群科 (18大群科 + 國中部)</option>
+              <optgroup label="【學術普通科】">
+                <option value="學術群">學術群 - 普通科/資優/體育班 (38,452人 | 公77%/私23%)</option>
+              </optgroup>
+              <optgroup label="【工業與電資環安化工類 (公立優勢)】">
+                <option value="電機與電子群">電機與電子群 - 資訊/電子/電機/控制/冷凍 (6,112人 | 公61%/私39%)</option>
+                <option value="機械群">機械群 - 機械/機電/製圖/模具 (2,898人 | 公94%/私6%)</option>
+                <option value="動力機械群">動力機械群 - 汽車/飛機修護/重機 (2,066人 | 公54%/私46%)</option>
+                <option value="土木與建築群">土木與建築群 - 建築/土木/消防工程 (1,025人 | 公95%/私5%)</option>
+                <option value="化工群">化工群 - 化工/環境檢驗/衛生化工 (651人 | 100%公立)</option>
+              </optgroup>
+              <optgroup label="【家政幼保美容與餐旅設計類 (私立優勢)】">
+                <option value="餐旅群">餐旅群 - 餐飲管理/觀光事業/烘焙餐飲 (5,898人 | 私76%/公24%)</option>
+                <option value="家政群">家政群 - 幼兒保育/照顧服務/時尚造型/家政 (2,589人 | 私63%/公37%)</option>
+                <option value="美容造型群">美容造型群 - 美容科/美髮/美顏技術 (458人 | 私93%/公7%)</option>
+                <option value="設計群">設計群 - 室內設計/多媒體/廣告設計/美工 (2,824人 | 公64%/私36%)</option>
+                <option value="藝術群">藝術群 - 表演藝術/影劇/音樂/電影電視 (743人 | 私79%/公21%)</option>
+              </optgroup>
+              <optgroup label="【商管外語、食品農業與海事服務類】">
+                <option value="商業與管理群">商業與管理群 - 商經/資處/會計/電商/國貿 (4,980人 | 公76%/私24%)</option>
+                <option value="食品群">食品群 - 食品加工/烘焙食品/食品科 (1,613人 | 公53%/私47%)</option>
+                <option value="農業群">農業群 - 園藝/農場經營/畜產保健/造園 (1,030人 | 公65%/私35%)</option>
+                <option value="外語群">外語群 - 應用英語/應用日語科 (965人 | 公60%/私40%)</option>
+                <option value="服務群">服務群 - 綜合職能/門市服務/居家服務 (461人 | 公89%/私11%)</option>
+                <option value="海事群">海事群 - 輪機/航海/船舶機電 (176人 | 100%公立)</option>
+                <option value="水產群">水產群 - 水產養殖/漁業科 (51人 | 100%公立)</option>
+              </optgroup>
+              <optgroup label="【國民中學五專生源池 (對接：護理科/醫技科/環境工程與衛生科/應外科)】">
+                <option value="國中部">國民中學 - 獨立國中＋附設國中部 (61,551人｜五專護理/醫技/環境工程與衛生科/應外)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">⑥ 學年度基準：</label>
+            <select id="filter-year" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="114">114 學年度 (最新官方實績)</option>
+              <option value="113">113 學年度 (同期比較基準)</option>
+              <option value="115">115 學年度 (核定名額預估)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Core Pillar KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-800"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度一：高級中等學校規模與公私立比</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-schools" class="text-2xl sm:text-3xl font-bold text-slate-900">231</span>
+            <span class="text-xs font-medium text-slate-500">所高中職</span>
+          </div>
+          <div id="kpi-schools-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span class="font-semibold text-blue-800">公立 153 所 (66.2%)</span>
+            <span class="font-semibold text-amber-700">私立 78 所 (33.8%)</span>
+          </div>
+          <div id="kpi-schools-gov" class="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-500">
+            設立別：國立 73 / 市立 55 / 縣立 11 / 公立 14 / 私立 78
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度二：高中職新生入學規模與公私比</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-students" class="text-2xl sm:text-3xl font-bold text-indigo-950">72,992</span>
+            <span id="kpi-students-unit" class="text-xs font-medium text-slate-500">人 (114高一新生)</span>
+          </div>
+          <div id="kpi-students-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span>公立：49,794人 (68.2%)</span>
+            <span>私立：23,198人 (31.8%)</span>
+          </div>
+          <div id="kpi-students-trend" class="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
+            <span>113年：76,037人 | 115預估：72,491人</span>
+            <span class="text-rose-600 font-bold">年增減 -4.0%</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-600"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度三：國民中學規模與公私/屬性結構</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-jh-schools" class="text-2xl sm:text-3xl font-bold text-emerald-900">208</span>
+            <span class="text-xs font-medium text-slate-500">所國中校部</span>
+          </div>
+          <div id="kpi-jh-schools-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span class="font-semibold text-emerald-800">公立 164 所 (78.8%)</span>
+            <span class="font-semibold text-amber-700">私立 44 所 (21.2%)</span>
+          </div>
+          <div id="kpi-jh-schools-type" class="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-500">
+            屬性：獨立國民中學 105 所 / 高中附設國中部 103 所
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度四：國中新生池與獨立/附設結構</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-jh" class="text-2xl sm:text-3xl font-bold text-slate-900">61,551</span>
+            <span id="kpi-jh-unit" class="text-xs font-medium text-slate-500">人 (114國一新生合計)</span>
+          </div>
+          <div id="kpi-jh-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span>公立：50,800人 (82.5%)</span>
+            <span>私立：10,751人 (17.5%)</span>
+          </div>
+          <div id="kpi-jh-detail" class="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
+            <span>獨立國中：39,750人</span>
+            <span>附設國中部：21,801人</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 id="left-chart-title" class="text-sm font-bold text-slate-800">各縣市「國高中職 × 公私立別」入學新生人數結構對比</h3>
+              <p class="text-xs text-slate-500">可由下方按鈕或下拉選單切換「公私立人數」、「公私立校數」或「113–115趨勢」</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="left-chart-select" class="text-xs border border-blue-300 rounded-lg px-2.5 py-1.5 bg-blue-50 font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+                <option value="own_stu">📊 檢視：公私立入學人數 (高中職+國中)</option>
+                <option value="hs_own_stu">📊 檢視：高中職公私立入學人數</option>
+                <option value="jh_own_stu">📊 檢視：國中公私立入學人數 (獨立/附設)</option>
+                <option value="own_sch">🏫 檢視：公私立學校數對比 (所)</option>
+                <option value="year_trend">📈 檢視：113–115 三學年人數趨勢</option>
+              </select>
+              <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                <button data-left-mode="own_stu" class="left-chart-btn px-2.5 py-1 rounded-md text-xs font-bold bg-blue-800 text-white shadow-sm transition">公私人數</button>
+                <button data-left-mode="own_sch" class="left-chart-btn px-2.5 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 transition">公私校數</button>
+                <button data-left-mode="year_trend" class="left-chart-btn px-2.5 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 transition">113-115趨勢</button>
+              </div>
+            </div>
+          </div>
+          <div class="relative h-80">
+            <canvas id="chart-county-trend"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 id="right-chart-title" class="text-sm font-bold text-slate-800">各群科/科別差異 × 公私立生源結構分佈 (18大群別)</h3>
+              <p class="text-xs text-slate-500">可由下方按鈕或下拉選單切換「18大科別群組(公vs私)」、「學校屬性類型」或「校數」</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="right-chart-select" class="text-xs border border-blue-300 rounded-lg px-2.5 py-1.5 bg-blue-50 font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+                <option value="cluster_stu">🔬 依 18 大群科/科別差異 (公立 vs 私立人數)</option>
+                <option value="cluster_sch">🔬 依 18 大群科/科別差異 (公立 vs 私立開課校數)</option>
+                <option value="stu">🏛️ 依 9 大學校屬性類型 (公立 vs 私立人數)</option>
+                <option value="sch">🏛️ 依 9 大學校屬性類型 (公立 vs 私立校數)</option>
+              </select>
+              <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                <button data-right-mode="cluster_stu" class="right-chart-btn px-2.5 py-1 rounded-md text-xs font-bold bg-blue-800 text-white shadow-sm transition">依群科/科別差異</button>
+                <button data-right-mode="stu" class="right-chart-btn px-2.5 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 transition">依屬性類型(人)</button>
+                <button data-right-mode="sch" class="right-chart-btn px-2.5 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 transition">依校數(所)</button>
+              </div>
+            </div>
+          </div>
+          <div class="relative h-80">
+            <canvas id="chart-school-type"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE 1: Regional Summary Table (High School + Junior High + Ownership + Attributes) -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">一、中南部及離島 8 縣市「高中職 × 國中」公私立校數、屬性結構與入學人數總覽表</h3>
+            <p class="text-xs text-slate-500">同時呈現各縣市高中職(231所)與國中(208所)之公私立校數、屬性類型分佈、113–115入學人數與策略定位（可使用右側下拉選單或點擊縣市列篩選）</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="t1-county-select" class="text-xs border border-blue-300 rounded-lg px-2.5 py-1.5 bg-blue-50 font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+              <option value="ALL">📍 縣市篩選：全部八縣市 (439校)</option>
+              <option value="高雄市">高雄市 (高中職55 + 國中39)</option>
+              <option value="屏東縣">屏東縣 (高中職19 + 國中23)</option>
+              <option value="臺南市">臺南市 (高中職48 + 國中35)</option>
+              <option value="嘉義市">嘉義市 (高中職12 + 國中11)</option>
+              <option value="嘉義縣">嘉義縣 (高中職9 + 國中12)</option>
+              <option value="雲林縣">雲林縣 (高中職22 + 國中20)</option>
+              <option value="臺中市">臺中市 (高中職53 + 國中52)</option>
+              <option value="臺東縣">臺東縣 (高中職11 + 國中10)</option>
+              <option value="澎湖縣">澎湖縣 (高中職2 + 國中8)</option>
+            </select>
+            <select id="t1-own-select" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 bg-slate-50 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+              <option value="ALL">🏛️ 公私立：全部顯示</option>
+              <option value="公立">僅顯示公立 (317校)</option>
+              <option value="私立">僅顯示私立 (122校)</option>
+              <option value="國立">僅顯示國立 (79校)</option>
+              <option value="市立">僅顯示市立 (156校)</option>
+              <option value="縣立">僅顯示縣立 (61校)</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-3 px-3 font-semibold">縣市名稱</th>
+                <th class="py-3 px-2.5 font-semibold text-right">高中職校數<br><span class="text-[10px] font-normal text-slate-300">(公立 / 私立)</span></th>
+                <th class="py-3 px-2.5 font-semibold">高中職屬性類型結構<br><span class="text-[10px] font-normal text-slate-300">(普通/技術/兼設/綜高實驗)</span></th>
+                <th class="py-3 px-2.5 font-semibold text-right">高中職113入學</th>
+                <th class="py-3 px-2.5 font-semibold text-right">高中職114入學<br><span class="text-[10px] font-normal text-blue-200">(公立 / 私立人數)</span></th>
+                <th class="py-3 px-2.5 font-semibold text-right">高中職115預估</th>
+                <th class="py-3 px-2 font-semibold text-right">114年增減</th>
+                <th class="py-3 px-2.5 font-semibold text-right bg-emerald-950/60">國中校數<br><span class="text-[10px] font-normal text-emerald-200">(公立 / 私立)</span></th>
+                <th class="py-3 px-2.5 font-semibold bg-emerald-950/60">國中屬性類型<br><span class="text-[10px] font-normal text-emerald-200">(獨立國中 / 附設國中部)</span></th>
+                <th class="py-3 px-2.5 font-semibold text-right bg-emerald-950/60">國中114新生<br><span class="text-[10px] font-normal text-emerald-200">(公立 / 私立人數)</span></th>
+                <th class="py-3 px-3 font-semibold">輔英招生策略分級</th>
+              </tr>
+            </thead>
+            <tbody id="table-county-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+            <tfoot id="table-county-foot" class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLE 2 (NEW): Department & Cluster Differences x Public/Private Cross-Tabulation -->
+      <div class="bg-white rounded-xl border-2 border-blue-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-blue-50/70 to-indigo-50/50 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-blue-800 text-white rounded-md">科別差異 × 公私立生態</span>
+              <h3 class="text-sm font-bold text-slate-900">二、各縣市國高中職「科別 / 群別差異性 × 公私立結構」交叉分析樞紐表</h3>
+              <span id="cluster-table-scope-badge" class="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-800 rounded-full">目前範圍：全部八縣市</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-1">
+              揭示<strong>「公立學校主導科別（如機械94%公、土木95%公、化工100%公、商管76%公、普通科77%公）」</strong>與<strong>「私立學校主導科別（如美容造型93%私、餐旅76%私、家政幼保63%私、藝術79%私）」</strong>之結構性差異，可使用右側下拉選單篩選！
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="t2-dom-select" class="text-xs border border-blue-300 rounded-lg px-2.5 py-1.5 bg-white font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+              <option value="ALL">🔬 科別生態篩選：全部群科 (18群+國中)</option>
+              <option value="PUB">🔵 公立主導科別 (公立佔比 ≥ 65%)</option>
+              <option value="PRIV">🟠 私立主導科別 (私立佔比 ≥ 60%)</option>
+              <option value="BAL">🟢 公私均衡競爭科別 (公私各半)</option>
+            </select>
+            <select id="t2-cluster-select" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer">
+              <option value="ALL">📚 單一群別：全部顯示</option>
+              <option value="學術群">學術群 (普通科/資優班)</option>
+              <option value="電機與電子群">電機與電子群 (資訊/電機/電子)</option>
+              <option value="餐旅群">餐旅群 (餐飲/觀光/烘焙)</option>
+              <option value="商業與管理群">商業與管理群 (商經/資處/國貿)</option>
+              <option value="機械群">機械群 (機械/製圖/機電)</option>
+              <option value="設計群">設計群 (廣告/多媒體/室設)</option>
+              <option value="家政群">家政群 (美容/幼保/照服/時尚)</option>
+              <option value="動力機械群">動力機械群 (汽車/飛機修護)</option>
+              <option value="食品群">食品群 (烘焙食品/食品加工)</option>
+              <option value="農業群">農業群 (寵物經營/畜產/園藝)</option>
+              <option value="土木與建築群">土木與建築群 (建築/土木)</option>
+              <option value="外語群">外語群 (應英/應日)</option>
+              <option value="藝術群">藝術群 (多媒體動畫/表演藝術)</option>
+              <option value="化工群">化工群 (化工/紡織/染整)</option>
+              <option value="服務群">服務群 (綜合職能/餐飲服務)</option>
+              <option value="美容造型群">美容造型群 (美顏/美髮技術)</option>
+              <option value="海事水產群">海事與水產群 (輪機/養殖)</option>
+              <option value="國中部">國民中學部 (五專：護理科/醫技科/環境工程與衛生科/應外科)</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-3 px-3 font-semibold">群別 / 學制分類</th>
+                <th class="py-3 px-3 font-semibold">涵蓋代表科別明細 (依教育部科別代碼展開)</th>
+                <th class="py-3 px-2.5 font-semibold text-right">開設校數<br><span class="text-[10px] font-normal text-slate-300">(公立 / 私立)</span></th>
+                <th class="py-3 px-2.5 font-semibold text-right">113入學(人)</th>
+                <th class="py-3 px-2.5 font-semibold text-right">114入學(人)</th>
+                <th class="py-3 px-3 font-semibold min-w-[200px]">114 公立 vs 私立學生數差異比</th>
+                <th class="py-3 px-2.5 font-semibold text-center">公私立科別生態定位</th>
+                <th class="py-3 px-2.5 font-semibold text-right">114公私校均人數</th>
+                <th class="py-3 px-2 font-semibold text-right">114增減率</th>
+                <th class="py-3 px-3 font-semibold">對接輔英目標系科與公私差異化策略</th>
+              </tr>
+            </thead>
+            <tbody id="table-cluster-diff-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+            <tfoot id="table-cluster-diff-foot" class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLE 3: School Attribute Type x Ownership Cross-Tabulation Table -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-slate-800">三、依「學校屬性類型分類 × 公私立別 × 設立主管」交叉統計樞紐表</h3>
+              <span id="attr-table-scope-badge" class="px-2.5 py-0.5 text-xs font-bold bg-indigo-100 text-indigo-800 rounded-full">目前範圍：全部八縣市</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">完整拆解【高級中等學校 7 大屬性類型】與【國民中學 2 大屬性類型】之公私立校數、國立/市縣立/私立結構與 113–115 入學人數</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="t3-attr-select" class="text-xs border border-indigo-300 rounded-lg px-2.5 py-1.5 bg-indigo-50 font-bold text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer">
+              <option value="ALL">🏫 屬性類型篩選：全部 9 大類型</option>
+              <option value="普通型高級中等學校">① 普通型高級中等學校 (純普通科)</option>
+              <option value="技術型高級中等學校(高職)">② 技術型高級中等學校 (純專業群科高職)</option>
+              <option value="普通型高中(設專業群科)">③ 普通型高中 (兼設專業群科)</option>
+              <option value="技術型高中(設普通科)">④ 技術型高中 (兼設普通科)</option>
+              <option value="綜合型/技術型高級中等學校">⑤ 綜合型/技術型高級中等學校</option>
+              <option value="實驗/單科型高級中等學校">⑥ 實驗/單科型高級中等學校</option>
+              <option value="綜合型高級中等學校">⑦ 綜合型高級中等學校</option>
+              <option value="國民中學">⑧ 國民中學 (獨立國中)</option>
+              <option value="高級中等學校附設國中部">⑨ 高級中等學校附設國中部 (完全中學)</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-3 px-3 font-semibold">學制層級</th>
+                <th class="py-3 px-3 font-semibold">學校屬性類型分類</th>
+                <th class="py-3 px-2.5 font-semibold text-right">學校總數</th>
+                <th class="py-3 px-2.5 font-semibold text-right">公立校數</th>
+                <th class="py-3 px-2.5 font-semibold text-right">私立校數</th>
+                <th class="py-3 px-3 font-semibold">設立主管別細目<br><span class="text-[10px] font-normal text-slate-300">(國立/市立/縣立/公立/私立)</span></th>
+                <th class="py-3 px-2.5 font-semibold text-right">113入學(人)</th>
+                <th class="py-3 px-2.5 font-semibold text-right">114入學(人)</th>
+                <th class="py-3 px-3 font-semibold">114 公立 vs 私立學生數佔比</th>
+                <th class="py-3 px-2.5 font-semibold text-right">115預估(人)</th>
+                <th class="py-3 px-2 font-semibold text-right">114增減率</th>
+                <th class="py-3 px-2 font-semibold text-right">同層級佔比</th>
+                <th class="py-3 px-3 font-semibold">主要生源培育特色與輔英對接管道</th>
+              </tr>
+            </thead>
+            <tbody id="table-attr-type-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+            <tfoot id="table-attr-type-foot" class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLE 4 & TABLE 5: County x Attribute Matrix & Full 439 School Explorer -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="subtab-btn-matrix" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition">
+              四、各縣市 × 國高中職屬性類型 × 公私立 交叉展開矩陣
+            </button>
+            <button id="subtab-btn-roster" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              五、439 所國高中職【公私立 × 屬性類型 × 開設科別】完整名冊檢索器 (<span id="roster-count-badge">439</span> 校部)
+            </button>
+          </div>
+
+          <!-- Controls for Matrix / Roster -->
+          <div id="matrix-controls" class="flex items-center gap-2">
+            <span class="text-xs text-slate-500">矩陣數值顯示：</span>
+            <select id="matrix-cell-mode" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 bg-slate-50 font-semibold text-slate-800">
+              <option value="both">同時顯示：校數 (公/私) ＋ 入學人數</option>
+              <option value="schools">僅顯示：總校數 (公立校數 / 私立校數)</option>
+              <option value="students">僅顯示：入學人數 (公立人數 / 私立人數)</option>
+            </select>
+          </div>
+
+          <div id="roster-controls" class="hidden flex flex-wrap items-center gap-2">
+            <input id="roster-search" type="text" placeholder="搜尋校名、代碼、科別(如:幼兒保育科、美容、化工、資訊)..." class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 w-72 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <select id="roster-limit" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 bg-slate-50 font-medium text-slate-700">
+              <option value="50">顯示前 50 筆</option>
+              <option value="100">顯示前 100 筆</option>
+              <option value="500">顯示全部符合筆數</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sub-panel A: County x Attribute Type x Ownership Matrix -->
+        <div id="subpanel-matrix" class="overflow-x-auto">
+          <div class="px-5 py-2.5 bg-slate-50 border-b border-slate-200 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-2">
+            <span>💡 <strong>矩陣閱讀與互動提示</strong>：每一格皆呈現該縣市在該學校屬性類型之<strong>「校數（公X/私Y）」</strong>與<strong>「入學人數」</strong>。點擊任一儲存格可自動跳轉至「完整名冊檢索器」並列出該分類所有學校！</span>
+          </div>
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-2.5 px-3 font-semibold sticky left-0 bg-slate-800 z-10">縣市名稱</th>
+                <th class="py-2.5 px-2.5 font-semibold text-center border-l border-slate-700 bg-blue-950">① 普通型高中<br><span class="text-[10px] font-normal text-blue-200">(純普通科)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">② 技術型高職<br><span class="text-[10px] font-normal text-blue-200">(純專業群科)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">③ 普通型高中<br><span class="text-[10px] font-normal text-blue-200">(設專業群科)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">④ 技術型高中<br><span class="text-[10px] font-normal text-blue-200">(設普通科)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">⑤ 綜合/技術型<br><span class="text-[10px] font-normal text-blue-200">高級中等學校</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">⑥ 實驗/單科型<br><span class="text-[10px] font-normal text-blue-200">高級中等學校</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-blue-950">⑦ 綜合型高中<br><span class="text-[10px] font-normal text-blue-200">(純學術/專程)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center border-l border-slate-700 bg-slate-900">高中職小計<br><span class="text-[10px] font-normal text-amber-300">(公立 / 私立)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center border-l border-slate-700 bg-emerald-950">⑧ 國民中學<br><span class="text-[10px] font-normal text-emerald-200">(獨立國中)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-emerald-950">⑨ 高中附設國中部<br><span class="text-[10px] font-normal text-emerald-200">(完全中學)</span></th>
+                <th class="py-2.5 px-2.5 font-semibold text-center bg-emerald-900">國中生源小計<br><span class="text-[10px] font-normal text-emerald-200">(公立 / 私立)</span></th>
+              </tr>
+            </thead>
+            <tbody id="table-county-type-matrix-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Sub-panel B: Full 439 School Roster Table -->
+        <div id="subpanel-roster" class="hidden overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-2.5 px-3 font-semibold">縣市</th>
+                <th class="py-2.5 px-2.5 font-semibold">學制層級</th>
+                <th class="py-2.5 px-2.5 font-semibold">學校代碼</th>
+                <th class="py-2.5 px-3 font-semibold">學校名稱</th>
+                <th class="py-2.5 px-2.5 font-semibold text-center">設立主管</th>
+                <th class="py-2.5 px-2.5 font-semibold text-center">公私立別</th>
+                <th class="py-2.5 px-3 font-semibold">學校屬性類型分類</th>
+                <th class="py-2.5 px-3 font-semibold">開設學程 / 班級規模</th>
+                <th class="py-2.5 px-2.5 font-semibold text-right">113入學</th>
+                <th class="py-2.5 px-2.5 font-semibold text-right">114入學(男/女)</th>
+                <th class="py-2.5 px-2.5 font-semibold text-right">115預估</th>
+                <th class="py-2.5 px-2.5 font-semibold text-right">114增減率</th>
+                <th class="py-2.5 px-3 font-semibold">IR 生源屬性備註</th>
+              </tr>
+            </thead>
+            <tbody id="table-school-roster-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 2: 10月 & 2月雙週期自動更新引擎
+    =========================================== -->
+    <section id="tab-scheduler" class="tab-panel hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-6 rounded-2xl shadow-md">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full">Dual-Cycle ETL Pipeline</span>
+            <h2 class="text-lg sm:text-xl font-bold mt-2">每學期 10 月及 2 月自動更新引擎架構設計</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl">
+              針對教育部統計處發布週期（每年 10 月 20 日普查基準日、次年 1 月底至 2 月初上網公告）與輔英科大校內學籍定錨時程，設計雙軌無縫自動化資料管線。
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-sim-oct" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow">
+              ▶ 測試 10 月【第一學期】排程
+            </button>
+            <button id="btn-sim-feb" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow">
+              ▶ 測試 2 月【第二學期】排程
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Cards: October vs February -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- October Engine -->
+        <div class="bg-white rounded-xl border-2 border-amber-500/40 shadow-sm p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-sm">10月</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">第一學期（10月15日 — 10月31日）自動排程</h3>
+                <p class="text-xs text-slate-500">Cron 表達式：<code class="bg-slate-100 px-1.5 py-0.5 rounded text-amber-800 font-mono">0 2 15,25 10 *</code> (每年10月15、25日凌晨執行)</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 rounded-md">校內定錨 + 學校名錄更新</span>
+          </div>
+
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 1：教育部「各級學校名錄及異動一覽表」爬蟲同步</div>
+              <p class="text-xs text-slate-600">教育部於每年 8–10 月發布最新學年學校異動名錄（新設校、改制、停招、合併）。系統自動抓取 8 縣市國高中職最新學校代碼與名稱異動映射表。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 2：輔英科大「10月15日新生學籍定錨」自動串接</div>
+              <p class="text-xs text-slate-600">配合高教深耕與校務基本資料庫 10 月基準日，從輔英教務處學籍系統匯入當學年實際註冊就讀新生名單，完成「一階 → 二階 → 錄取 → 報到 → 實際註冊」五階閉環。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 3：計算當學年度「先導預估入學人數 (Forecast Model)」</div>
+              <p class="text-xs text-slate-600">由於教育部當學年度各校實際新生數需待次年 1 月底公布，10 月份系統自動以「國中畢業生推估模型 + 核定招生名額」先行產出當學年預估生源池，供 11 月招生委員會決策使用。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- February Engine -->
+        <div class="bg-white rounded-xl border-2 border-emerald-500/40 shadow-sm p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm">2月</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">第二學期（2月1日 — 2月15日）自動排程</h3>
+                <p class="text-xs text-slate-500">Cron 表達式：<code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-800 font-mono">0 3 1,5,10 2 *</code> (每年2月1、5、10日凌晨執行)</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md">教育部普查覆寫 + 春季衝刺</span>
+          </div>
+
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 1：教育部 `base2` 高級中等學校科別資料 & 國中校別資料自動擷取</div>
+              <p class="text-xs text-slate-600">教育部固定於每年 1 月底（如 115.01.29）上網公告最新學年度各校科別實際學生數。2 月 1 日排程自動下載 XLSX/CSV，解析 8 縣市各校各科一年級（新生）、二年級、三年級與畢業生確切人數。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 2：預估數自動覆寫為官方實績 ( Forecast → Actual )</div>
+              <p class="text-xs text-slate-600">系統將前一年 10 月的「預估入學人數」自動替換為教育部正式普查實績，並觸發重算「核心統計數據與生源結構摘要」四大模組指標與縣市消長率。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 3：春季招生（四技申請 3 月 / 四技甄選 5 月）目標配額派發</div>
+              <p class="text-xs text-slate-600">根據最新高三在籍人數與群科結構，自動更新各系「重點認養高中職名單」與拜訪優先序（紅黃綠燈預警），直接推送至輔英招生中心教師認養系統。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Pipeline Execution Console -->
+      <div class="bg-slate-900 text-slate-200 rounded-xl border border-slate-800 p-5">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-mono text-slate-400 ml-2">antigravity-etl-runner — bash — 10月/2月排程模擬終端機</span>
+          </div>
+          <span id="console-badge" class="text-xs font-mono text-emerald-400">STATUS: IDLE (READY)</span>
+        </div>
+        <div id="etl-log-output" class="code-block text-slate-300 space-y-1 max-h-56 overflow-y-auto">
+          <div>[SYSTEM] Antigravity Dual-Cycle ETL Engine v2.4 initialized.</div>
+          <div>[CONFIG] Target Regions: 臺中市(06/19), 嘉義縣(10), 嘉義市(20), 雲林縣(09), 臺南市(11/21), 高雄市(12/50), 屏東縣(13), 臺東縣(14), 澎湖縣(16)</div>
+          <div>[READY] 點擊上方「測試 10 月排程」或「測試 2 月排程」按鈕以檢視自動化資料流與檢核日誌...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: 輔英招生系統串接與漏斗分析
+    =========================================== -->
+    <section id="tab-admission" class="tab-panel hidden space-y-6">
+      <!-- Top Explanation Card -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full">Fooyin Admission Linkage</span>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 mt-1">輔英科技大學招生系統串接：111–115 學年度真實漏斗數據驗證</h2>
+          <p class="text-xs text-slate-600 mt-0.5">
+            透過 6 碼教育部學校代碼 (<code class="bg-slate-100 px-1 py-0.5 rounded">school_id</code>) 與模糊校名正規化引擎，將「教育部 8 縣市生源母體」與「輔英四技甄選 / 四技申請招生系統」無縫串接。
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-funnel-zx" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition">
+            四技甄選入學 (111-115)
+          </button>
+          <button id="btn-funnel-sq" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            四技申請入學 (111-115)
+          </button>
+        </div>
+      </div>
+
+      <!-- Funnel Chart & Table Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 id="funnel-chart-title" class="text-sm font-bold text-slate-800 mb-1">四技甄選入學：近 5 年 (111-115) 報名至報到漏斗趨勢</h3>
+          <p id="funnel-chart-sub" class="text-xs text-slate-500 mb-4">對應管道階段：一階報名 → 二階報名 → 錄取(正備取) → 最終報到</p>
+          <div class="relative h-72">
+            <canvas id="chart-admission-funnel"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 id="funnel-table-title" class="text-sm font-bold text-slate-800 mb-1">輔英招生系統各階段人數與轉化率明細</h3>
+            <p class="text-xs text-slate-500 mb-3">已內建學校代碼正規化與報到狀態判定規則（已確認 OR 聯合會系統=已報到）</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr id="funnel-table-head" class="bg-slate-800 text-white">
+                    <!-- Dynamic headers -->
+                  </tr>
+                </thead>
+                <tbody id="funnel-table-body" class="divide-y divide-slate-200">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3.5 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-slate-700 space-y-1">
+            <div class="font-bold text-blue-950">🔗 資料庫串接關鍵邏輯 (Entity Resolution & Join Key)：</div>
+            <div>1. <strong>申請入學串接鍵</strong>：直接以 <code class="bg-white px-1 rounded">畢業學校代碼</code> 對接教育部 `base2` 之 6 碼 <code class="bg-white px-1 rounded">學校代碼</code>。</div>
+            <div>2. <strong>甄選入學串接鍵</strong>：以 <code class="bg-white px-1 rounded">集體報名學校/就讀學校</code> + <code class="bg-white px-1 rounded">郵遞區號</code> + <code class="bg-white px-1 rounded">甄選群(類)別代碼</code> 透過校名別名庫 (`School_Alias_Map`) 對接教育部科別資料。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schema Mapping Diagram -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-800 mb-3">教育部公開資料庫 × 輔英招生系統 × 教務學籍系統 三方串接 ER 架構</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-blue-900 text-sm">① 教育部生源母體庫 (MOE)</span>
+              <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-mono">dim_school_moe</span>
+            </div>
+            <ul class="space-y-1 text-slate-600 font-mono text-xs">
+              <li>🔑 school_code (6碼主鍵, 如 120301)</li>
+              <li>• county_code / county_name (8縣市)</li>
+              <li>• ownership_type (公立 / 私立)</li>
+              <li>• school_category (普通/技術/綜合/國中)</li>
+              <li>• dept_group_code (職群代碼 01-20)</li>
+              <li>• g1_students_113 / 114 / 115_est</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-indigo-900 text-sm">② 校名與群科映射中樞 (Bridge)</span>
+              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-mono">bridge_school_alias</span>
+            </div>
+            <ul class="space-y-1 text-slate-700 font-mono text-xs">
+              <li>🔗 raw_school_name (如 "私立樹德家商")</li>
+              <li>🔑 canonical_school_code ("501402")</li>
+              <li>• zip_code_prefix (郵遞區號前3碼校驗)</li>
+              <li>• tv_group_to_moe_cluster (群類映射)</li>
+              <li>• feeder_tier (核心生源/潛力生源/流失預警)</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-900 text-sm">③ 輔英招生與學籍庫 (Fooyin)</span>
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-mono">fact_admission_funnel</span>
+            </div>
+            <ul class="space-y-1 text-slate-700 font-mono text-xs">
+              <li>🔑 academic_year + channel (甄選/申請)</li>
+              <li>🔗 school_code + fooyin_dept_code</li>
+              <li>• step1_cnt / step2_cnt / admitted_cnt</li>
+              <li>• confirmed_cnt (已確認 OR 聯合會已報到)</li>
+              <li>• enrolled_oct_cnt (10月學籍定錨實到數)</li>
+              <li>• penetration_rate (本校報到 / 該校高三池)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 4: Antigravity IDE 系統藍圖與 Agent 指令
+    =========================================== -->
+    <section id="tab-antigravity" class="tab-panel hidden space-y-6">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <span class="px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">Antigravity IDE Workspace Spec</span>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 mt-1">進入 Antigravity IDE 專案目錄架構與 Agent 自動化開發指令</h2>
+            <p class="text-xs text-slate-500">可直接複製下方提示詞 (Prompt) 或專案結構至 Antigravity IDE 啟動 Multi-Agent 自動建置</p>
+          </div>
+          <button id="btn-copy-prompt" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+            <span>📋 複製 Antigravity Agent 啟動提示詞</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Workspace Tree -->
+          <div class="lg:col-span-5 bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
+            <div class="text-blue-400 font-bold mb-2"># Antigravity IDE 標準專案目錄樹</div>
+            <pre class="overflow-x-auto text-slate-300">fooyin-ir-admission-system/
+├── .antigravity/
+│   ├── rules.md               # 校務研究IR業務規則與報到判定規範
+│   ├── agents.yaml            # 定義 ETL-Agent, IR-Analyst, UI-Agent
+│   └── workflows/
+│       ├── sync_oct_10.yaml   # 每年10月名錄與新生學籍定錨工作流
+│       └── sync_feb_02.yaml   # 每年2月教育部base2普查覆寫工作流
+├── backend/
+│   ├── app/
+│   │   ├── main.py            # FastAPI 核心服務入口
+│   │   ├── scheduler.py       # APScheduler / Celery (10月 & 2月排程)
+│   │   ├── models/
+│   │   │   ├── moe_school.py  # 教育部8縣市國高中職模型
+│   │   │   └── admission.py   # 輔英甄選/申請漏斗模型
+│   │   ├── etl/
+│   │   │   ├── moe_crawler.py # 自動抓取教育部統計處XLSX/CSV
+│   │   │   ├── school_matcher.py # 6碼代碼與模糊校名正規化
+│   │   │   └── fooyin_parser.py  # 甄選4階与申請3階解析器
+│   │   └── services/
+│   │       └── summary_engine.py # 4大核心統計摘要生成引擎
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ExecutiveSummary.tsx # 本案核心統計數據與生源結構摘要
+│   │   │   ├── CountyMatrixTable.tsx # 8縣市生源消長矩陣
+│   │   │   └── AdmissionFunnel.tsx   # 輔英招生系統連動漏斗
+└── database/
+    ├── migrations/
+    └── seeds/
+        └── 114_base2_8counties.xlsx  # 初始種子資料</pre>
+          </div>
+
+          <!-- Antigravity Prompt Box -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex-1 flex flex-col">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700">🚀 Antigravity IDE 專用系統建置 Prompt (可直接貼入 Agent 視窗)</span>
+                <span class="text-xs text-slate-400">支援 Claude / Gemini Pro Agent Mode</span>
+              </div>
+              <textarea id="antigravity-prompt-text" readonly class="w-full flex-1 min-h-[260px] p-3 text-xs font-mono bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none">請在 Antigravity IDE 中為「輔英科技大學校務研究(IR)與招生中心」建立一套全自動生源分析與招生串接系統 (fooyin-ir-admission-system)：
+
+1. 【地理與學校性質範圍】：
+   鎖定中南部及離島 8 縣市（臺中市 06/19、嘉義縣 10、嘉義市 20、雲林縣 09、臺南市 11/21、高雄市 12/50、屏東縣 13、臺東縣 14、澎湖縣 16）之國高中職。依《高級中等教育法》第5條區分：普通型高中、技術型高中(高職)、綜合型高中、實驗/單科型高中及國民中學(含完全中學附設國中部)。
+
+2. 【每學期 10 月及 2 月雙週期自動更新引擎 (APScheduler / Cron)】：
+   - 10月排程 (第一學期 10/15-10/31)：自動抓取教育部最新學年「各級學校名錄及異動一覽表」，並串接輔英教務處 10/15 新生學籍定錨名單，同時以人口模型推估當學年度先導新生數。
+   - 2月排程 (第二學期 2/1-2/15)：自動從教育部統計處下載1月底最新公告之「高級中等學校科別資料 (base2.xlsx)」與「國民中學校別資料」，將預估數自動覆寫為官方實際入學人數，並觸發春季招生拜訪預警。
+
+3. 【「本案核心統計數據與生源結構摘要」自動化生成架構】：
+   實作 SummaryEngine 服務，自動聚合並輸出四大決策模組：
+   (1) 涵蓋學校規模與公私立比（如 231 所高中職：公立 153 所、私立 78 所；國中 208 所）。
+   (2) 入學人數規模與消長趨勢（113、114 實際入學與 115 預估入學之年增減率與性別比）。
+   (3) 區域生源聚落分佈（計算中、高、南三大主力都會區佔比與次級重點區滲透率）。
+   (4) 學校性質結構分類（普通科 vs 專業群科生源池對比）。
+
+4. 【與輔英科技大學招生系統深度串接】：
+   - 支援匯入與 API 串接「四技甄選入學（一階→二階→錄取→報到）」及「四技申請入學（一階→二階→錄取→報到，判定條件：報到狀態='已確認' OR 聯合會系統/招生中心註記='已報到'）」。
+   - 建立 SchoolMatcher 校名正規化模組，將報名資料中之學校名稱與 6 碼教育部學校代碼綁定，自動計算各高中職對輔英各系之「報名轉換率」、「報到率」與「市場滲透率」。</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="font-bold text-blue-900">Phase 1：基礎資料層</div>
+                <div class="text-slate-600 mt-0.5">匯入 8 縣市 231 所高中職與 111-115 歷年甄選/申請檔案建立 PostgreSQL 基線。</div>
+              </div>
+              <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <div class="font-bold text-indigo-900">Phase 2：排程與串接層</div>
+                <div class="text-slate-600 mt-0.5">部署 10 月與 2 月雙週期爬蟲與輔英招生系統 API / 批次匯入轉接頭。</div>
+              </div>
+              <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <div class="font-bold text-emerald-900">Phase 3：決策看板層</div>
+                <div class="text-slate-600 mt-0.5">提供研發處(IR)、招生中心與各系認養教師紅黃綠燈生源預警及報表匯出。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         TAB 5: 五專/四技精準招生決策矩陣 (距離×群科×系科對接)
+    =========================================== -->
+    <section id="tab-focus-matrix" class="tab-panel hidden space-y-6">
+      <!-- Top Banner -->
+      <div class="bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 text-white p-6 rounded-2xl shadow-md">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30 rounded-full">Precision Enrollment Matrix (五專 × 四技雙軌聚焦)</span>
+            <h2 class="text-lg sm:text-xl font-bold mt-2">輔英科技大學「五專＋四技」六大精準招生決策要素與系科對接引擎</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-4xl">
+              突破傳統「僅看各縣市國高中總人數變化」之盲點，整合<strong>①地理距離與通勤圈</strong>、<strong>②學校群科特質(工科/商管/家政醫護/農生/餐旅)</strong>、<strong>③輔英相對應系科(四技13系+五專部【護理科、醫學檢驗生物技術科、環境工程與衛生科(環工科)、應用外語科】)</strong>、<strong>④完全中學直升耗損率</strong>、<strong>⑤五專升四技留校銜接率</strong>及<strong>⑥競校磁吸與認養教師ROI</strong>，讓招生委員會精準聚焦資源投放。
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <select id="matrix-domain-filter" class="text-xs sm:text-sm bg-slate-800 text-white border border-slate-600 rounded-xl px-3.5 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400">
+              <option value="ALL">全部領域特質 (8縣市 72,992 高一生 / 61,551 國中生)</option>
+              <option value="HEALTH">① 醫護與家政幼保美群 (對接：護理/物治/健美/幼保/高齡)</option>
+              <option value="ENG">② 工科與電資環安化工群 (對接：四技環工/應化/職安/資科 ＋ 五專環境工程與衛生科)</option>
+              <option value="MGMT">③ 商管與餐旅服務群 (對接：健管/休憩/資科)</option>
+              <option value="AGRI">④ 農業與食品生技群 (對接：保健營養/生技綠產)</option>
+              <option value="JUNIOR">⑤ 國民中學五專生源池 (對接：五專部護理科/醫技科/環境工程與衛生科(環工科)/應外科)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 Strategic Dimensions Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">要素 1：空間距離與通勤圈 (Isochrone)</span>
+            <span class="text-xs font-mono text-slate-400">GIS 權重 25%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            以<strong>輔英科大(高雄市大寮區進學路151號)</strong>為圓心，結合<strong>捷運橘線大寮站(OT1)</strong>與<strong>台88線快速道路</strong>，劃分 4 級通勤圈：<strong>圈層A (≤20分鐘：大寮/鳳山/林園/小港/屏東市)</strong>主攻日間走讀生（如五專環工科高達91.7%生源來自高雄大寮/鳳山/林園圈層）；<strong>圈層B (20-45分鐘：原高雄市區/岡山/東港/潮州)</strong>推捷運接駁專車；<strong>圈層C (45-90分鐘：臺南/恆春/嘉義)</strong>強推保證住宿與交通津貼；<strong>圈層D (>90分鐘：臺中/雲林/臺東/澎湖)</strong>主攻五專公費生、原民專班與特色實習。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">要素 2：高職15群科 × 輔英系科精準對接</span>
+            <span class="text-xs font-mono text-slate-400">群科權重 30%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            不再只看「某校總人數」，而是直接拆解教育部 `base2` 各校<strong>工科(機械/電機/化工 11,727人)</strong>、<strong>管理餐旅(10,878人)</strong>、<strong>家政美容(3,047人)</strong>、<strong>食品農業(2,643人)</strong>及<strong>普通科(38,452人)</strong>，精準配對輔英<strong>環境工程與科學系(含五專部環境工程與衛生科)、應化材料、職安、資科、護理、物治、保健營養、生技、健管、幼保、健美</strong>等系科。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-emerald-900 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">要素 3：五專國中生源與直升扣除率</span>
+            <span class="text-xs font-mono text-slate-400">五專權重 20%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            五專部（<strong>護理科、醫學檢驗生物技術科、環境工程與衛生科(環工科)、應用外語科</strong>）生源來自<strong>國民中學</strong>（其中五專環工科114學年13人成長至115學年23人，主攻完全免試與優先免試）。系統特別標記 8 縣市 103 所「完全中學附設國中部(21,801人)」之<strong>校內直升高中部比率</strong>，將五專入班宣導火力精準集中於「高外流率之公立獨立國中」（如鳳山、大寮、中芸、潮寮、鳳西、青年、明正國中）。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-amber-900 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">要素 4：管道屬性偏好 (甄選 vs 申請 vs 聯登)</span>
+            <span class="text-xs font-mono text-slate-400">轉換權重 10%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            普通型高中生源（36,942人）走<strong>四技申請入學（看重學測級分與學習歷程）</strong>；技術型高職生源（21,291人）走<strong>四技甄選、技優甄審與聯登（看重統測群類與乙丙級證照加分）</strong>。系統自動依學校學程結構分派不同管道之簡章宣導策略。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-purple-900 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">要素 5：醫院公費獎助與產學就業敏感度</span>
+            <span class="text-xs font-mono text-slate-400">誘因權重 10%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            針對屏東偏鄉、臺東、澎湖、雲林、嘉義縣及私立高職弱勢生源，系統納入<strong>「附設醫院與合作醫療院所帶薪實習/公費生名額」</strong>及<strong>「環境檢測/化工半導體產學攜手專班」</strong>媒合指標，大幅提高二階複試後之最終報到率。
+          </p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-rose-900 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">要素 6：競校重疊率與教師認養 ROI 指數</span>
+            <span class="text-xs font-mono text-slate-400">管考權重 5%</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            串接申請入學之 <code class="bg-slate-100 px-1 rounded">已報到校系(組)學程</code> 與 <code class="bg-slate-100 px-1 rounded">認養教師 / 早鳥獎勵教師</code> 欄位，分析各高中職生源最終流向哪些競爭校系，並計算認養教師電訪與入校宣導之<strong>實際報到轉換 ROI</strong>。
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Distance Ring Calculator & Cluster Mapping -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1">📍 空間距離與通勤時間圈層分析 (以大寮校區/捷運OT1站為基準)</h3>
+            <p class="text-xs text-slate-500 mb-3">自動計算各圈層國高中職校數、生源池與歷史報到轉換率</p>
+            <div class="space-y-2.5 text-xs">
+              <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-emerald-950">圈層 A：核心走讀圈 (車程 ≤ 20 分鐘 / ≤ 15 km)</div>
+                  <div class="text-slate-600 mt-0.5">大寮、鳳山、林園、小港、鳥松、大樹、屏東市區 (台88線直達)</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-emerald-800 text-sm">報到轉換率 42.5%</div>
+                  <div class="text-slate-500">主攻：五專日間+四技全系</div>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-blue-950">圈層 B：捷運與校車通勤圈 (20–45 分鐘 / 15–35 km)</div>
+                  <div class="text-slate-600 mt-0.5">三民、苓雅、左營、前鎮、楠梓、岡山、屏東萬丹/潮州/東港</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-blue-800 text-sm">報到轉換率 28.4%</div>
+                  <div class="text-slate-500">主攻：橘線OT1接駁+重點認養</div>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-amber-950">圈層 C：南臺灣住宿生活圈 (45–90 分鐘 / 35–100 km)</div>
+                  <div class="text-slate-600 mt-0.5">臺南市全區、高雄旗美九區、屏東恆春半島、嘉義縣市</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-amber-800 text-sm">報到轉換率 16.8%</div>
+                  <div class="text-slate-500">主攻：大一保證住宿+早鳥獎學金</div>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-purple-950">圈層 D：跨區與離島專案圈 (> 90 分鐘 / > 100 km)</div>
+                  <div class="text-slate-600 mt-0.5">臺中市、雲林縣、臺東縣、澎湖縣</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-purple-800 text-sm">報到轉換率 11.2%</div>
+                  <div class="text-slate-500">主攻：醫護公費班+原民/離島保送</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">📊 8 縣市高職群科特質生源池 × 輔英四技/五專對應規模 (114學年高一實績)</h3>
+              <p class="text-xs text-slate-500">依據教育部 `114_base2` 實際群別資料統計，可隨上方領域選單連動</p>
+            </div>
+          </div>
+          <div class="relative h-72">
+            <canvas id="chart-domain-cluster"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Cross-Mapping Table: School Domain x Fooyin Depts -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">輔英科技大學「五專＋四技」各學院系科 × 國高中職群科特質 × 空間距離 招生聚焦對照表</h3>
+            <p class="text-xs text-slate-500">供招生委員會審視各系科「目標生源群類」、「8縣市高一對應生源池人數」、「主力靶心學校範例」與「差異化招生武器」</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-3 px-3 font-semibold">生源特質領域</th>
+                <th class="py-3 px-3 font-semibold">對應教育部群別 / 學制</th>
+                <th class="py-3 px-3 font-semibold text-right">8縣市高一/國一生源池</th>
+                <th class="py-3 px-3 font-semibold">對接輔英科技大學系科 (四技 / 五專)</th>
+                <th class="py-3 px-3 font-semibold">優先鎖定通勤圈與靶心生源校範例</th>
+                <th class="py-3 px-3 font-semibold">招生會聚焦策略與關鍵誘因</th>
+              </tr>
+            </thead>
+            <tbody id="table-domain-mapping-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ==========================================
+    // 1. REAL VERIFIED DATA (8 Counties: 231 HS + 208 JH & 18 Department Clusters)
+    // ==========================================
+    const CLUSTER_DB = {"clList":[["臺中市","學術群",25,17,8278,4316,8358,4241,7763,4198],["臺中市","外語群",3,6,422,251,343,204,413,250],["臺中市","藝術群",2,2,111,174,143,135,131,135],["臺中市","農業群",3,2,332,196,327,210,308,82],["臺中市","食品群",3,4,148,381,163,342,145,188],["臺中市","餐旅群",5,12,386,1724,386,1604,339,1534],["臺中市","美容造型群",0,3,0,173,0,190,0,155],["臺中市","商業與管理群",6,10,1201,534,1165,479,1149,548],["臺中市","家政群",2,7,170,572,162,569,153,510],["臺中市","設計群",6,7,457,671,496,638,400,617],["臺中市","電機與電子群",7,8,1187,923,1228,887,1102,744],["臺中市","動力機械群",4,4,268,385,278,373,231,294],["臺中市","機械群",8,3,1020,142,1000,152,926,148],["臺中市","化工群",3,1,293,0,264,0,283,11],["臺中市","土木與建築群",5,2,255,52,253,51,208,65],["臺中市","服務群",8,0,146,0,151,0,151,0],["雲林縣","學術群",10,5,1582,632,1615,650,1544,599],["雲林縣","商業與管理群",5,3,362,60,359,33,444,47],["雲林縣","外語群",3,0,80,0,68,0,96,0],["雲林縣","農業群",3,0,134,0,124,0,134,0],["雲林縣","食品群",2,0,122,0,103,0,100,0],["雲林縣","電機與電子群",3,2,263,23,218,19,239,31],["雲林縣","土木與建築群",2,0,111,0,63,0,47,0],["雲林縣","機械群",3,0,231,0,226,0,218,0],["雲林縣","服務群",2,2,39,0,33,0,34,6],["雲林縣","動力機械群",2,2,86,26,64,20,43,35],["雲林縣","化工群",2,1,56,41,39,0,92,69],["雲林縣","設計群",2,0,138,0,136,0,136,0],["雲林縣","家政群",1,2,35,40,35,14,30,60],["雲林縣","餐旅群",0,3,0,181,0,138,0,174],["雲林縣","美容造型群",0,2,0,40,0,31,0,28],["雲林縣","藝術群",0,1,0,41,0,31,0,34],["嘉義縣","食品群",2,1,149,109,141,63,123,32],["嘉義縣","學術群",6,2,545,276,526,256,472,311],["嘉義縣","機械群",2,0,98,0,77,0,81,0],["嘉義縣","動力機械群",2,1,74,21,100,0,50,25],["嘉義縣","電機與電子群",2,1,113,172,99,199,108,175],["嘉義縣","服務群",2,0,22,0,21,0,11,0],["嘉義縣","農業群",1,0,13,0,7,0,24,0],["嘉義縣","餐旅群",0,1,0,68,0,52,0,81],["嘉義縣","商業與管理群",0,1,0,0,0,0,0,18],["臺南市","商業與管理群",13,4,929,71,679,78,877,29],["臺南市","學術群",24,11,5044,2641,5124,2388,4666,2519],["臺南市","設計群",7,3,383,94,307,75,348,53],["臺南市","外語群",3,2,100,64,83,49,93,56],["臺南市","食品群",5,3,229,198,191,166,208,57],["臺南市","機械群",8,0,648,0,579,0,632,0],["臺南市","土木與建築群",6,0,224,0,198,0,184,0],["臺南市","農業群",3,1,158,14,70,7,121,9],["臺南市","餐旅群",7,6,494,503,438,562,434,454],["臺南市","電機與電子群",9,5,741,227,716,185,662,188],["臺南市","化工群",4,0,100,0,89,0,96,0],["臺南市","服務群",7,1,80,0,78,0,90,4],["臺南市","動力機械群",3,4,142,145,143,145,113,156],["臺南市","家政群",4,2,186,136,178,109,174,67],["臺南市","美容造型群",0,1,0,0,0,0,0,10],["高雄市","學術群",34,8,10015,532,9606,492,9050,537],["高雄市","家政群",5,8,293,610,310,726,214,499],["高雄市","設計群",8,4,608,268,643,175,484,224],["高雄市","食品群",2,2,68,171,53,110,45,20],["高雄市","動力機械群",4,6,233,376,237,372,164,476],["高雄市","餐旅群",7,10,305,1768,270,1545,236,1489],["高雄市","農業群",2,3,61,103,50,141,59,6],["高雄市","機械群",5,1,623,23,620,28,489,120],["高雄市","電機與電子群",6,7,927,1156,936,806,745,1042],["高雄市","服務群",5,4,54,83,46,50,60,87],["高雄市","土木與建築群",4,0,270,0,272,0,191,0],["高雄市","化工群",3,0,146,0,138,0,120,0],["高雄市","商業與管理群",5,5,1103,579,990,516,883,474],["高雄市","美容造型群",0,3,0,141,0,161,0,121],["高雄市","外語群",0,3,0,90,0,99,0,138],["屏東縣","學術群",12,4,2065,280,2048,283,2059,324],["屏東縣","商業與管理群",4,2,66,63,65,67,74,33],["屏東縣","餐旅群",4,2,152,220,97,228,95,183],["屏東縣","農業群",2,0,67,0,64,0,55,0],["屏東縣","動力機械群",3,0,134,0,168,0,130,0],["屏東縣","食品群",3,0,106,0,128,0,97,0],["屏東縣","機械群",2,0,114,0,109,0,95,0],["屏東縣","電機與電子群",4,1,236,76,243,58,198,58],["屏東縣","家政群",2,2,38,49,32,56,35,47],["屏東縣","化工群",1,0,31,0,27,0,27,0],["屏東縣","土木與建築群",1,0,126,0,123,0,104,0],["屏東縣","服務群",3,0,43,0,40,0,45,0],["屏東縣","海事群",1,0,49,0,64,0,34,0],["屏東縣","水產群",1,0,21,0,11,0,13,0],["屏東縣","設計群",0,2,0,84,0,70,0,102],["屏東縣","外語群",0,1,0,40,0,31,0,30],["臺東縣","電機與電子群",2,1,61,21,80,10,37,16],["臺東縣","家政群",1,1,47,10,60,13,33,15],["臺東縣","動力機械群",1,0,40,0,39,0,32,0],["臺東縣","農業群",1,0,24,0,30,0,22,0],["臺東縣","機械群",1,1,4,11,6,3,6,17],["臺東縣","土木與建築群",2,0,20,0,30,0,23,0],["臺東縣","設計群",2,1,52,37,45,38,42,51],["臺東縣","服務群",2,0,16,0,17,0,16,0],["臺東縣","學術群",6,1,691,0,683,0,604,17],["臺東縣","餐旅群",4,1,94,13,64,16,94,11],["臺東縣","商業與管理群",3,0,174,0,134,0,161,0],["臺東縣","藝術群",1,0,9,0,16,0,3,0],["臺東縣","外語群",1,0,18,0,23,0,17,0],["臺東縣","水產群",1,0,8,0,0,0,9,0],["臺東縣","美容造型群",0,1,0,13,0,9,0,10],["澎湖縣","商業與管理群",2,0,64,0,68,0,58,0],["澎湖縣","學術群",1,0,228,0,205,0,214,0],["澎湖縣","餐旅群",2,0,66,0,79,0,75,0],["澎湖縣","動力機械群",1,0,11,0,12,0,9,0],["澎湖縣","電機與電子群",1,0,21,0,18,0,22,0],["澎湖縣","水產群",1,0,16,0,18,0,9,0],["澎湖縣","海事群",1,0,58,0,69,0,44,0],["澎湖縣","食品群",1,0,9,0,21,0,8,0],["澎湖縣","服務群",1,0,4,0,6,0,7,0],["嘉義市","學術群",5,5,1493,501,1499,478,1488,501],["嘉義市","設計群",3,2,186,24,183,18,169,49],["嘉義市","商業與管理群",2,2,339,95,337,10,338,43],["嘉義市","餐旅群",2,2,95,302,95,324,80,231],["嘉義市","外語群",2,0,75,0,65,0,71,0],["嘉義市","電機與電子群",1,1,197,224,199,211,186,85],["嘉義市","機械群",1,0,141,0,98,0,150,0],["嘉義市","動力機械群",1,1,54,44,70,45,49,21],["嘉義市","土木與建築群",1,0,46,0,35,0,49,0],["嘉義市","化工群",1,0,86,0,94,0,92,0],["嘉義市","服務群",2,0,22,0,19,0,21,0],["嘉義市","家政群",1,2,154,98,185,140,121,124],["嘉義市","美容造型群",1,1,11,26,32,35,15,34],["嘉義市","食品群",1,1,62,50,61,71,56,0],["嘉義市","藝術群",0,1,0,19,0,17,0,21],["臺南市","水產群",1,0,35,0,22,0,15,0],["臺南市","海事群",1,0,45,0,43,0,40,0],["臺南市","藝術群",0,1,0,49,0,41,0,70],["高雄市","藝術群",0,2,0,356,0,360,0,289]],"topDepts":{"學術群":"普通科(33,514人)、綜高1年級(2,242人)、體育班(1,451人)、數理資優班(386人)、美術班(288人)、音樂班(159人)","外語群":"應用英語科(657人)、應用日語科(272人)、外語群不分科(36人)","藝術群":"多媒體動畫科(231人)、表演藝術科(217人)、表演技術科(81人)、音樂科(58人)、美術科(34人)、影劇科(34人)","農業群":"寵物經營科(343人)、畜產保健科(240人)、園藝科(189人)、農場經營科(110人)、園藝技術科(53人)、森林科(34人)","食品群":"烘焙食品科(582人)、食品加工科(510人)、烘焙科(336人)、食品科(102人)、水產食品科(83人)","餐旅群":"餐飲管理科(3,328人)、餐飲技術科(1,038人)、觀光事業科(998人)、烘焙食品科(421人)、餐旅群不分科(55人)、觀光事務科(30人)","美容造型群":"美顏技術科(253人)、美髮技術科(185人)、美容造型科(20人)","商業與管理群":"商業經營科(1,812人)、資料處理科(1,611人)、國際貿易科(769人)、會計事務科(302人)、電子商務科(257人)、商用資訊科(117人)","家政群":"美容科(1,042人)、幼兒保育科(575人)、時尚造型科(269人)、流行服飾科(235人)、照顧服務科(206人)、家政科(161人)","設計群":"廣告設計科(936人)、多媒體設計科(615人)、室內空間設計科(353人)、美工科(324人)、室內設計科(224人)、圖文傳播科(143人)","電機與電子群":"資訊科(2,028人)、電機科(1,916人)、電子科(1,210人)、水電技術科(273人)、冷凍空調科(224人)、電資不分科(118人)","動力機械群":"汽車科(1,546人)、汽車修護科(283人)、飛機修護科(114人)、農業機械科(87人)、塗裝技術科(21人)","機械群":"機械科(1,676人)、電腦機械製圖科(351人)、製圖科(279人)、生物產業機電科(133人)、機械加工科(129人)、板金科(105人)","化工群":"化工科(550人)、紡織科(69人)、染整科(32人)","土木與建築群":"建築科(711人)、土木科(274人)、營造技術科(31人)、消防工程科(9人)","服務群":"綜合職能科(302人)、餐飲服務科(111人)、汽車美容服務科(25人)、門市服務科(23人)","海事群":"輪機科(156人)、航海科(11人)、船舶機電科(9人)","水產群":"水產養殖科(40人)、漁業科(11人)","國中部":"獨立國民中學普通班(39,750人，100%公立)、高級中等學校附設國中部(21,801人，公50.7%/私49.3%)｜直通輔英五專部：護理科、醫技科、環境工程與衛生科(環工科)、應外科"}};
+
+    const clusterStrategyMap = {
+      '學術群': '對接：四技全系【申請入學(學測)】｜鎖定公立普通高中自然/社會組，強打護理、物治、醫技、保健營養國考高通過率',
+      '電機與電子群': '對接：資科系、環工系、職安系、應化系｜公私並重(公61%/私39%)，主推AI智慧醫療資訊、半導體廠務環安與設備工程',
+      '餐旅群': '對接：休憩系、健管系、保健營養系｜高度集中私校(私76%)，主攻高齡康養俱樂部、月子中心餐飲設計與醫院健康餐飲轉型',
+      '商業與管理群': '對接：健管系、資科系、休憩系｜公立高商主導(公76%)，主攻醫療大數據管理、智慧健康產業行銷與數位商務',
+      '機械群': '對接：環工系、職安系、應化系｜公立高工絕對主導(公94%)，主推科技大廠廠務安全衛生管理師與綠能機電環評證照',
+      '設計群': '對接：資科系(多媒體)、健美系、幼保系｜公私均衡(公64%/私36%)，結合數位健康媒體設計、空間無障礙規劃與時尚美學',
+      '家政群': '對接：護理系、高齡長照系、幼保系、健美系｜私立家商主導(私63%)，為輔英醫護幼保美容最核心技職生源池，推公費與技優甄審',
+      '動力機械群': '對接：環工系(空污檢測)、職安系｜公私各半(公54%/私46%)，輔導跨考環境檢測、職業安全與ESG碳盤查實務',
+      '食品群': '對接：保健營養系、生技綠產系｜公私均衡(公53%/私47%)，強打營養師國考、食品檢驗分析乙級證照與保健食品研發',
+      '農業群': '對接：生技綠產系、保健營養系｜公立農工為主(公65%)，主攻伴侶動物保健、精準農業生物科技與綠色循環經濟',
+      '土木與建築群': '對接：環工系、職安系｜公立高工絕對主導(公95%)，主攻營建職安衛管理師、水資源環工技師與綠建築環評',
+      '外語群': '對接：應外科(五專/二技)、健管系(國際醫療)、休憩系｜公私均衡(公60%/私40%)，主打國際醫療觀光與雙語健康商務',
+      '藝術群': '對接：休憩系、健美系、幼保系｜私立藝校/高職主導(私79%)，結合表演藝術療癒、整體造型設計與幼兒律動展演',
+      '化工群': '對接：應化材料系、環境工程與科學系(含五專環工科升二技/四技)、職安系、生技系｜100%公立高工生源，強打半導體特用化學材料、環境水質檢驗與化丙/化乙加分',
+      '服務群': '對接：高齡長照系、休憩系、健美系｜公立特教與高職實用技能班為主(公89%)，提供安心就學獎助與照服員實務銜接',
+      '美容造型群': '對接：健康美容系、高齡長照系｜私立高職絕對主導(私93%)，強打醫學美容諮詢師、芳療SPA與時尚造型雙證照',
+      '海事群': '對接：環境工程與科學系、職安系｜100%公立海事水產學校(東港/澎湖/臺南海事)，主攻海洋環境監測與港灣工業安全',
+      '水產群': '對接：生技綠產系、保健營養系｜100%公立水產學校，主攻水產機能性保健素材萃取與生態養殖生技',
+      '國中部': '對接：【五專部】護理科(996人)、醫學檢驗生物技術科(282人)、應用外語科(99人)、環境工程與衛生科/環工科(36人，114年13人→115年23人成長+77%)｜鎖定獨立公立國中(鳳山/大寮/中芸/潮寮/鳳西國中)與附設國中部外流生源'
+    };
+
+    const funnelData = {
+      zx: {
+        title: '四技甄選入學：近 5 年 (111–115) 報名至報到漏斗趨勢',
+        sub: '對應階段：一階報名 → 二階報名 → 錄取(正備取) → 最終報到（真實檔案核驗數據）',
+        headers: ['學年度', '一階報名(人)', '二階報名(人)', '錄取人數(人)', '最終報到(人)', '一階轉二階率', '二階報到轉化率'],
+        rows: [
+          { year: '111學年度', s1: 793, s2: 422, s3: 171, s4: 161 },
+          { year: '112學年度', s1: 124, s2: 230, s3: 100, s4: 93 },
+          { year: '113學年度', s1: 556, s2: 247, s3: 114, s4: 109 },
+          { year: '114學年度', s1: 399, s2: 162, s3: 162, s4: 86 },
+          { year: '115學年度', s1: 353, s2: 162, s3: 162, s4: 78 }
+        ]
+      },
+      sq: {
+        title: '四技申請入學：近 5 年 (111–115) 報名至報到漏斗趨勢',
+        sub: '對應階段：一階通過 → 二階複試 → 正備取總數 → 最終報到（報到狀態:已確認 或 聯合會/中心:已報到）',
+        headers: ['學年度', '一階篩選(人)', '二階複試(人)', '錄取總數(人)', '確認報到(人)', '二階參與率', '錄取報到率'],
+        rows: [
+          { year: '111學年度', s1: 1349, s2: 656,  s3: 632, s4: 193 },
+          { year: '112學年度', s1: 1282, s2: 1282, s3: 481, s4: 148 },
+          { year: '113學年度', s1: 1085, s2: 1085, s3: 358, s4: 126 },
+          { year: '114學年度', s1: 1083, s2: 1083, s3: 366, s4: 135 },
+          { year: '115學年度', s1: 1061, s2: 1061, s3: 372, s4: 155 }
+        ]
+      }
+    };
+
+    let countyChartInstance = null;
+    let typeChartInstance = null;
+    let funnelChartInstance = null;
+    let leftChartMode = 'own_stu';       // 'own_stu' | 'own_sch' | 'year_trend'
+    let rightChartMode = 'cluster_stu';  // 'cluster_stu' | 'stu' | 'sch'
+
+    const RAW_DB = {"counties":["臺中市","高雄市","臺南市","嘉義市","雲林縣","屏東縣","嘉義縣","臺東縣","澎湖縣"],"govs":["國立","市立","縣立","公立","私立"],"owns":["公立","私立"],"hsTypes":["普通型高級中等學校","技術型高級中等學校(高職)","普通型高中(設專業群科)","技術型高中(設普通科)","綜合型/技術型高級中等學校","實驗/單科型高級中等學校","綜合型高級中等學校"],"hsNotes":["普通高中生源校","主要技職生源校","綜合/實驗教育"],"jhTypes":["國民中學","高級中等學校附設國中部"],"hs":[[0,"060322","國立興大附中",0,0,0,"【學術群】普通科(467)、數理資優班(31)",493,498,306,192,496,0,0],[0,"060323","國立中科實驗高級中學",0,0,5,"【學術群】普通科(128)、雙語部(14)；附設國中部",138,142,97,45,141,1,2],[0,"061310","臺中市大明高中",3,0,2,"【藝術群】多媒體動畫科(80) ｜ 【設計群】美工科(50)、廣告設計科(48) ｜ 【學術群】普通科(29)；附設國中部",221,207,62,145,206,1,0],[0,"061322","華德福大地實驗學校",3,0,5,"【學術群】普通科(15)；附設國中部",10,15,9,6,15,1,2],[0,"063303","市立大甲高中",1,0,2,"【學術群】綜高1年級(406)、體育班(33)、學術社會、學術自然 ｜ 【設計群】美工科(32)、廣告設計、室內設計 ｜ 【土木與建築群】建築技術 ｜ 【商業與管理群】資訊應用",464,471,206,265,469,0,0],[0,"063305","市立清水高中",1,0,0,"【學術群】普通科(458)、音樂班(22)",466,480,229,251,478,0,0],[0,"063312","市立豐原高中",1,0,0,"【學術群】普通科(485)、美術班(20)",513,505,227,278,502,0,0],[0,"063401","市立豐原高商",1,0,3,"【商業與管理群】商業經營科(179)、國際貿易科(122)、資料處理科(117) ｜ 【外語群】應用英語科(64) ｜ 【服務群】綜合職能科(24) ｜ 【學術群】體育班(20)",508,526,214,312,521,0,1],[0,"063402","市立大甲高工",1,0,1,"【土木與建築群】建築科(84) ｜ 【電機與電子群】電機科(72)、電子科(69)、資訊科(37)、電機修護科(33) ｜ 【機械群】機械加工科(67)、機械科(65)、製圖科(33) ｜ 【服務群】餐飲服務科(20)",444,480,417,63,475,0,1],[0,"063404","市立東勢高工",1,0,1,"【動力機械群】汽車科(66) ｜ 【機械群】機械科(63)、製圖科(18)、電腦繪圖科(17) ｜ 【電機與電子群】電機科(60)、電子科(33)、資訊科(28)、水電技術科(12) ｜ 【設計群】室內空間設計科(35)、家具設計科(29)、裝潢技術科 ｜ 【土木與建築群】建築科(34) ｜ 【化工群】化工科(20) ｜ 【服務群】餐飲服務科(12)",477,427,348,79,423,0,1],[0,"063407","市立沙鹿高工",1,0,3,"【機械群】機械科(121)、製圖科(34) ｜ 【動力機械群】汽車科(90) ｜ 【化工群】化工科(70)、紡織科(69)、染整科(32) ｜ 【電機與電子群】電子科(46)、資訊科(33) ｜ 【商業與管理群】資料處理科(32)、商用資訊科(27) ｜ 【服務群】綜合職能科(19) ｜ 【學術群】體育班(17)",572,590,469,121,584,0,1],[0,"063408","市立霧峰農工",1,0,1,"【機械群】機械科(81)、電腦繪圖科(10) ｜ 【電機與電子群】電機科(71)、電子科(69) ｜ 【食品群】食品加工科(44) ｜ 【動力機械群】汽車科(39) ｜ 【餐旅群】餐飲管理科(34) ｜ 【農業群】園藝科(31) ｜ 【服務群】綜合職能科(17)",418,396,329,67,392,0,1],[0,"064308","市立后綜高中",1,0,0,"【學術群】普通科(252)、體育班(38)；附設國中部",292,290,150,140,289,1,0],[0,"064324","市立大里高中",1,0,0,"【學術群】普通科(213)、體育班(52)；附設國中部",255,265,132,133,264,1,0],[0,"064328","市立新社高中",1,0,2,"【學術群】普通科(120)、體育班(45) ｜ 【農業群】園藝科(27)、農場經營科(26) ｜ 【商業與管理群】商業經營科(23)、資料處理科(17)；附設國中部",296,258,141,117,257,1,0],[0,"064336","市立長億高中",1,0,0,"【學術群】普通科(250)、體育班(19)；附設國中部",262,269,156,113,268,1,0],[0,"064342","市立中港高中",1,0,0,"【學術群】普通科(208)、體育班(21)；附設國中部",237,229,103,126,228,1,0],[0,"064350","市立龍津高中",1,0,0,"【學術群】普通科(133)、體育班(24)、美術班(18)；附設國中部",161,175,87,88,174,1,0],[0,"064406","市立神岡高工",1,0,1,"【機械群】機械科(70)、機械加工科(34)；附設國中部",96,104,102,2,103,1,1],[0,"190406","國立興大附農",0,0,2,"【餐旅群】餐飲管理科(95)、觀光事業科(44)、觀光事務科(30)、餐飲技術科(30) ｜ 【農業群】園藝科(77)、農場經營科(63)、畜產保健科(38)、森林科(34)、園藝技術科(31) ｜ 【食品群】食品加工科(67)、烘焙食品科(42) ｜ 【機械群】生物產業機電科(35) ｜ 【家政群】幼兒保育科(35) ｜ 【土木與建築群】土木科(32) ｜ 【服務群】綜合職能科(31) ｜ 【學術群】體育班(17)",690,701,327,374,697,0,0],[0,"191305","臺中市新民高中",3,0,2,"【學術群】普通科(379)、音樂班(8) ｜ 【餐旅群】觀光事業科(133) ｜ 【設計群】多媒體設計科(128)、室內設計科(47)、廣告設計科(44) ｜ 【商業與管理群】商業經營科(124)、國際貿易科(36)、資料處理科(35)、電子商務科(23) ｜ 【電機與電子群】電機科(116)、資訊科(75)、電子科(39) ｜ 【外語群】應用日語科(109)、應用英語科(97) ｜ 【藝術群】表演藝術科(63) ｜ 【機械群】機械科(61)、電腦機械製圖科(22)；附設國中部",1598,1539,824,715,1531,1,0],[0,"193301","市立臺中女中",1,0,0,"【學術群】普通科(585)、數理資優班(29)、人文與社會科學資優班(29)",631,643,0,643,640,0,0],[0,"193302","市立臺中一中",1,0,0,"【學術群】普通科(796)、科學班(30)、數理資優班(29)、美術班(25)、語文資優班(7)",882,887,860,27,883,0,0],[0,"193303","市立忠明高中",1,0,0,"【學術群】普通科(289)、體育班(34)；附設國中部",312,323,159,164,321,1,0],[0,"193313","市立西苑高中",1,0,0,"【學術群】普通科(285)、體育班(48)；附設國中部",334,333,165,168,331,1,0],[0,"193315","市立東山高中",1,0,0,"【學術群】普通科(286)、體育班(50)；附設國中部",330,336,157,179,334,1,0],[0,"193316","市立惠文高中",1,0,0,"【學術群】普通科(360)、體育班(40)；附設國中部",394,400,233,167,398,1,0],[0,"193404","市立臺中家商",1,0,1,"【商業與管理群】商業經營科(164)、資料處理科(113)、國際貿易科(84)、會計事務科(69)、商業事務科 ｜ 【外語群】應用英語科(73) ｜ 【家政群】流行服飾科(69)、幼兒保育科(58) ｜ 【餐旅群】餐飲技術科(20) ｜ 【服務群】餐飲服務科(15) ｜ 【食品群】烘焙食品科(10) ｜ 【設計群】服裝製作科(10)",667,685,218,467,678,0,1],[0,"193407","市立臺中高工",1,0,1,"【機械群】機械科(162)、電腦機械製圖科(71)、板金科(36) ｜ 【電機與電子群】電機科(94)、控制科(76)、資訊科(75)、電子科(74)、冷凍空調科(70)、冷凍空調技術科(36)、電機修護科(10) ｜ 【動力機械群】汽車科(83) ｜ 【化工群】化工科(73) ｜ 【設計群】圖文傳播科(73) ｜ 【土木與建築群】建築科(56)、土木科(40)、營造技術科(7) ｜ 【服務群】綜合職能科(13)",1015,1049,860,189,1039,0,1],[0,"194303","市立臺中二中",1,0,0,"【學術群】普通科(717)、數理資優班(29)、語文資優班(27)、音樂班(19)",795,792,436,356,788,0,0],[0,"194315","市立文華高中",1,0,0,"【學術群】普通科(625)、語文資優班(30)、數理資優班(28)、舞蹈班(19)",703,702,298,404,698,0,0],[0,"061301","財團法人常春藤高中",4,1,2,"【學術群】普通科(138) ｜ 【外語群】應用英語科；附設國中部",166,138,69,69,137,1,0],[0,"061306","私立明台高中",4,1,1,"【餐旅群】餐飲技術科(122)、餐飲管理科 ｜ 【農業群】寵物經營科(81) ｜ 【食品群】烘焙食品科(50) ｜ 【美容造型群】美顏技術科(40)、美髮技術科(33) ｜ 【藝術群】表演技術科(27) ｜ 【設計群】室內設計科(26)",436,379,104,275,375,0,1],[0,"061309","私立致用高中",4,1,2,"【餐旅群】餐飲技術科(104)、餐飲管理科(41) ｜ 【食品群】烘焙食品科(88) ｜ 【電機與電子群】資訊科(82)、水電技術科(65) ｜ 【機械群】機械科(80) ｜ 【家政群】美容科(41)、照顧服務科(17) ｜ 【商業與管理群】資料處理科(37) ｜ 【動力機械群】汽車科(28)、汽車修護科 ｜ 【學術群】普通科",498,583,328,255,580,0,0],[0,"061311","私立嘉陽高中",4,1,0,"【餐旅群】餐飲管理科(47)",69,47,27,20,47,0,0],[0,"061313","私立明道高中",4,1,2,"【學術群】普通科(542) ｜ 【商業與管理群】商業經營科(171) ｜ 【餐旅群】餐飲管理科(135)、觀光事業科(44) ｜ 【設計群】廣告設計科(132)、美工科(92) ｜ 【電機與電子群】電子科(89)、資訊科(88) ｜ 【外語群】應用英語科(84)；附設國中部",1347,1377,672,705,1370,1,0],[0,"061314","私立僑泰高中",4,1,2,"【學術群】普通科(345) ｜ 【餐旅群】餐飲管理科(171)、餐飲技術科(90)、觀光事業科(58) ｜ 【農業群】寵物經營科(129) ｜ 【家政群】美容科(110)、幼兒保育科(45) ｜ 【動力機械群】汽車科(104)、汽車修護科(45) ｜ 【設計群】多媒體設計科(91)、室內設計科(80)、廣告設計科(41) ｜ 【電機與電子群】電子科(75)、資訊科(35) ｜ 【機械群】機械科(70)、機械加工科 ｜ 【美容造型群】美髮技術科(45)、美顏技術科(45) ｜ 【商業與管理群】商業經營科(45)、資料處理科 ｜ 【外語群】應用日語科(33)、應用英語科(28)；附設國中部",1803,1685,835,850,1677,1,0],[0,"061315","私立華盛頓高中",4,1,0,"【學術群】普通科(362)；附設國中部",351,362,174,188,360,1,0],[0,"061316","私立青年高中",4,1,4,"【電機與電子群】資訊科(128)、水電技術科(57) ｜ 【食品群】烘焙食品科(120) ｜ 【動力機械群】汽車科(111) ｜ 【餐旅群】餐飲管理科(62)、烘焙食品科 ｜ 【商業與管理群】商用資訊科(47) ｜ 【學術群】綜高1年級(45)、學術社會、學術自然 ｜ 【藝術群】表演藝術科(45)、多媒體動畫科(42)、音樂科(21) ｜ 【家政群】美容科(42)",683,720,414,306,713,0,1],[0,"061317","私立弘文高中",4,1,0,"【學術群】普通科(533)；附設國中部",524,533,274,259,530,1,0],[0,"061318","私立立人高中",4,1,0,"【學術群】普通科(756)；附設國中部",732,756,351,405,752,1,0],[0,"061319","私立玉山高中",4,1,1,"【家政群】照顧服務科(38)、美容科(10) ｜ 【餐旅群】餐飲管理科(27) ｜ 【商業與管理群】資料處理科(6)",131,81,31,50,80,0,1],[0,"061321","私立慈明高中",4,1,1,"【餐旅群】餐飲管理科(205)、觀光事業科(67)、餐飲技術科(27)、烘焙食品科(23) ｜ 【電機與電子群】資訊科(89) ｜ 【食品群】烘焙食品科(84) ｜ 【家政群】美容科(74)、照顧服務科(18) ｜ 【美容造型群】美顏技術科(27) ｜ 【商業與管理群】電子商務科(18)",724,632,285,347,626,0,1],[0,"061323","私立洛克威爾藝術實驗教育學校",4,1,5,"【學術群】普通科(2)",6,2,1,1,2,0,2],[0,"191301","私立東大附中",4,1,0,"【學術群】普通科(286)；附設國中部",281,286,117,169,285,1,0],[0,"191302","私立葳格高中",4,1,2,"【學術群】普通科(91) ｜ 【餐旅群】餐飲管理科(28)；附設國中部",99,119,62,57,118,1,0],[0,"191308","私立宜寧高中",4,1,2,"【餐旅群】觀光事業科(53)、觀光事務科 ｜ 【電機與電子群】電機科(44)、電子科 ｜ 【學術群】普通科(36) ｜ 【商業與管理群】資料處理科(34)、電子商務科 ｜ 【外語群】應用日語科(21)、應用英語科；附設國中部",257,188,121,67,187,1,0],[0,"191309","私立明德高中",4,1,2,"【學術群】普通科(253) ｜ 【家政群】美容科(117)、幼兒保育科(57) ｜ 【餐旅群】餐飲管理科(98) ｜ 【設計群】多媒體設計科(45)、廣告設計科 ｜ 【商業與管理群】商業經營科(19)；附設國中部",701,589,194,395,586,1,0],[0,"191311","私立衛道高中",4,1,0,"【學術群】普通科(358)；附設國中部",359,358,234,124,356,1,0],[0,"191313","私立曉明女中",4,1,0,"【學術群】普通科(272)；附設國中部",266,272,0,272,271,1,0],[0,"191314","私立嶺東高中",4,1,2,"【學術群】普通科(205) ｜ 【餐旅群】觀光事業科(113)、餐飲管理科(46)、餐飲技術科(43) ｜ 【商業與管理群】商業經營科(102)、資料處理科 ｜ 【設計群】多媒體設計科(87)、廣告設計科(44) ｜ 【電機與電子群】資訊科(81)、電子科(45) ｜ 【動力機械群】汽車科(43)、汽車修護科(42) ｜ 【土木與建築群】建築科(42) ｜ 【外語群】應用英語科(38)；附設國中部",1023,931,514,417,926,1,0],[0,"191315","私立磊川華德福實驗教育學校",4,1,5,"【學術群】普通科(17)；附設國中部",19,17,10,7,17,1,2],[0,"191412","財團法人光華高工",4,1,1,"【電機與電子群】電機科(9) ｜ 【土木與建築群】消防工程科(9) ｜ 【機械群】機械科(2)",19,20,19,1,20,0,1],[3,"200302","國立嘉義女中",0,0,0,"【學術群】普通科(420)、數理資優班(29)、人文與社會科學資優班(27)、舞蹈班(18)、語文資優班",515,494,30,464,492,0,0],[3,"200303","國立嘉義高中",0,0,0,"【學術群】普通科(546)、數理資優班(29)、美術班(24)、科學班(20)、音樂班(18)、語文資優班(12)",669,649,594,55,646,0,0],[3,"200401","國立華南高商",0,0,3,"【學術群】普通科(110) ｜ 【商業與管理群】國際貿易科(35)、資料處理科(33)、電子商務科(32)、商業經營科(31) ｜ 【外語群】應用英語科(34) ｜ 【餐旅群】觀光事業科(28) ｜ 【設計群】廣告設計科(27)、美工科(26)",373,356,159,197,352,0,1],[3,"200405","國立嘉義高工",0,0,3,"【學術群】綜高1年級(97)、體育班(21)、學術社會、學術自然 ｜ 【化工群】化工科(94) ｜ 【電機與電子群】電機科(77)、電子科(62)、電機空調科(28)、水電技術科(23)、微電腦修護科(9)、電機修護科 ｜ 【機械群】機械科(59)、製圖科(30)、電腦繪圖科(9)、機械修護科、電腦輔助機械 ｜ 【設計群】室內空間設計科(52)、裝潢技術科(18) ｜ 【土木與建築群】建築科(35)、建築製圖 ｜ 【動力機械群】汽車科(32)、塗裝技術科(21)、汽車修護科(17) ｜ 【服務群】汽車美容服務科(12)",683,696,563,133,689,0,1],[3,"200406","國立嘉義高商",0,0,3,"【學術群】普通科(128) ｜ 【商業與管理群】國際貿易科(74)、商業經營科(66)、資料處理科(66) ｜ 【設計群】廣告設計科(60) ｜ 【外語群】應用英語科(31)",425,425,127,298,421,0,1],[3,"200407","國立嘉義家職",0,0,1,"【餐旅群】餐飲管理科(67) ｜ 【家政群】時尚造型科(65)、幼兒保育科(55)、流行服飾科(52)、美容科(13) ｜ 【食品群】食品科(61) ｜ 【美容造型群】美顏技術科(32) ｜ 【服務群】綜合職能科(7)",296,352,79,273,348,0,1],[3,"201304","私立興華高中",4,1,2,"【學術群】普通科(55) ｜ 【餐旅群】餐旅群不分科(114學年試辦)(34)、觀光事業科、餐飲管理科 ｜ 【商業與管理群】資料處理科；附設國中部",135,89,59,30,89,1,0],[3,"201310","私立嘉華高中",4,1,0,"【學術群】普通科(193)；附設國中部",189,193,115,78,192,1,0],[3,"201312","私立輔仁高中",4,1,2,"【學術群】普通科(198)；附設國中部",218,198,111,87,197,1,0],[3,"201313","私立宏仁高中",4,1,0,"【學術群】普通科(20)；附設國中部",20,20,8,12,20,1,0],[3,"201314","私立立仁高中",4,1,6,"【學術群】綜高1年級(12) ｜ 【家政群】幼兒保育",8,12,7,5,12,0,2],[3,"201408","私立東吳工家",4,1,1,"【餐旅群】餐飲管理科(220)、餐飲技術科(46)、烘焙食品科(24)、觀光事業科 ｜ 【電機與電子群】資訊科(170)、水電技術科(41) ｜ 【家政群】時尚造型科(122)、幼兒保育科(18) ｜ 【食品群】烘焙科(71) ｜ 【動力機械群】汽車修護科(45)、汽車科 ｜ 【設計群】多媒體技術科(18) ｜ 【美容造型群】美顏技術科(18)、美髮技術科(17) ｜ 【藝術群】表演藝術科(17) ｜ 【商業與管理群】資料處理科(10)",813,837,426,411,829,0,1],[6,"100301","國立東石高中",0,0,2,"【學術群】普通科(73) ｜ 【食品群】食品加工科(64)、食品科(41) ｜ 【電機與電子群】電機科(51) ｜ 【機械群】機械科(47) ｜ 【動力機械群】汽車科(34) ｜ 【服務群】綜合職能科(11)",341,321,219,102,319,0,0],[6,"100302","國立新港藝術高中",0,0,0,"【學術群】普通科(45)",69,45,13,32,45,0,0],[6,"100303","國立嘉科實驗高中",0,0,5,"【學術群】普通科(89)、雙語部；附設國中部",92,89,37,52,89,1,2],[6,"100402","國立民雄農工",0,0,3,"【動力機械群】汽車科(57)、機車修護科(9) ｜ 【電機與電子群】電機科(48) ｜ 【食品群】食品加工科(36) ｜ 【機械群】機械科(20)、生物產業機電科(10) ｜ 【學術群】體育班(18) ｜ 【服務群】餐飲服務科(10) ｜ 【農業群】園藝科(7)",216,215,185,30,213,0,1],[6,"104319","縣立竹崎高中",2,0,0,"【學術群】普通科(106)、體育班(27)、美術班(15)；附設國中部",131,148,84,64,147,1,0],[6,"104326","縣立永慶高中",2,0,0,"【學術群】普通科(128)、體育班(15)、學術性向資優班(10)；附設國中部",165,153,68,85,152,1,0],[6,"101303","私立同濟高中",4,1,0,"普通科、進修部",0,0,0,0,0,0,0],[6,"101304","私立協同高中",4,1,0,"【學術群】普通科(256)；附設國中部",276,256,138,118,255,1,0],[6,"101406","私立萬能工商",4,1,1,"【電機與電子群】資訊科(199) ｜ 【食品群】烘焙科(63) ｜ 【餐旅群】餐飲管理科(52)、餐飲技術科 ｜ 【動力機械群】汽車修護科",370,314,169,145,311,0,1],[4,"090305","國立斗六高中",0,0,0,"【學術群】普通科(427)、數理資優班(29)、體育班(21)、美術班(19)",506,496,266,230,494,0,0],[4,"090306","國立北港高中",0,0,2,"【學術群】普通科(126)、體育班(13) ｜ 【商業與管理群】商業經營科(26)、資料處理科(16)、國際貿易科(6) ｜ 【外語群】應用英語科(5)",198,192,75,117,191,0,0],[4,"090315","國立虎尾高中",0,0,0,"【學術群】普通科(404)、數理資優班(29)、體育班(12)",449,445,216,229,443,0,0],[4,"090401","國立虎尾農工",0,0,1,"【電機與電子群】電機科(68) ｜ 【食品群】食品加工科(67) ｜ 【機械群】機械科(33)、生物產業機電科(29)、電腦機械製圖科(28)、電腦繪圖科(8) ｜ 【農業群】畜產保健科(32)、農業技術科(23) ｜ 【商業與管理群】商業經營科(31) ｜ 【土木與建築群】建築科(28)、營造技術科 ｜ 【服務群】門市服務科(23)",348,370,290,80,366,0,1],[4,"090402","國立西螺農工",0,0,4,"【學術群】綜高1年級(107)、學術社會 ｜ 【電機與電子群】電機科(39)、電子科(35)、電子技術、電機技術 ｜ 【動力機械群】汽車科(37)、汽車技術 ｜ 【食品群】食品加工科(36)、食品加工 ｜ 【農業群】畜產保健科(35) ｜ 【化工群】化工科(33)、化工技術 ｜ 【機械群】機械科(32)、生物產業機電科(31)、機械加工科(28)、電腦機械製圖科(24)、電腦繪圖科、機械技術 ｜ 【商業與管理群】商用資訊科(17)",453,454,348,106,449,0,1],[4,"090403","國立斗六家商",0,0,1,"【設計群】廣告設計科(68) ｜ 【商業與管理群】資料處理科(67)、國際貿易科(65)、商業經營科(24) ｜ 【外語群】應用英語科(63) ｜ 【家政群】幼兒保育科(35)",307,322,90,232,319,0,1],[4,"090404","國立北港農工",0,0,1,"【電機與電子群】電機科(61)、資訊科(10)、微電腦修護科(5) ｜ 【動力機械群】農業機械科(27) ｜ 【農業群】畜產保健科(24)、農場經營科(10) ｜ 【機械群】機械科(13) ｜ 【服務群】餐飲服務科(10) ｜ 【化工群】化工科(6)",220,166,139,27,164,0,1],[4,"090413","國立土庫商工",0,0,1,"【商業與管理群】資料處理科(55)、商業經營科(36)、商用資訊科(11)、會計事務科(5) ｜ 【土木與建築群】建築科(35)、營造技術科 ｜ 【設計群】美工科(35)、廣告設計科(33)",288,210,110,100,208,0,1],[4,"091319","福智高中",3,0,0,"【學術群】普通科(67)；附設國中部",67,67,34,33,67,1,0],[4,"091320","雲林縣維多利亞實驗高中",3,0,5,"【學術群】普通科(37)；附設國中部",43,37,19,18,37,1,2],[4,"094301","縣立斗南高中",2,0,0,"【學術群】普通科(124)、體育班(19)；附設國中部",185,143,73,70,142,1,0],[4,"094307","縣立麥寮高中",2,0,0,"【學術群】普通科(92)、體育班(36)；附設國中部",120,128,78,50,127,1,0],[4,"094308","縣立古坑華德福實驗高級中學",2,0,5,"【學術群】普通科(29)；附設國中部",23,29,15,14,29,1,2],[4,"094326","縣立蔦松藝術高中",2,0,0,"【學術群】普通科(24)；附設國中部",32,24,13,11,24,1,0],[4,"091307","私立永年高中",4,1,0,"【學術群】普通科(105)；附設國中部",130,105,53,52,104,1,0],[4,"091308","私立正心高中",4,1,0,"【學術群】普通科(269)；附設國中部",279,269,149,120,268,1,0],[4,"091311","私立文生高中",4,1,0,"【學術群】普通科(72)；附設國中部",70,72,45,27,72,1,0],[4,"091312","私立巨人高中",4,1,6,"【學術群】綜高1年級(83) ｜ 【化工群】衛生化工 ｜ 【家政群】幼老福利",68,83,20,63,83,0,2],[4,"091316","私立揚子高中",4,1,0,"【學術群】普通科(121)；附設國中部",153,121,65,56,120,1,0],[4,"091318","財團法人義峰高中",4,1,1,"【餐旅群】餐飲技術科(41)、餐飲管理科(31) ｜ 【藝術群】多媒體動畫科(31) ｜ 【美容造型群】美容造型科(20) ｜ 【家政群】照顧服務科(14) ｜ 【商業與管理群】電子商務科",194,137,63,74,136,0,1],[4,"091410","私立大成商工",4,1,1,"【餐旅群】餐飲管理科(24)、餐飲技術科(16) ｜ 【動力機械群】汽車修護科(20) ｜ 【美容造型群】美髮技術科(11) ｜ 【電機與電子群】水電技術科",104,71,41,30,70,0,1],[4,"091414","私立大德工商",4,1,1,"【商業與管理群】資料處理科(33)、電子商務科 ｜ 【餐旅群】餐飲管理科(26) ｜ 【電機與電子群】資訊科(19)、水電技術科",86,78,50,28,77,0,1],[2,"110302","國立新豐高中",0,0,4,"【學術群】綜高1年級(224)、體育班(18)、學術社會、學術自然 ｜ 【商業與管理群】商業經營科(27)、資訊應用、商業服務 ｜ 【設計群】廣告設計",329,269,149,120,266,0,1],[2,"110308","國立臺南大學附中",0,0,4,"【學術群】綜高1年級(353)、普通科(135)、學術社會、學術自然 ｜ 【機械群】電腦製圖 ｜ 【土木與建築群】營建技術 ｜ 【商業與管理群】資訊應用 ｜ 【農業群】園藝與休閒、畜產保健 ｜ 【餐旅群】餐飲技術 ｜ 【食品群】食品加工",502,488,258,230,483,0,1],[2,"110311","國立北門高中",0,0,0,"【學術群】普通科(236)、體育班(29)",324,265,156,109,264,0,0],[2,"110312","國立新營高中",0,0,2,"【學術群】普通科(165)、美術班(24) ｜ 【商業與管理群】商業經營科(34)、電子商務科(17)、資料處理科(14)、流通管理科(7) ｜ 【外語群】應用英語科(16)",326,277,139,138,276,0,0],[2,"110314","國立後壁高中",0,0,2,"【學術群】普通科(46) ｜ 【設計群】多媒體設計科(22)、美工科(20)、室內空間設計科(18)、廣告設計科(5) ｜ 【電機與電子群】電機科(19)、資訊科(12) ｜ 【土木與建築群】建築科(17)",192,159,88,71,158,0,0],[2,"110315","國立善化高中",0,0,0,"【學術群】普通科(178)、體育班(28)",293,206,121,85,205,0,0],[2,"110317","國立新化高中",0,0,0,"【學術群】普通科(391)",404,391,179,212,389,0,0],[2,"110328","國立南科國際實驗高中",0,0,5,"【學術群】普通科(122)、雙語部(16)；附設國中部",142,138,78,60,137,1,2],[2,"110401","國立新化高工",0,0,1,"【電機與電子群】電子科(52)、電機科(33)、資訊科(30)、水電技術科(26) ｜ 【土木與建築群】建築科(34)、營造技術科(24) ｜ 【機械群】機械科(33)、製圖科(33)、電腦繪圖科(17) ｜ 【化工群】化工科(19) ｜ 【商業與管理群】資料處理科(19) ｜ 【服務群】綜合職能科(9)",343,329,276,53,326,0,1],[2,"110403","國立白河商工",0,0,1,"【電機與電子群】水電技術科(21)、電機科(11)、資訊科(10) ｜ 【動力機械群】汽車科(11)、汽車修護科(10) ｜ 【服務群】綜合職能科(10) ｜ 【土木與建築群】土木科(7) ｜ 【商業與管理群】資料處理科(7)、商業經營科(6) ｜ 【機械群】機械科(6)",127,99,87,12,98,0,1],[2,"110404","國立北門農工",0,0,3,"【食品群】食品加工科(61) ｜ 【電機與電子群】電機科(46)、電子科(19) ｜ 【農業群】畜產保健科(30)、造園科(16) ｜ 【機械群】機械科(28)、電腦機械製圖科(12) ｜ 【土木與建築群】土木科(26) ｜ 【商業與管理群】資料處理科(25)、電子商務科(13) ｜ 【服務群】綜合職能科(12) ｜ 【學術群】體育班",348,288,195,93,285,0,1],[2,"110405","國立曾文家商",0,0,1,"【商業與管理群】商業經營科(62)、電子商務科(27)、資料處理科(21)、銷售事務科(12) ｜ 【餐旅群】餐飲管理科(53) ｜ 【設計群】廣告設計科(34)、廣告技術科(31) ｜ 【家政群】幼兒保育科(31)",270,271,76,195,268,0,1],[2,"110406","國立新營高工",0,0,1,"【餐旅群】餐飲管理科(49)、餐飲技術科(19) ｜ 【電機與電子群】電機科(49)、資訊科(17)、電機修護科(3) ｜ 【機械群】機械科(30)、模具科(22)、製圖科(11)、模具技術科(6) ｜ 【商業與管理群】多媒體技術科(3)",232,209,168,41,207,0,1],[2,"110407","國立玉井工商",0,0,3,"【餐旅群】餐飲管理科(19)、餐飲技術科(9) ｜ 【電機與電子群】電機科(11)、電子科(3)、水電技術科 ｜ 【設計群】廣告設計科(11) ｜ 【食品群】食品加工科(8) ｜ 【商業與管理群】資料處理科(4) ｜ 【學術群】普通科(1)",113,66,35,31,65,0,1],[2,"110409","國立成大附屬南工",0,0,1,"【機械群】機械科(123)、板金科(69)、製圖科(67)、機械板金科(34)、鑄造科(30)、電腦繪圖科(25)、機電科 ｜ 【電機與電子群】資訊科(97)、電機科(88)、電子科(71) ｜ 【化工群】化工科(66) ｜ 【土木與建築群】建築科(55)、土木科(35) ｜ 【動力機械群】飛機修護科(39)、汽車科(36) ｜ 【服務群】綜合職能科(26) ｜ 【設計群】室內空間設計科(19)",776,880,760,120,871,0,1],[2,"110410","國立曾文農工",0,0,3,"【食品群】食品加工科(48)、烘焙食品科(25) ｜ 【電機與電子群】電機科(40)、電子科(10) ｜ 【動力機械群】汽車科(25)、汽車修護科(22) ｜ 【農業群】畜產保健科(14)、園藝科(10) ｜ 【機械群】機械科(11)、電腦機械製圖科(3)、電腦繪圖科(2) ｜ 【服務群】綜合職能科(9) ｜ 【學術群】體育班(8)、普通科(4) ｜ 【化工群】化工科(4) ｜ 【商業與管理群】多媒體技術科",275,235,164,71,233,0,1],[2,"111321","臺南市中信國際高中",3,0,0,"【學術群】普通科(108)；附設國中部",164,108,61,47,107,1,0],[2,"114306","市立大灣高中",1,0,0,"【學術群】普通科(212)；附設國中部",217,212,107,105,211,1,0],[2,"114307","市立永仁高中",1,0,0,"【學術群】普通科(130)；附設國中部",130,130,59,71,129,1,0],[2,"114344","市立沙崙國際高中",1,0,0,"【學術群】普通科(98)；附設國中部",0,98,52,46,98,1,0],[2,"210303","國立臺南二中",0,0,0,"【學術群】普通科(620)、美術班(21)",655,641,433,208,638,0,0],[2,"210305","國立臺南一中",0,0,0,"【學術群】普通科(625)、科學班(31)、數理資優班(29)",691,685,670,15,682,0,0],[2,"210306","國立臺南女中",0,0,0,"【學術群】普通科(562)、數理資優班(29)、人文與社會科學資優班(27)、音樂班(19)、語文資優班",656,637,6,631,634,0,0],[2,"210309","國立家齊高中",0,0,2,"【學術群】普通科(348)、舞蹈班(14) ｜ 【餐旅群】餐飲管理科(103) ｜ 【家政群】流行服飾科(103)",573,568,166,402,565,0,0],[2,"210408","國立臺南高商",0,0,1,"【商業與管理群】國際貿易科(123)、商業經營科(105)、資料處理科(79)、會計事務科(29) ｜ 【餐旅群】觀光事業科(77)、餐飲管理科(13) ｜ 【外語群】應用英語科(67) ｜ 【設計群】廣告設計科(62) ｜ 【服務群】綜合職能科(12)",578,567,192,375,561,0,1],[2,"210416","國立臺南海事",0,0,3,"【電機與電子群】電子科(48) ｜ 【海事水產群】輪機科(34)、水產養殖科(22)、船舶機電科(9)、水產養殖技術科 ｜ 【學術群】體育班(30) ｜ 【食品群】水產食品科(26)、烘焙食品科(23) ｜ 【商業與管理群】商業經營科(20)、電子商務科(10) ｜ 【機械群】機電科(17)",264,239,190,49,237,0,1],[2,"211310","臺南市光華高中",3,0,2,"【餐旅群】餐飲管理科(96)、觀光餐飲 ｜ 【設計群】多媒體設計科(85)、多媒體設計 ｜ 【家政群】幼兒保育科(33)、流行服飾科(11) ｜ 【學術群】普通科(30)、學術社會、學術自然 ｜ 【商業與管理群】商業經營科(15)；附設國中部",411,270,88,182,269,1,0],[2,"211317","臺南市崑山高中",3,0,2,"【學術群】普通科(4)；附設國中部",5,4,2,2,4,1,0],[2,"213303","市立南寧高中",1,0,0,"【學術群】普通科(98)、體育班(19)；附設國中部",118,117,61,56,116,1,0],[2,"213316","市立土城高中",1,0,0,"【學術群】普通科(64)、體育班(28)；附設國中部",80,92,49,43,92,1,0],[2,"111313","私立南光高中",4,1,0,"【學術群】普通科(250)；附設國中部",280,250,138,112,249,1,0],[2,"111320","私立港明高中",4,1,0,"【學術群】普通科(530)；附設國中部",541,530,298,232,527,1,0],[2,"111322","私立明達高中",4,1,0,"【學術群】普通科(44)；附設國中部",51,44,25,19,44,1,0],[2,"111323","私立黎明高中",4,1,0,"【學術群】普通科(242)；附設國中部",311,242,141,101,241,1,0],[2,"111326","私立新榮高中",4,1,1,"專業群科",0,0,0,0,0,0,1],[2,"111419","私立陽明工商",4,1,1,"【商業與管理群】資料處理科(14) ｜ 【設計群】家具木工科(11) ｜ 【電機與電子群】水電技術科(7)",28,32,26,6,32,0,1],[2,"111427","私立育德工家",4,1,1,"【餐旅群】餐飲技術科(63)、餐飲管理科(50)、烘焙食品科 ｜ 【動力機械群】汽車科(15)、飛機修護科 ｜ 【家政群】時尚造型科(14)",121,142,77,65,141,0,1],[2,"111G91","私立樹德高中進修學校",4,1,0,"【學術群】普通科(21)；附設國中部",19,21,21,0,21,1,0],[2,"211301","私立長榮高中",4,1,2,"【學術群】普通科(144)、體育班(17) ｜ 【設計群】多媒體設計科(36)、廣告設計科(28) ｜ 【餐旅群】觀光事業科(32) ｜ 【電機與電子群】電機科(26)、資訊科 ｜ 【外語群】應用英語科(17) ｜ 【商業與管理群】國際貿易科；附設國中部",462,300,171,129,298,1,0],[2,"211302","私立長榮女中",4,1,1,"【餐旅群】餐飲管理科(65) ｜ 【家政群】美容科(55)、時尚造型科(40)",194,160,24,136,158,0,1],[2,"211304","財團法人聖功女中",4,1,0,"【學術群】普通科(229)；附設國中部",273,229,0,229,228,1,0],[2,"211314","私立六信高中",4,1,2,"【電機與電子群】資訊科(72) ｜ 【食品群】烘焙食品科(71) ｜ 【商業與管理群】資料處理科(36) ｜ 【餐旅群】餐飲技術科(16)、餐飲管理科(8) ｜ 【農業群】寵物經營科(7) ｜ 【學術群】普通科(2)",168,212,113,99,211,0,0],[2,"211315","私立瀛海高中",4,1,0,"【學術群】普通科(340)；附設國中部",355,340,205,135,338,1,0],[2,"211318","私立德光高中",4,1,0,"【學術群】普通科(370)；附設國中部",374,370,199,171,368,1,0],[2,"211320","財團法人慈濟高中",4,1,0,"【學術群】普通科(199)；附設國中部",209,199,99,100,198,1,0],[2,"211407","私立南英商工",4,1,1,"【餐旅群】餐飲管理科(110)、餐飲技術科 ｜ 【電機與電子群】電機空調科(40) ｜ 【外語群】應用日語科(32) ｜ 【動力機械群】汽車科(29) ｜ 【藝術群】多媒體動畫科(25)、電影電視科(16)",273,252,177,75,249,0,1],[2,"211412","私立亞洲餐旅",4,1,1,"【餐旅群】餐飲技術科(85)、餐飲管理科(67)、烘焙食品科(66) ｜ 【商業與管理群】電子商務科(28) ｜ 【食品群】烘焙食品科(15)、烘焙科(12)",295,273,148,125,270,0,1],[2,"211419","私立慈幼工商",4,1,1,"【動力機械群】汽車科(65)、汽車修護科(36) ｜ 【食品群】烘焙食品科(35)、烘焙科(33) ｜ 【電機與電子群】資訊科(26)、電機科(14)",188,209,162,47,207,0,1],[1,"120303","國立鳳山高中",0,0,0,"【學術群】普通科(596)、數理資優班(29)",641,625,406,219,622,0,0],[1,"120304","國立岡山高中",0,0,0,"【學術群】普通科(361)、體育班(21)",477,382,220,162,380,0,0],[1,"120311","國立旗美高中",0,0,2,"【學術群】普通科(81)、體育班(16) ｜ 【家政群】家政群不分科(114學年試辦)(40)、家政科、幼兒保育科 ｜ 【設計群】多媒體設計科(22)",198,159,70,89,158,0,0],[1,"120319","國立鳳新高中",0,0,0,"【學術群】普通科(586)、美術班(25)、音樂班(18)",634,629,306,323,626,0,0],[1,"120320","國立高科實驗高中",0,0,5,"附設國中部",0,0,0,0,0,1,2],[1,"120401","國立旗山農工",0,0,1,"【電機與電子群】電機科(42) ｜ 【家政群】家政科(19) ｜ 【動力機械群】汽車科(18) ｜ 【食品群】食品加工科(15)、烘焙食品科 ｜ 【農業群】畜產保健科(15)、園藝科(10)、農場經營科(5) ｜ 【服務群】綜合職能科(6) ｜ 【機械群】機械科(5)、生物產業機電科(3)",162,138,105,33,137,0,1],[1,"120402","國立岡山農工",0,0,1,"【動力機械群】汽車科(80) ｜ 【機械群】機械科(60)、生物產業機電科(25) ｜ 【家政群】家政科(50) ｜ 【電機與電子群】資訊科(45)、電機科(35)、電子科(32) ｜ 【食品群】食品加工科(38) ｜ 【設計群】室內空間設計科(28) ｜ 【農業群】園藝科(20) ｜ 【土木與建築群】建築科(15) ｜ 【服務群】綜合職能科(5) ｜ 【化工群】化工科(4)",461,437,327,110,433,0,1],[1,"120409","國立鳳山商工",0,0,3,"【商業與管理群】商業經營科(146)、資料處理科(55)、國際貿易科(40)、會計事務科(24) ｜ 【機械群】機械科(101)、電腦機械製圖科(87) ｜ 【設計群】室內空間設計科(100)、家具設計科(31) ｜ 【餐旅群】觀光事業科(47) ｜ 【學術群】體育班(14) ｜ 【服務群】餐飲服務科(14)",684,659,394,265,652,0,1],[1,"121302","光禾華德福實驗學校",3,0,5,"【學術群】普通科(3)；附設國中部",6,3,2,1,3,1,2],[1,"124302","市立文山高中",1,0,0,"【學術群】普通科(227)、體育班(22)；附設國中部",267,249,115,134,248,1,0],[1,"124311","市立林園高中",1,0,0,"【學術群】普通科(119)、體育班(15)；附設國中部",171,134,78,56,133,1,0],[1,"124313","市立仁武高中",1,0,0,"【學術群】普通科(130)、體育班(25)；附設國中部",175,155,73,82,154,1,0],[1,"124322","市立路竹高中",1,0,0,"【學術群】普通科(131)、體育班(15)；附設國中部",161,146,72,74,145,1,0],[1,"124333","市立六龜高中",1,0,0,"【學術群】普通科(25)；附設國中部",21,25,12,13,25,1,0],[1,"124340","市立福誠高中",1,0,0,"【學術群】普通科(193)、體育班(26)；附設國中部",220,219,121,98,218,1,0],[1,"12C301","明陽中學",3,0,6,"【學術群】綜高1年級(29)、學術社會、學術自然 ｜ 【餐旅群】餐飲製作",32,29,29,0,29,0,2],[1,"521301","天主教明誠高中",3,0,0,"【學術群】普通科(93)；附設國中部",113,93,46,47,93,1,0],[1,"523301","市立鼓山高中",1,0,0,"【學術群】普通科(215)、美術班(20)、體育班(17)；附設國中部",240,252,126,126,251,1,0],[1,"533301","市立左營高中",1,0,0,"【學術群】普通科(480)、舞蹈班(20)、體育班(6)",518,506,217,289,503,0,0],[1,"533302","市立新莊高中",1,0,0,"【學術群】普通科(451)、體育班(23)、音樂班(5)",499,479,259,220,477,0,0],[1,"533401","市立海青工商",1,0,3,"【設計群】廣告設計科(83)、美工科(69)、室內空間設計科(68) ｜ 【商業與管理群】資料處理科(73)、會計事務科(22) ｜ 【土木與建築群】土木科(63)、建築科(59) ｜ 【電機與電子群】資訊科(62)、電子科(30) ｜ 【學術群】體育班(13)",559,542,290,252,537,0,1],[1,"533402","市立三民家商",1,0,3,"【設計群】室內設計科(71) ｜ 【家政群】幼兒保育科(70)、美容科(68)、服裝科(61) ｜ 【餐旅群】餐飲管理科(67)、觀光事業科(64) ｜ 【商業與管理群】資料處理科(64)、國際貿易科(58) ｜ 【學術群】體育班(26) ｜ 【服務群】綜合職能科(14)",563,563,156,407,557,0,1],[1,"540301","國立中山大學附屬國光高中",0,0,0,"【學術群】普通科(207)；附設國中部",214,207,113,94,206,1,0],[1,"543301","市立中山高中",1,0,0,"【學術群】普通科(474)",486,474,233,241,472,0,0],[1,"543302","市立楠梓高中",1,0,4,"【學術群】綜高1年級(164)、體育班(22)、學術社會、學術自然 ｜ 【商業與管理群】資訊應用 ｜ 【餐旅群】觀光餐飲",234,186,108,78,184,0,1],[1,"543F01","市立楠梓特殊學校",1,0,1,"【餐旅群】餐飲技術科(3) ｜ 【電機與電子群】資訊科(2) ｜ 【家政群】美容科(2)",7,7,0,7,7,0,1],[1,"553301","市立高雄中學",1,0,0,"【學術群】普通科(747)、體育班(33)、科學班(31)、音樂班(21)",858,832,800,32,828,0,0],[1,"553302","市立三民高中",1,0,0,"【學術群】普通科(362)、體育班(27)",393,389,178,211,387,0,0],[1,"553401","市立高雄高工",1,0,1,"【機械群】機械科(154)、電腦機械製圖科(73)、製圖科(12) ｜ 【電機與電子群】電機科(135)、資訊科(84)、電子科(78)、冷凍空調科(73) ｜ 【動力機械群】汽車科(72) ｜ 【土木與建築群】建築科(70) ｜ 【設計群】圖文傳播科(70) ｜ 【化工群】化工科(67)",863,888,745,143,879,0,1],[1,"563301","市立新興高中",1,0,0,"【學術群】普通科(210)、音樂班(19)；附設國中部",226,229,120,109,228,1,0],[1,"563401","市立高雄高商",1,0,3,"【商業與管理群】商業經營科(152)、會計事務科(132)、國際貿易科(126)、資料處理科(98) ｜ 【設計群】廣告設計科(69) ｜ 【學術群】體育班(7)",590,584,176,408,578,0,1],[1,"573301","市立高雄女中",1,0,0,"【學術群】普通科(735)",752,735,0,735,731,0,0],[1,"580301","國立高師大附中",0,0,0,"【學術群】普通科(292)；附設國中部",279,292,225,67,291,1,0],[1,"581302","天主教道明中學",3,0,0,"【學術群】普通科(583)；附設國中部",638,583,279,304,580,1,0],[1,"583301","市立中正高中",1,0,0,"【學術群】普通科(342)、體育班(14)；附設國中部",360,356,179,177,354,1,0],[1,"593301","市立前鎮高中",1,0,0,"【學術群】普通科(467)、美術班(19)",512,486,229,257,484,0,0],[1,"593302","市立瑞祥高中",1,0,0,"【學術群】普通科(270)、體育班(19)；附設國中部",295,289,153,136,288,1,0],[1,"593401","市立中正高工",1,0,3,"【電機與電子群】電機科(93)、冷凍空調科(66)、資訊科(65)、電子科(36)、控制科(36)、微電腦修護科(13)、冷凍空調技術科(9) ｜ 【機械群】機械科(69)、電腦機械製圖科(31) ｜ 【動力機械群】汽車科(67) ｜ 【化工群】化工科(67) ｜ 【土木與建築群】建築科(65) ｜ 【設計群】金屬工藝科(32) ｜ 【學術群】體育班(13) ｜ 【服務群】汽車美容服務科(7)",641,669,596,73,662,0,1],[1,"610405","國立高餐大附屬餐旅中學",0,0,1,"【餐旅群】餐飲管理科(33)、烹調技術科(28)、觀光事業科(28)；附設國中部",88,89,30,59,88,1,1],[1,"613301","市立小港高中",1,0,0,"【學術群】普通科(441)、體育班(11)",468,452,211,241,450,0,0],[1,"121306","財團法人新光高中",4,1,1,"【家政群】美容科(7) ｜ 【農業群】寵物經營科(2) ｜ 【電機與電子群】資訊科(1)",21,10,3,7,10,0,1],[1,"121307","財團法人普門中學",4,1,2,"【學術群】普通科(88) ｜ 【餐旅群】餐飲管理科(27)；附設國中部",91,115,71,44,114,1,0],[1,"121318","私立正義高中",4,1,0,"【學術群】普通科(62)；附設國中部",110,62,30,32,62,1,0],[1,"121320","私立義大國際高中",4,1,0,"【學術群】普通科(57)；附設國中部",70,57,32,25,57,1,0],[1,"121405","私立中山工商",4,1,3,"【餐旅群】餐飲管理科(291)、餐飲技術科(114)、觀光事業科(35)、烘焙食品科(33) ｜ 【電機與電子群】電機科(208)、資訊科(149)、電子科(79)、電機修護科(45)、電機與電子群不分科(112學年試辦)(38) ｜ 【動力機械群】汽車科(189)、汽車修護科(46) ｜ 【商業與管理群】商業經營科(111)、商業與管理群不分科(113學年試辦)(31)、資料處理科 ｜ 【家政群】美容科(102)、幼兒保育科(43) ｜ 【學術群】普通科(59) ｜ 【美容造型群】美顏技術科(39) ｜ 【外語群】外語群不分科(113學年試辦)(36)、應用英語科、應用日語科 ｜ 【設計群】多媒體技術科(31)、多媒體設計科(29) ｜ 【機械群】機電科(28) ｜ 【農業群】園藝技術科(15) ｜ 【服務群】餐飲服務科(12)、汽車美容服務科(6)；附設國中部",2080,1769,1102,667,1751,1,1],[1,"121410","私立旗美商工",4,1,0,"【家政群】照顧服務科(21)",17,21,13,8,21,0,0],[1,"121413","私立高英工商",4,1,1,"【動力機械群】汽車科 ｜ 【餐旅群】餐飲管理科 ｜ 【電機與電子群】資訊科、電機科 ｜ 【設計群】廣告設計科",169,0,0,0,0,0,1],[1,"121415","私立華德工家",4,1,1,"【電機與電子群】資訊科(77) ｜ 【食品群】烘焙科(46) ｜ 【餐旅群】餐飲技術科(23)、餐飲管理科(14) ｜ 【動力機械群】飛機修護科(11)",160,171,91,80,169,0,1],[1,"121417","私立高苑工商",4,1,4,"【餐旅群】餐飲管理科(84)、餐飲技術科(34)、運動休閒 ｜ 【電機與電子群】資訊科(82)、電機科(23) ｜ 【食品群】烘焙科(64) ｜ 【學術群】綜高1年級(43) ｜ 【美容造型群】美髮技術科(13) ｜ 【動力機械群】汽車科 ｜ 【服務群】綜合職能科",429,343,201,142,340,0,1],[1,"521303","私立大榮高中",4,1,2,"【動力機械群】飛機修護科(64)、汽車科(18) ｜ 【電機與電子群】電機科(30) ｜ 【學術群】普通科(20)；附設國中部",133,132,118,14,131,1,0],[1,"521401","私立中華藝校",4,1,1,"【藝術群】多媒體動畫科(53)、音樂科(37)、美術科(34)、影劇科(34)、影劇技術科(33)、舞蹈科(23)",186,214,54,160,212,0,1],[1,"551301","私立立志高中",4,1,2,"【學術群】普通科(103) ｜ 【餐旅群】餐飲管理科(62) ｜ 【動力機械群】汽車科(44) ｜ 【商業與管理群】電競經營科(40)、資料處理科(31) ｜ 【電機與電子群】資訊科(24)、電機科(24)、水電技術科(21)、電子科(5) ｜ 【家政群】美容科(14)、照顧服務科(12)；附設國中部",419,380,253,127,378,1,0],[1,"551402","私立樹德家商",4,1,1,"【家政群】美容科(289)、照顧服務科(41)、幼兒保育科(40) ｜ 【餐旅群】餐飲管理科(192)、烘焙食品科(153)、餐飲技術科(77)、觀光事業科(26) ｜ 【商業與管理群】資料處理科(136)、商業經營科(26) ｜ 【農業群】寵物經營科(124) ｜ 【藝術群】表演藝術科(92)、表演技術科(54) ｜ 【設計群】廣告設計科(71) ｜ 【美容造型群】美髮技術科(57)、美顏技術科(52) ｜ 【外語群】應用日語科(35)、應用英語科(17) ｜ 【服務群】綜合職能科(20)",1667,1502,465,1037,1487,0,1],[1,"581301","私立復華高中",4,1,2,"【學術群】普通科(60) ｜ 【餐旅群】觀光事業科(20)；附設國中部",101,80,45,35,80,1,0],[1,"581402","私立三信家商",4,1,1,"【餐旅群】餐飲管理科(214)、烘焙食品科(122)、餐飲技術科(24) ｜ 【商業與管理群】資料處理科(141) ｜ 【家政群】美容科(98)、照顧服務科(45)、幼兒保育科(14) ｜ 【設計群】廣告設計科(44) ｜ 【服務群】餐飲服務科(12) ｜ 【外語群】應用日語科(11)",603,725,300,425,718,0,1],[5,"130302","國立屏東女中",0,0,0,"【學術群】普通科(453)、數理資優班(20)、語文資優班(20)、音樂班(7)",525,500,1,499,498,0,0],[5,"130305","國立屏東高中",0,0,0,"【學術群】普通科(341)、體育班(26)、美術班(20)、數理資優班(17)",391,404,388,16,402,0,0],[5,"130306","國立潮州高中",0,0,0,"【學術群】普通科(374)、體育班(20)",388,394,212,182,392,0,0],[5,"130307","國立屏科實驗高中",0,0,5,"【學術群】普通科(92)、雙語部(1)；附設國中部",90,93,68,25,93,1,2],[5,"130322","國立屏北高中",0,0,4,"【學術群】綜高1年級(151)、普通科(28)、學術社會、學術自然 ｜ 【商業與管理群】商業服務 ｜ 【餐旅群】餐飲服務",193,179,95,84,177,0,1],[5,"130401","國立內埔農工",0,0,3,"【動力機械群】汽車科(28)、農業機械科(24) ｜ 【農業群】野生動物保育科(22)、農場經營科(2) ｜ 【電機與電子群】電機科(15) ｜ 【學術群】體育班(13) ｜ 【食品群】烘焙科(13)、食品加工科(5) ｜ 【家政群】家政科(9) ｜ 【機械群】機械科(5)",137,136,101,35,135,0,1],[5,"130403","國立屏東高工",0,0,1,"【電機與電子群】電機科(90)、電子科(84) ｜ 【動力機械群】汽車科(88) ｜ 【土木與建築群】建築科(66)、土木科(57) ｜ 【機械群】機械科(63)、製圖科(41) ｜ 【化工群】化工科(27) ｜ 【服務群】綜合職能科(21)",514,537,468,69,532,0,1],[5,"130404","國立佳冬高農",0,0,1,"【食品群】烘焙科(34)、食品加工科(21)、烘焙食品科(4) ｜ 【商業與管理群】電子商務科(30) ｜ 【餐旅群】餐飲管理科(28) ｜ 【動力機械群】農業機械科(22)、機車修護科(6) ｜ 【農業群】畜產保健科(22)、園藝技術科(7)、園藝科(7)、農場經營科(4) ｜ 【服務群】綜合職能科(14)",192,199,120,79,197,0,1],[5,"130410","國立東港海事",0,0,1,"【海事水產群】輪機科(64)、水產養殖科(11) ｜ 【食品群】水產食品科(36)、烘焙食品科(15) ｜ 【家政群】家政科(23) ｜ 【電機與電子群】電子科(18) ｜ 【商業與管理群】航運管理科(15) ｜ 【餐旅群】餐飲技術科",178,182,126,56,180,0,1],[5,"130417","國立恆春工商",0,0,3,"【餐旅群】觀光事業科(38)、餐飲管理科(31) ｜ 【電機與電子群】電機與電子群不分科(112學年試辦)(22)、電機科(14)、資訊科、電子科 ｜ 【商業與管理群】資料處理科(20) ｜ 【學術群】普通科(17) ｜ 【服務群】綜合職能科(5)",117,147,73,74,146,0,1],[5,"131302","屏東縣崇華高中",3,0,0,"普通科、附設國中部",0,0,0,0,0,1,0],[5,"134304","縣立大同高中",2,0,0,"【學術群】普通科(86)、體育班(33)、美術班(16)；附設國中部",189,135,58,77,134,1,0],[5,"134321","縣立枋寮高中",2,0,0,"【學術群】普通科(62)、體育班(15)；附設國中部",75,77,36,41,77,1,0],[5,"134324","縣立東港高中",2,0,0,"【學術群】普通科(169)、體育班(26)；附設國中部",213,195,115,80,194,1,0],[5,"134334","縣立來義高中",2,0,0,"【學術群】普通科(26)、體育班(15)；附設國中部",46,41,19,22,41,1,0],[5,"131307","財團法人屏榮高中",4,1,2,"【餐旅群】餐飲管理科(177) ｜ 【學術群】普通科(75) ｜ 【設計群】多媒體設計科(70) ｜ 【電機與電子群】電機與電子群不分科(112學年試辦)(58)、資訊科、電子科 ｜ 【商業與管理群】電子商務科(44) ｜ 【家政群】幼兒保育科(41) ｜ 【外語群】應用日語科(31)；附設國中部",553,496,238,258,494,1,0],[5,"131308","私立陸興高中",4,1,0,"【學術群】普通科(17)；附設國中部",20,17,13,4,17,1,0],[5,"131311","私立美和高中",4,1,0,"【學術群】普通科(174)；附設國中部",156,174,117,57,173,1,0],[5,"131409","私立民生家商",4,1,3,"【餐旅群】餐飲管理科(35)、餐飲技術科(16) ｜ 【商業與管理群】資料處理科(23) ｜ 【學術群】體育班(17) ｜ 【家政群】時尚造型科(15)",83,106,56,50,105,0,1],[7,"140222","國立臺東專科學校附設高職部",0,0,1,"【家政群】家政科(60) ｜ 【電機與電子群】電機科(50)、資訊科(15) ｜ 【農業群】畜產保健科(30) ｜ 【動力機械群】汽車科(25)、農業機械科(14) ｜ 【服務群】綜合職能科(15) ｜ 【土木與建築群】土木科(14) ｜ 【設計群】室內空間設計科(13) ｜ 【機械群】機械科(6)",209,242,161,81,240,0,1],[7,"140301","國立臺東大學附屬體育高中",0,0,5,"【學術群】體育班(65)；附設國中部",71,65,48,17,65,1,2],[7,"140302","國立臺東女中",0,0,4,"【學術群】綜高1年級(247)、美術班(18)、學術社會、學術自然",268,265,3,262,262,0,1],[7,"140303","國立臺東高中",0,0,4,"【學術群】綜高1年級(235)、體育班(16)、原住民藝能班(6)、學術社會、學術自然",310,257,249,8,254,0,1],[7,"140404","國立關山工商",0,0,1,"【餐旅群】餐旅群不分科(114學年試辦)(21)、觀光事業科、餐飲管理科 ｜ 【土木與建築群】建築科(16) ｜ 【藝術群】時尚工藝科(16) ｜ 【電機與電子群】冷凍空調科(15) ｜ 【服務群】綜合職能科(2) ｜ 【商業與管理群】資料處理科",48,70,41,29,69,0,1],[7,"140405","國立臺東高商",0,0,1,"【商業與管理群】資料處理科(58)、商業經營科(40)、會計事務科(21)、電子商務科(15) ｜ 【餐旅群】觀光事業科(43) ｜ 【設計群】廣告設計科(32) ｜ 【外語群】應用英語科(23)",269,232,113,119,230,0,1],[7,"140408","國立成功商水",0,0,6,"【學術群】綜高1年級(40) ｜ 【商業與管理群】資訊應用、商業服務 ｜ 【餐旅群】餐飲服務、觀光事務 ｜ 【海事水產群】水產養殖",31,40,23,17,40,0,2],[7,"141301","臺東縣均一高中",3,0,0,"【學術群】普通科(50)；附設國中部",42,50,21,29,50,1,0],[7,"144322","縣立蘭嶼高中",2,0,6,"【學術群】綜高1年級(6) ｜ 【餐旅群】餐飲管理；附設國中部",10,6,2,4,6,1,2],[7,"141307","私立育仁高中",4,1,0,"普通科、附設國中部",0,0,0,0,0,1,0],[7,"141406","私立公東高工",4,1,1,"【設計群】室內空間設計科(20)、家具木工科(18) ｜ 【餐旅群】餐飲技術科(16) ｜ 【家政群】時尚造型科(13) ｜ 【電機與電子群】電機科(10) ｜ 【美容造型群】美髮技術科(9) ｜ 【機械群】機械科(3)",105,89,41,48,88,0,1],[8,"160302","國立馬公高中",0,0,2,"【學術群】普通科(192)、美術班(4)、音樂班(3)、舞蹈班(3)、體育班(3) ｜ 【餐旅群】觀光事業科(48) ｜ 【商業與管理群】商業經營科(27)、資料處理科(22)、商用資訊科(15)",327,317,139,178,315,0,0],[8,"160401","國立澎湖海事水產",0,0,1,"【海事水產群】輪機科(58)、航海科(11)、漁業科(11)、水產養殖科(7) ｜ 【餐旅群】餐飲管理科(31) ｜ 【食品群】水產食品科(21) ｜ 【動力機械群】汽車科(12) ｜ 【電機與電子群】資訊科(9)、電子科(9) ｜ 【服務群】餐飲服務科(6)、居家生活服務科 ｜ 【商業與管理群】航運管理科(4)",150,179,131,48,177,0,1]],"jh":[[0,"060323","國立中科實驗高級中學 (附設國中部)",1,0,0,15,127,140,82,58,139,"完全中學直升生源"],[0,"061310","臺中市大明高中 (附設國中部)",1,3,0,1,0,38,18,20,38,"完全中學直升生源"],[0,"061322","華德福大地實驗學校 (附設國中部)",1,3,0,3,28,12,6,6,12,"完全中學直升生源"],[0,"064308","市立后綜高中 (附設國中部)",1,1,0,34,316,279,152,127,278,"完全中學直升生源"],[0,"064324","市立大里高中 (附設國中部)",1,1,0,21,189,202,117,85,201,"完全中學直升生源"],[0,"064328","市立新社高中 (附設國中部)",1,1,0,17,152,143,77,66,142,"完全中學直升生源"],[0,"064336","市立長億高中 (附設國中部)",1,1,0,34,322,329,152,177,327,"完全中學直升生源"],[0,"064342","市立中港高中 (附設國中部)",1,1,0,38,385,407,203,204,405,"完全中學直升生源"],[0,"064350","市立龍津高中 (附設國中部)",1,1,0,25,232,224,121,103,223,"完全中學直升生源"],[0,"064406","市立神岡高工 (附設國中部)",1,1,0,24,230,177,106,71,176,"完全中學直升生源"],[0,"064501","臺中市立居仁國民中學",0,1,0,66,680,695,360,335,688,"明星指標國中"],[0,"064502","臺中市立光明國民中學",0,1,0,54,520,510,265,245,505,"公立大型國中"],[0,"064503","臺中市立向上國民中學",0,1,0,48,480,475,240,235,470,"公立大型國中"],[0,"064504","臺中市立雙十國民中學",0,1,0,42,410,405,210,195,401,"公立國中/音樂資優"],[0,"064505","臺中市立育英國民中學",0,1,0,36,350,340,180,160,337,"公立國中"],[0,"064506","臺中市立東峰國民中學",0,1,0,30,280,275,145,130,272,"公立國中"],[0,"064507","臺中市立崇倫國民中學",0,1,0,36,360,350,185,165,346,"公立國中"],[0,"064508","臺中市立四育國民中學",0,1,0,32,310,305,160,145,302,"公立國中"],[0,"064509","臺中市立忠明國民中學",0,1,0,45,450,440,225,215,436,"公立國中"],[0,"064510","臺中市立漢口國民中學",0,1,0,48,480,490,255,235,485,"公立大型國中"],[0,"064511","臺中市立大雅國民中學",0,1,0,52,530,520,270,250,515,"公立大型國中"],[0,"064512","臺中市立潭子國民中學",0,1,0,44,430,420,220,200,416,"公立國中"],[0,"064513","臺中市立豐南國民中學",0,1,0,58,590,580,300,280,574,"公立大型國中"],[0,"064514","臺中市立豐原國民中學",0,1,0,46,460,450,235,215,446,"公立國中"],[0,"064515","臺中市立后里國民中學",0,1,0,33,320,310,165,145,307,"公立國中"],[0,"064516","臺中市立東勢國民中學",0,1,0,30,290,280,150,130,277,"公立國中"],[0,"064517","臺中市立沙鹿國民中學",0,1,0,45,450,445,230,215,441,"公立國中"],[0,"064518","臺中市立清水國民中學",0,1,0,48,480,470,245,225,465,"公立國中"],[0,"064519","臺中市立梧棲國民中學",0,1,0,36,350,340,175,165,337,"公立國中"],[0,"064520","臺中市立大甲國民中學",0,1,0,42,420,410,215,195,406,"公立國中"],[0,"064521","臺中市立太平國民中學",0,1,0,45,440,435,225,210,431,"公立國中"],[0,"064522","臺中市立中平國民中學",0,1,0,40,390,385,200,185,381,"公立國中"],[0,"064523","臺中市立霧峰國民中學",0,1,0,36,350,340,175,165,337,"公立國中"],[0,"064524","臺中市立烏日國民中學",0,1,0,38,380,375,195,180,371,"公立國中"],[0,"191305","臺中市新民高中 (附設國中部)",1,3,0,17,224,244,127,117,243,"完全中學直升生源"],[0,"193303","市立忠明高中 (附設國中部)",1,1,0,33,342,310,149,161,308,"完全中學直升生源"],[0,"193313","市立西苑高中 (附設國中部)",1,1,0,50,474,491,268,223,489,"完全中學直升生源"],[0,"193315","市立東山高中 (附設國中部)",1,1,0,68,787,785,403,382,781,"完全中學直升生源"],[0,"193316","市立惠文高中 (附設國中部)",1,1,0,30,324,318,155,163,316,"完全中學直升生源"],[0,"061301","財團法人常春藤高中 (附設國中部)",1,4,1,11,144,150,86,64,149,"完全中學直升生源"],[0,"061313","私立明道高中 (附設國中部)",1,4,1,60,889,890,535,355,886,"完全中學直升生源"],[0,"061314","私立僑泰高中 (附設國中部)",1,4,1,25,335,370,201,169,368,"完全中學直升生源"],[0,"061315","私立華盛頓高中 (附設國中部)",1,4,1,21,348,331,168,163,329,"完全中學直升生源"],[0,"061317","私立弘文高中 (附設國中部)",1,4,1,28,451,455,253,202,453,"完全中學直升生源"],[0,"061318","私立立人高中 (附設國中部)",1,4,1,20,281,328,185,143,326,"完全中學直升生源"],[0,"191301","私立東大附中 (附設國中部)",1,4,1,20,289,312,157,155,310,"完全中學直升生源"],[0,"191302","私立葳格高中 (附設國中部)",1,4,1,12,129,130,68,62,129,"完全中學直升生源"],[0,"191308","私立宜寧高中 (附設國中部)",1,4,1,3,27,25,8,17,25,"完全中學直升生源"],[0,"191309","私立明德高中 (附設國中部)",1,4,1,18,236,239,115,124,238,"完全中學直升生源"],[0,"191311","私立衛道高中 (附設國中部)",1,4,1,51,825,825,575,250,821,"完全中學直升生源"],[0,"191313","私立曉明女中 (附設國中部)",1,4,1,30,495,495,0,495,493,"完全中學直升生源"],[0,"191314","私立嶺東高中 (附設國中部)",1,4,1,12,135,158,68,90,157,"完全中學直升生源"],[0,"191315","私立磊川華德福實驗教育學校 (附設國中部)",1,4,1,3,23,23,11,12,23,"完全中學直升生源"],[3,"204501","嘉義市立北興國民中學",0,1,0,54,560,550,285,265,544,"嘉義市大型指標國中"],[3,"204502","嘉義市立民生國民中學",0,1,0,48,500,490,255,235,485,"嘉義市大型指標國中"],[3,"204503","嘉義市立南興國民中學",0,1,0,36,360,350,180,170,346,"公立國中/管樂特色"],[3,"204504","嘉義市立嘉義國民中學",0,1,0,38,380,370,190,180,366,"公立歷史名校"],[3,"204505","嘉義市立玉山國民中學",0,1,0,28,270,260,135,125,257,"公立國中"],[3,"204506","嘉義市立蘭潭國民中學",0,1,0,26,250,245,130,115,243,"公立國中/科技特色"],[3,"204507","嘉義市立北園國民中學",0,1,0,20,190,185,100,85,183,"公立國中"],[3,"201304","私立興華高中 (附設國中部)",1,4,1,7,78,58,37,21,58,"完全中學直升生源"],[3,"201310","私立嘉華高中 (附設國中部)",1,4,1,16,221,252,142,110,251,"完全中學直升生源"],[3,"201312","私立輔仁高中 (附設國中部)",1,4,1,20,330,293,178,115,292,"完全中學直升生源"],[3,"201313","私立宏仁高中 (附設國中部)",1,4,1,3,23,25,12,13,25,"完全中學直升生源"],[6,"100303","國立嘉科實驗高中 (附設國中部)",1,0,0,7,69,80,40,40,80,"完全中學直升生源"],[6,"104319","縣立竹崎高中 (附設國中部)",1,2,0,23,176,186,107,79,185,"完全中學直升生源"],[6,"104326","縣立永慶高中 (附設國中部)",1,2,0,18,156,156,86,70,155,"完全中學直升生源"],[6,"104501","嘉義縣立民雄國民中學",0,2,0,36,350,340,180,160,337,"嘉義縣指標國中"],[6,"104502","嘉義縣立水上國民中學",0,2,0,32,310,300,155,145,297,"公立國中"],[6,"104503","嘉義縣立朴子國民中學",0,2,0,30,290,280,145,135,277,"公立女中改制國中"],[6,"104504","嘉義縣立東石國民中學",0,2,0,32,310,305,160,145,302,"公立指標國中"],[6,"104505","嘉義縣立新港國民中學",0,2,0,28,270,260,135,125,257,"公立國中"],[6,"104506","嘉義縣立太保國民中學",0,2,0,26,250,260,135,125,257,"高鐵特區/成長型"],[6,"104507","嘉義縣立中埔國民中學",0,2,0,24,230,220,115,105,218,"公立國中"],[6,"104508","嘉義縣立大林國民中學",0,2,0,26,250,240,125,115,238,"公立國中"],[6,"101304","私立協同高中 (附設國中部)",1,4,1,30,383,411,211,200,409,"完全中學直升生源"],[4,"091319","福智高中 (附設國中部)",1,3,0,3,32,0,0,0,0,"完全中學直升生源"],[4,"091320","雲林縣維多利亞實驗高中 (附設國中部)",1,3,0,6,57,72,29,43,72,"完全中學直升生源"],[4,"094301","縣立斗南高中 (附設國中部)",1,2,0,21,149,122,70,52,121,"完全中學直升生源"],[4,"094307","縣立麥寮高中 (附設國中部)",1,2,0,30,249,243,124,119,242,"完全中學直升生源"],[4,"094308","縣立古坑華德福實驗高級中學 (附設國中部)",1,2,0,6,43,36,19,17,36,"完全中學直升生源"],[4,"094326","縣立蔦松藝術高中 (附設國中部)",1,2,0,12,62,36,13,23,36,"完全中學直升生源"],[4,"094501","雲林縣立斗六國民中學",0,2,0,48,510,500,260,240,495,"雲林縣指標國中"],[4,"094502","雲林縣立雲林國民中學",0,2,0,42,430,420,220,200,416,"斗六市大型國中"],[4,"094503","雲林縣立虎尾國民中學",0,2,0,40,410,400,210,190,396,"虎尾鎮指標國中"],[4,"094504","雲林縣立西螺國民中學",0,2,0,32,320,310,160,150,307,"西螺鎮公立國中"],[4,"094505","雲林縣立建國國民中學",0,2,0,36,360,350,185,165,346,"北港鎮指標國中"],[4,"094506","雲林縣立北港國民中學",0,2,0,24,230,220,115,105,218,"北港鎮公立國中"],[4,"094507","雲林縣立大埤國民中學",0,2,0,18,170,160,85,75,158,"公立國中"],[4,"094508","雲林縣立莿桐國民中學",0,2,0,20,190,185,95,90,183,"公立國中"],[4,"094509","雲林縣立土庫國民中學",0,2,0,22,210,200,105,95,198,"公立國中"],[4,"094510","雲林縣立東勢國民中學",0,2,0,16,150,140,75,65,139,"偏鄉重點學校"],[4,"091307","私立永年高中 (附設國中部)",1,4,1,17,250,303,174,129,301,"完全中學直升生源"],[4,"091308","私立正心高中 (附設國中部)",1,4,1,32,421,414,229,185,412,"完全中學直升生源"],[4,"091311","私立文生高中 (附設國中部)",1,4,1,6,100,94,62,32,94,"完全中學直升生源"],[4,"091316","私立揚子高中 (附設國中部)",1,4,1,11,164,167,113,54,166,"完全中學直升生源"],[2,"110328","國立南科國際實驗高中 (附設國中部)",1,0,0,27,248,238,123,115,237,"完全中學直升生源"],[2,"111321","臺南市中信國際高中 (附設國中部)",1,3,0,11,128,57,37,20,57,"完全中學直升生源"],[2,"114306","市立大灣高中 (附設國中部)",1,1,0,47,489,427,202,225,425,"完全中學直升生源"],[2,"114307","市立永仁高中 (附設國中部)",1,1,0,22,152,163,67,96,162,"完全中學直升生源"],[2,"114344","市立沙崙國際高中 (附設國中部)",1,1,0,14,112,169,85,84,168,"完全中學直升生源"],[2,"114501","臺南市立建興國民中學",0,1,0,60,680,670,380,290,663,"明星指標國中/資優名校"],[2,"114502","臺南市立後甲國民中學",0,1,0,66,750,730,380,350,723,"東區超大型指標國中"],[2,"114503","臺南市立復興國民中學",0,1,0,72,850,840,435,405,832,"東區超大型額滿國中"],[2,"114504","臺南市立崇明國民中學",0,1,0,54,580,570,295,275,564,"東區指標國中"],[2,"114505","臺南市立大成國民中學",0,1,0,42,420,410,215,195,406,"南區公立國中/音樂班"],[2,"114506","臺南市立金城國民中學",0,1,0,45,460,450,235,215,446,"安平區指標國中"],[2,"114507","臺南市立安平國民中學",0,1,0,48,490,480,250,230,475,"安平區公立國中"],[2,"114508","臺南市立永康國民中學",0,1,0,62,690,680,355,325,673,"永康區大型指標國中"],[2,"114509","臺南市立大橋國民中學",0,1,0,56,620,615,320,295,609,"永康區大型額滿國中"],[2,"114510","臺南市立新東國民中學",0,1,0,36,360,350,185,165,346,"新營區指標國中"],[2,"114511","臺南市立南新國民中學",0,1,0,34,340,330,175,155,327,"新營區公立國中"],[2,"114512","臺南市立善化國民中學",0,1,0,38,390,410,215,195,406,"南科特區/成長型國中"],[2,"114513","臺南市立新市國民中學",0,1,0,32,330,350,185,165,346,"南科特區/成長型國中"],[2,"114514","臺南市立麻豆國民中學",0,1,0,30,290,280,145,135,277,"麻豆區公立國中"],[2,"114515","臺南市立佳里國民中學",0,1,0,36,360,350,185,165,346,"佳里區指標國中"],[2,"211310","臺南市光華高中 (附設國中部)",1,3,0,3,12,9,4,5,9,"完全中學直升生源"],[2,"211317","臺南市崑山高中 (附設國中部)",1,3,0,3,6,6,4,2,6,"完全中學直升生源"],[2,"213303","市立南寧高中 (附設國中部)",1,1,0,15,146,140,60,80,139,"完全中學直升生源"],[2,"213316","市立土城高中 (附設國中部)",1,1,0,9,74,62,28,34,62,"完全中學直升生源"],[2,"111313","私立南光高中 (附設國中部)",1,4,1,20,335,342,196,146,340,"完全中學直升生源"],[2,"111320","私立港明高中 (附設國中部)",1,4,1,36,571,588,354,234,585,"完全中學直升生源"],[2,"111322","私立明達高中 (附設國中部)",1,4,1,6,59,62,32,30,62,"完全中學直升生源"],[2,"111323","私立黎明高中 (附設國中部)",1,4,1,25,434,388,184,204,386,"完全中學直升生源"],[2,"111G91","私立樹德高中進修學校 (附設國中部)",1,4,1,3,13,14,14,0,14,"完全中學直升生源"],[2,"211301","私立長榮高中 (附設國中部)",1,4,1,7,69,55,33,22,55,"完全中學直升生源"],[2,"211304","財團法人聖功女中 (附設國中部)",1,4,1,18,239,235,0,235,234,"完全中學直升生源"],[2,"211315","私立瀛海高中 (附設國中部)",1,4,1,21,316,369,226,143,367,"完全中學直升生源"],[2,"211318","私立德光高中 (附設國中部)",1,4,1,29,473,490,260,230,488,"完全中學直升生源"],[2,"211320","財團法人慈濟高中 (附設國中部)",1,4,1,21,204,202,111,91,201,"完全中學直升生源"],[1,"120320","國立高科實驗高中 (附設國中部)",1,0,0,3,0,42,26,16,42,"完全中學直升生源"],[1,"121302","光禾華德福實驗學校 (附設國中部)",1,3,0,3,12,17,8,9,17,"完全中學直升生源"],[1,"124302","市立文山高中 (附設國中部)",1,1,0,27,256,299,147,152,298,"完全中學直升生源"],[1,"124311","市立林園高中 (附設國中部)",1,1,0,48,477,455,227,228,453,"完全中學直升生源"],[1,"124313","市立仁武高中 (附設國中部)",1,1,0,26,243,225,101,124,224,"完全中學直升生源"],[1,"124322","市立路竹高中 (附設國中部)",1,1,0,34,331,306,154,152,304,"完全中學直升生源"],[1,"124333","市立六龜高中 (附設國中部)",1,1,0,6,36,34,21,13,34,"完全中學直升生源"],[1,"124340","市立福誠高中 (附設國中部)",1,1,0,39,420,382,204,178,380,"完全中學直升生源"],[1,"124501","高雄市立青年國民中學",0,1,0,56,620,610,315,295,604,"鳳山區大型指標國中"],[1,"124502","高雄市立鳳甲國民中學",0,1,0,52,580,570,295,275,564,"鳳山區指標國中"],[1,"124503","高雄市立鳳西國民中學",0,1,0,64,710,700,365,335,693,"鳳山區超大型國中"],[1,"124504","高雄市立岡山國民中學",0,1,0,44,450,440,230,210,436,"岡山區指標國中"],[1,"124505","高雄市立阿蓮國民中學",0,1,0,24,230,220,115,105,218,"公立國中"],[1,"124506","高雄市立旗山國民中學",0,1,0,28,270,260,135,125,257,"旗美九區指標國中"],[1,"124507","高雄市立美濃國民中學",0,1,0,20,190,180,95,85,178,"客家文化特色國中"],[1,"504501","高雄市立陽明國民中學",0,1,0,78,880,870,450,420,861,"三民區指標超大型國中"],[1,"504502","高雄市立五福國民中學",0,1,0,72,820,810,420,390,802,"苓雅區傳統指標名校"],[1,"504503","高雄市立七賢國民中學",0,1,0,46,480,475,250,225,470,"前金/鼓山明星國中"],[1,"504504","高雄市立明華國民中學",0,1,0,60,680,675,350,325,668,"左營區額滿指標國中"],[1,"504505","高雄市立龍華國民中學",0,1,0,58,650,645,335,310,639,"左營區大型指標國中"],[1,"504506","高雄市立福康國民中學",0,1,0,36,360,350,180,170,346,"苓雅區公立國中"],[1,"504507","高雄市立光華國民中學",0,1,0,38,380,370,195,175,366,"前鎮區公立國中"],[1,"504508","高雄市立前鎮國民中學",0,1,0,32,310,300,155,145,297,"前鎮區公立國中"],[1,"504509","高雄市立小港國民中學",0,1,0,45,450,440,230,210,436,"小港區指標國中"],[1,"504510","高雄市立中山國民中學",0,1,0,42,420,410,215,195,406,"小港區公立國中"],[1,"521301","天主教明誠高中 (附設國中部)",1,3,0,11,136,133,60,73,132,"完全中學直升生源"],[1,"523301","市立鼓山高中 (附設國中部)",1,1,0,15,131,144,73,71,143,"完全中學直升生源"],[1,"540301","國立中山大學附屬國光高中 (附設國中部)",1,0,0,19,180,201,94,107,200,"完全中學直升生源"],[1,"563301","市立新興高中 (附設國中部)",1,1,0,22,177,194,95,99,193,"完全中學直升生源"],[1,"580301","國立高師大附中 (附設國中部)",1,0,0,12,108,115,56,59,114,"完全中學直升生源"],[1,"581302","天主教道明中學 (附設國中部)",1,3,0,33,436,460,237,223,458,"完全中學直升生源"],[1,"583301","市立中正高中 (附設國中部)",1,1,0,21,200,179,96,83,178,"完全中學直升生源"],[1,"593302","市立瑞祥高中 (附設國中部)",1,1,0,43,365,384,207,177,382,"完全中學直升生源"],[1,"610405","國立高餐大附屬餐旅中學 (附設國中部)",1,0,0,9,85,90,34,56,90,"完全中學直升生源"],[1,"121307","財團法人普門中學 (附設國中部)",1,4,1,15,158,178,113,65,177,"完全中學直升生源"],[1,"121318","私立正義高中 (附設國中部)",1,4,1,9,76,99,62,37,99,"完全中學直升生源"],[1,"121320","私立義大國際高中 (附設國中部)",1,4,1,9,63,56,33,23,56,"完全中學直升生源"],[1,"121405","私立中山工商 (附設國中部)",1,4,1,6,47,42,21,21,42,"完全中學直升生源"],[1,"521303","私立大榮高中 (附設國中部)",1,4,1,8,77,109,57,52,108,"完全中學直升生源"],[1,"551301","私立立志高中 (附設國中部)",1,4,1,16,195,176,104,72,175,"完全中學直升生源"],[1,"581301","私立復華高中 (附設國中部)",1,4,1,17,238,240,143,97,239,"完全中學直升生源"],[5,"130307","國立屏科實驗高中 (附設國中部)",1,0,0,7,39,55,32,23,55,"完全中學直升生源"],[5,"131302","屏東縣崇華高中 (附設國中部)",1,3,0,0,0,0,0,0,0,"完全中學直升生源"],[5,"134304","縣立大同高中 (附設國中部)",1,2,0,29,278,277,135,142,276,"完全中學直升生源"],[5,"134321","縣立枋寮高中 (附設國中部)",1,2,0,22,189,196,92,104,195,"完全中學直升生源"],[5,"134324","縣立東港高中 (附設國中部)",1,2,0,38,358,356,185,171,354,"完全中學直升生源"],[5,"134334","縣立來義高中 (附設國中部)",1,2,0,9,65,62,38,24,62,"完全中學直升生源"],[5,"134501","屏東縣立中正國民中學",0,2,0,58,640,630,330,300,624,"屏東市超大型指標國中"],[5,"134502","屏東縣立明正國民中學",0,2,0,54,590,580,305,275,574,"屏東市大型指標國中"],[5,"134503","屏東縣立至正國民中學",0,2,0,32,320,310,160,150,307,"屏東市公立國中"],[5,"134504","屏東縣立公正國民中學",0,2,0,30,290,280,145,135,277,"屏東市公立國中"],[5,"134505","屏東縣立潮州國民中學",0,2,0,42,430,420,220,200,416,"潮州鎮指標國中"],[5,"134506","屏東縣立東港國民中學",0,2,0,38,380,370,195,175,366,"東港鎮指標國中"],[5,"134507","屏東縣立恆春國民中學",0,2,0,28,270,260,135,125,257,"恆春半島指標國中"],[5,"134508","屏東縣立萬丹國民中學",0,2,0,32,310,300,155,145,297,"萬丹鄉公立國中"],[5,"134509","屏東縣立里港國民中學",0,2,0,26,250,240,125,115,238,"公立國中"],[5,"134510","屏東縣立內埔國民中學",0,2,0,28,270,260,135,125,257,"內埔鄉公立國中"],[5,"131307","財團法人屏榮高中 (附設國中部)",1,4,1,5,56,60,22,38,60,"完全中學直升生源"],[5,"131308","私立陸興高中 (附設國中部)",1,4,1,4,31,17,12,5,17,"完全中學直升生源"],[5,"131311","私立美和高中 (附設國中部)",1,4,1,19,261,273,140,133,272,"完全中學直升生源"],[7,"140301","國立臺東大學附屬體育高中 (附設國中部)",1,0,0,12,66,60,38,22,60,"完全中學直升生源"],[7,"141301","臺東縣均一高中 (附設國中部)",1,3,0,6,49,50,19,31,50,"完全中學直升生源"],[7,"144322","縣立蘭嶼高中 (附設國中部)",1,2,0,6,27,33,20,13,33,"完全中學直升生源"],[7,"144501","臺東縣立新生國民中學",0,2,0,42,440,430,225,205,426,"臺東縣指標名校"],[7,"144502","臺東縣立東海國民中學",0,2,0,36,370,360,190,170,356,"臺東市大型國中"],[7,"144503","臺東縣立寶桑國民中學",0,2,0,26,250,240,125,115,238,"臺東市公立國中"],[7,"144504","臺東縣立關山國民中學",0,2,0,18,160,150,80,70,148,"縱谷線指標國中"],[7,"144505","臺東縣立新港國民中學",0,2,0,18,170,160,85,75,158,"海岸線指標國中"],[7,"144506","臺東縣立大武國民中學",0,2,0,12,110,100,55,45,99,"南迴線公立國中"],[7,"141307","私立育仁高中 (附設國中部)",1,4,1,3,16,8,4,4,8,"完全中學直升生源"],[8,"164501","澎湖縣立馬公國民中學",0,2,0,42,450,440,230,210,436,"澎湖縣第一大國中"],[8,"164502","澎湖縣立中正國民中學",0,2,0,26,260,250,130,120,248,"馬公市公立國中"],[8,"164503","澎湖縣立文光國民中學",0,2,0,24,230,220,115,105,218,"馬公市公立國中/舞蹈班"],[8,"164504","澎湖縣立湖西國民中學",0,2,0,12,110,105,55,50,104,"湖西鄉公立國中"],[8,"164505","澎湖縣立白沙國民中學",0,2,0,9,80,75,40,35,74,"白沙鄉公立國中"],[8,"164506","澎湖縣立西嶼國民中學",0,2,0,9,75,70,38,32,69,"西嶼鄉公立國中"],[8,"164507","澎湖縣立望安國民中學",0,2,0,6,40,35,20,15,35,"離島偏鄉學校"],[8,"164508","澎湖縣立七美國民中學",0,2,0,6,45,40,22,18,40,"離島偏鄉學校"]]};
+
+    // Unpack RAW_DB into unified school list (439 schools: 231 HS + 208 JH)
+    const ALL_SCHOOLS = [
+      ...RAW_DB.hs.map(r => ({
+        stage: 'HS',
+        stageLabel: '高級中等學校(高中職)',
+        county: RAW_DB.counties[r[0]],
+        code: r[1],
+        name: r[2],
+        gov: RAW_DB.govs[r[3]],
+        own: RAW_DB.owns[r[4]],
+        type: RAW_DB.hsTypes[r[5]],
+        depts: r[6],
+        s113: r[7],
+        s114: r[8],
+        male114: r[9],
+        female114: r[10],
+        s115: r[11],
+        hasJH: r[12] === 1,
+        note: RAW_DB.hsNotes[r[13]] || ''
+      })),
+      ...RAW_DB.jh.map(r => ({
+        stage: 'JH',
+        stageLabel: '國民中學(含完全中學國中部)',
+        county: RAW_DB.counties[r[0]],
+        code: r[1],
+        name: r[2],
+        type: RAW_DB.jhTypes[r[3]],
+        gov: RAW_DB.govs[r[4]],
+        own: RAW_DB.owns[r[5]],
+        classes: r[6],
+        s113: r[7],
+        s114: r[8],
+        male114: r[9],
+        female114: r[10],
+        s115: r[11],
+        depts: r[3] === 0 ? `【國中部】獨立國中普通班 (${r[6]}班)` : `【國中部】完全中學附設國中部 (${r[6]}班)`,
+        hasJH: true,
+        note: r[12] || ''
+      }))
+    ];
+
+    function getActiveFilters() {
+      return {
+        county: (document.getElementById('filter-county') || {}).value || 'ALL',
+        stage: (document.getElementById('filter-stage') || {}).value || 'ALL',
+        own: (document.getElementById('filter-ownership') || {}).value || 'ALL',
+        attrType: (document.getElementById('filter-attr-type') || {}).value || 'ALL',
+        cluster: (document.getElementById('filter-cluster') || {}).value || 'ALL',
+        year: (document.getElementById('filter-year') || {}).value || '114',
+        search: ((document.getElementById('roster-search') || {}).value || '').trim().toLowerCase(),
+        rosterLimit: (document.getElementById('roster-limit') || {}).value || '50'
+      };
+    }
+
+    function matchOwnFilter(s, ownVal) {
+      if (ownVal === 'ALL') return true;
+      if (ownVal === '公立' || ownVal === '私立') return s.own === ownVal;
+      return s.gov === ownVal;
+    }
+
+    function matchClusterFilter(s, clusterVal) {
+      if (clusterVal === 'ALL') return true;
+      if (clusterVal === '國中部') return s.stage === 'JH' || s.hasJH;
+      if (s.stage === 'JH') return false;
+      if (clusterVal === '海事水產群') {
+        return s.depts.includes('【海事水產群】') || s.depts.includes('海事') || s.depts.includes('水產');
+      }
+      return s.depts.includes(`【${clusterVal}】`) || s.depts.includes(clusterVal);
+    }
+
+    function getFilteredSchools(ignoreSearch = false) {
+      const f = getActiveFilters();
+      return ALL_SCHOOLS.filter(s => {
+        if (f.county !== 'ALL' && s.county !== f.county) return false;
+        if (f.stage !== 'ALL' && s.stage !== f.stage) return false;
+        if (!matchOwnFilter(s, f.own)) return false;
+        if (f.attrType !== 'ALL' && s.type !== f.attrType) return false;
+        if (!matchClusterFilter(s, f.cluster)) return false;
+        if (!ignoreSearch && f.search) {
+          const hay = `${s.code} ${s.name} ${s.county} ${s.gov} ${s.own} ${s.type} ${s.depts} ${s.note}`.toLowerCase();
+          if (!hay.includes(f.search)) return false;
+        }
+        return true;
+      });
+    }
+
+    function getYearStudentCount(s, year) {
+      if (year === '113') return s.s113;
+      if (year === '115') return s.s115;
+      return s.s114;
+    }
+
+    // 1. Update Top 4 KPI Cards (matching exact HTML IDs)
+    function updateSummaryKPIs() {
+      const f = getActiveFilters();
+      const filtered = getFilteredSchools(true);
+      const hsList = filtered.filter(s => s.stage === 'HS');
+      const jhList = filtered.filter(s => s.stage === 'JH');
+
+      const hsPub = hsList.filter(s => s.own === '公立');
+      const hsPriv = hsList.filter(s => s.own === '私立');
+      const hsNat = hsList.filter(s => s.gov === '國立');
+      const hsMun = hsList.filter(s => s.gov === '市立');
+      const hsCty = hsList.filter(s => s.gov === '縣立');
+      const hsPubOther = hsList.filter(s => s.gov === '公立');
+
+      const jhPub = jhList.filter(s => s.own === '公立');
+      const jhPriv = jhList.filter(s => s.own === '私立');
+      const jhIndep = jhList.filter(s => s.type === '國民中學');
+      const jhAttach = jhList.filter(s => s.type === '高級中等學校附設國中部');
+
+      const hsStu113 = hsList.reduce((a, b) => a + b.s113, 0);
+      const hsStu114 = hsList.reduce((a, b) => a + b.s114, 0);
+      const hsStu115 = hsList.reduce((a, b) => a + b.s115, 0);
+      const hsStuYear = hsList.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const hsPubStu = hsPub.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const hsPrivStu = hsPriv.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+
+      const jhStuYear = jhList.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const jhPubStu = jhPub.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const jhPrivStu = jhPriv.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const jhIndepStu = jhIndep.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+      const jhAttachStu = jhAttach.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+
+      const yoy = hsStu113 > 0 ? (((hsStu114 - hsStu113) / hsStu113) * 100).toFixed(1) : '0.0';
+      const hsPubSchPct = hsList.length > 0 ? ((hsPub.length / hsList.length) * 100).toFixed(1) : '0.0';
+      const hsPrivSchPct = hsList.length > 0 ? ((hsPriv.length / hsList.length) * 100).toFixed(1) : '0.0';
+      const hsPubPct = hsStuYear > 0 ? ((hsPubStu / hsStuYear) * 100).toFixed(1) : '0.0';
+      const hsPrivPct = hsStuYear > 0 ? ((hsPrivStu / hsStuYear) * 100).toFixed(1) : '0.0';
+
+      const jhPubSchPct = jhList.length > 0 ? ((jhPub.length / jhList.length) * 100).toFixed(1) : '0.0';
+      const jhPrivSchPct = jhList.length > 0 ? ((jhPriv.length / jhList.length) * 100).toFixed(1) : '0.0';
+      const jhPubPct = jhStuYear > 0 ? ((jhPubStu / jhStuYear) * 100).toFixed(1) : '0.0';
+      const jhPrivPct = jhStuYear > 0 ? ((jhPrivStu / jhStuYear) * 100).toFixed(1) : '0.0';
+
+      const elKpiSchools = document.getElementById('kpi-schools');
+      if (elKpiSchools) elKpiSchools.textContent = hsList.length.toLocaleString();
+      const elKpiSchoolsSub = document.getElementById('kpi-schools-sub');
+      if (elKpiSchoolsSub) {
+        elKpiSchoolsSub.innerHTML = `<span class="font-semibold text-blue-800">公立 ${hsPub.length} 所 (${hsPubSchPct}%)</span><span class="font-semibold text-amber-700">私立 ${hsPriv.length} 所 (${hsPrivSchPct}%)</span>`;
+      }
+      const elKpiSchoolsGov = document.getElementById('kpi-schools-gov');
+      if (elKpiSchoolsGov) {
+        elKpiSchoolsGov.textContent = `設立別：國立 ${hsNat.length} / 市立 ${hsMun.length} / 縣立 ${hsCty.length} / 公立 ${hsPubOther.length} / 私立 ${hsPriv.length}`;
+      }
+
+      const elKpiStudents = document.getElementById('kpi-students');
+      if (elKpiStudents) elKpiStudents.textContent = hsStuYear.toLocaleString();
+      const elKpiStudentsUnit = document.getElementById('kpi-students-unit');
+      if (elKpiStudentsUnit) elKpiStudentsUnit.textContent = `人 (${f.year}高一新生)`;
+      const elKpiStudentsSub = document.getElementById('kpi-students-sub');
+      if (elKpiStudentsSub) {
+        elKpiStudentsSub.innerHTML = `<span>公立：${hsPubStu.toLocaleString()}人 (${hsPubPct}%)</span><span>私立：${hsPrivStu.toLocaleString()}人 (${hsPrivPct}%)</span>`;
+      }
+      const elKpiStudentsTrend = document.getElementById('kpi-students-trend');
+      if (elKpiStudentsTrend) {
+        elKpiStudentsTrend.innerHTML = `<span>113年：${hsStu113.toLocaleString()}人 | 115預估：${hsStu115.toLocaleString()}人</span><span class="${parseFloat(yoy) <= 0 ? 'text-rose-600' : 'text-emerald-600'} font-bold">年增減 ${yoy > 0 ? '+' : ''}${yoy}%</span>`;
+      }
+
+      const elKpiJhSchools = document.getElementById('kpi-jh-schools');
+      if (elKpiJhSchools) elKpiJhSchools.textContent = jhList.length.toLocaleString();
+      const elKpiJhSchoolsSub = document.getElementById('kpi-jh-schools-sub');
+      if (elKpiJhSchoolsSub) {
+        elKpiJhSchoolsSub.innerHTML = `<span class="font-semibold text-emerald-800">公立 ${jhPub.length} 所 (${jhPubSchPct}%)</span><span class="font-semibold text-amber-700">私立 ${jhPriv.length} 所 (${jhPrivSchPct}%)</span>`;
+      }
+      const elKpiJhSchoolsType = document.getElementById('kpi-jh-schools-type');
+      if (elKpiJhSchoolsType) {
+        elKpiJhSchoolsType.textContent = `屬性：獨立國民中學 ${jhIndep.length} 所 / 高中附設國中部 ${jhAttach.length} 所`;
+      }
+
+      const elKpiJh = document.getElementById('kpi-jh');
+      if (elKpiJh) elKpiJh.textContent = jhStuYear.toLocaleString();
+      const elKpiJhUnit = document.getElementById('kpi-jh-unit');
+      if (elKpiJhUnit) elKpiJhUnit.textContent = `人 (${f.year}國一新生合計)`;
+      const elKpiJhSub = document.getElementById('kpi-jh-sub');
+      if (elKpiJhSub) {
+        elKpiJhSub.innerHTML = `<span>公立：${jhPubStu.toLocaleString()}人 (${jhPubPct}%)</span><span>私立：${jhPrivStu.toLocaleString()}人 (${jhPrivPct}%)</span>`;
+      }
+      const elKpiJhDetail = document.getElementById('kpi-jh-detail');
+      if (elKpiJhDetail) {
+        elKpiJhDetail.innerHTML = `<span>獨立國中：${jhIndepStu.toLocaleString()}人</span><span>附設國中部：${jhAttachStu.toLocaleString()}人</span>`;
+      }
+    }
+
+    // 2. Render Left & Right Interactive Charts (matching #chart-county-trend & #chart-school-type)
+    function renderCharts() {
+      const f = getActiveFilters();
+      const filtered = getFilteredSchools(true);
+      const counties = f.county === 'ALL' ? RAW_DB.counties : [f.county];
+
+      // Left Chart: #chart-county-trend
+      const ctxLeft = document.getElementById('chart-county-trend');
+      if (ctxLeft) {
+        if (countyChartInstance) countyChartInstance.destroy();
+        let datasets = [];
+        let isStacked = true;
+
+        if (leftChartMode === 'own_stu') {
+          datasets = [
+            {
+              label: '公立高中職新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '公立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#1d4ed8',
+              stack: 'HS'
+            },
+            {
+              label: '私立高中職新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '私立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#f59e0b',
+              stack: 'HS'
+            },
+            {
+              label: '公立國中一年級(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.own === '公立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#059669',
+              stack: 'JH'
+            },
+            {
+              label: '私立國中一年級(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.own === '私立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#a855f7',
+              stack: 'JH'
+            }
+          ];
+        } else if (leftChartMode === 'hs_own_stu') {
+          datasets = [
+            {
+              label: '公立高中職新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '公立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#1d4ed8',
+              stack: 'HS'
+            },
+            {
+              label: '私立高中職新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '私立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#f59e0b',
+              stack: 'HS'
+            }
+          ];
+        } else if (leftChartMode === 'jh_own_stu') {
+          datasets = [
+            {
+              label: '公立獨立國中新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.type === '國民中學').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#059669',
+              stack: 'JH'
+            },
+            {
+              label: '公立附設國中部新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.type === '高級中等學校附設國中部' && s.own === '公立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#0284c7',
+              stack: 'JH'
+            },
+            {
+              label: '私立附設國中部新生(人)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.own === '私立').reduce((a, b) => a + getYearStudentCount(b, f.year), 0)),
+              backgroundColor: '#a855f7',
+              stack: 'JH'
+            }
+          ];
+        } else if (leftChartMode === 'own_sch') {
+          datasets = [
+            {
+              label: '公立高中職(校)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '公立').length),
+              backgroundColor: '#1d4ed8',
+              stack: 'HS'
+            },
+            {
+              label: '私立高中職(校)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'HS' && s.own === '私立').length),
+              backgroundColor: '#f59e0b',
+              stack: 'HS'
+            },
+            {
+              label: '公立國中(校)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.own === '公立').length),
+              backgroundColor: '#059669',
+              stack: 'JH'
+            },
+            {
+              label: '私立國中(校)',
+              data: counties.map(c => filtered.filter(s => s.county === c && s.stage === 'JH' && s.own === '私立').length),
+              backgroundColor: '#a855f7',
+              stack: 'JH'
+            }
+          ];
+        } else {
+          isStacked = false;
+          datasets = [
+            {
+              label: '113學年入學人數',
+              data: counties.map(c => filtered.filter(s => s.county === c).reduce((a, b) => a + b.s113, 0)),
+              backgroundColor: '#94a3b8'
+            },
+            {
+              label: '114學年入學人數',
+              data: counties.map(c => filtered.filter(s => s.county === c).reduce((a, b) => a + b.s114, 0)),
+              backgroundColor: '#2563eb'
+            },
+            {
+              label: '115學年推估人數',
+              data: counties.map(c => filtered.filter(s => s.county === c).reduce((a, b) => a + b.s115, 0)),
+              backgroundColor: '#10b981'
+            }
+          ];
+        }
+
+        countyChartInstance = new Chart(ctxLeft.getContext('2d'), {
+          type: 'bar',
+          data: { labels: counties, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+            scales: {
+              x: { stacked: isStacked },
+              y: { stacked: isStacked, beginAtZero: true }
+            }
+          }
+        });
+      }
+
+      // Right Chart: #chart-school-type
+      const ctxRight = document.getElementById('chart-school-type');
+      if (ctxRight) {
+        if (typeChartInstance) typeChartInstance.destroy();
+        if (rightChartMode === 'cluster_stu' || rightChartMode === 'cluster_sch') {
+          // Aggregate by cluster from CLUSTER_DB.clList
+          // Note: r = [countyStr, clusterStr, pubSch, privSch, pub113, priv113, pub114, priv114, pub112, priv112]
+          const clAgg = {};
+          CLUSTER_DB.clList.forEach(r => {
+            const cName = r[0];
+            let clName = r[1];
+            if (f.county !== 'ALL' && cName !== f.county) return;
+            if (f.cluster !== 'ALL') {
+              if (f.cluster === '海事水產群' && clName !== '海事群' && clName !== '水產群') return;
+              else if (f.cluster !== '海事水產群' && clName !== f.cluster) return;
+            }
+            if (!clAgg[clName]) clAgg[clName] = { pubStu: 0, privStu: 0, pubSch: 0, privSch: 0 };
+            clAgg[clName].pubSch += r[2];
+            clAgg[clName].privSch += r[3];
+            clAgg[clName].pubStu += f.year === '113' ? r[4] : r[6];
+            clAgg[clName].privStu += f.year === '113' ? r[5] : r[7];
+          });
+
+          const isStu = rightChartMode === 'cluster_stu';
+          const sortedClusters = Object.keys(clAgg).sort((a, b) => {
+            const va = isStu ? (clAgg[a].pubStu + clAgg[a].privStu) : (clAgg[a].pubSch + clAgg[a].privSch);
+            const vb = isStu ? (clAgg[b].pubStu + clAgg[b].privStu) : (clAgg[b].pubSch + clAgg[b].privSch);
+            return vb - va;
+          });
+
+          typeChartInstance = new Chart(ctxRight.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: sortedClusters,
+              datasets: [
+                {
+                  label: isStu ? '公立高一新生(人)' : '公立開課校數(所)',
+                  data: sortedClusters.map(k => f.own === '私立' ? 0 : (isStu ? clAgg[k].pubStu : clAgg[k].pubSch)),
+                  backgroundColor: '#2563eb',
+                  borderRadius: 3
+                },
+                {
+                  label: isStu ? '私立高一新生(人)' : '私立開課校數(所)',
+                  data: sortedClusters.map(k => f.own === '公立' ? 0 : (isStu ? clAgg[k].privStu : clAgg[k].privSch)),
+                  backgroundColor: '#f59e0b',
+                  borderRadius: 3
+                }
+              ]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+              scales: {
+                x: { stacked: true, beginAtZero: true },
+                y: { stacked: true, ticks: { font: { size: 11 } } }
+              }
+            }
+          });
+        } else {
+          // Attribute Type Breakdown (Public vs Private)
+          const typeLabels = [
+            '普通型高級中等學校',
+            '普通型高中(設專業群科)',
+            '技術型高級中等學校(高職)',
+            '技術型高中(設普通科)',
+            '綜合型/技術型高級中等學校',
+            '綜合型高級中等學校',
+            '實驗/單科型高級中等學校',
+            '國民中學',
+            '高級中等學校附設國中部'
+          ].filter(t => {
+            if (f.stage === 'HS' && (t === '國民中學' || t === '高級中等學校附設國中部')) return false;
+            if (f.stage === 'JH' && t !== '國民中學' && t !== '高級中等學校附設國中部') return false;
+            if (f.attrType !== 'ALL' && t !== f.attrType) return false;
+            return true;
+          });
+
+          const shortLabel = {
+            '普通型高級中等學校': '普通型高中(純普通)',
+            '普通型高中(設專業群科)': '普通高中(設專業群科)',
+            '技術型高級中等學校(高職)': '技術型高中(純高職)',
+            '技術型高中(設普通科)': '技術型高中(設普通科)',
+            '綜合型/技術型高級中等學校': '綜合/技術型高中',
+            '綜合型高級中等學校': '綜合型高中',
+            '實驗/單科型高級中等學校': '實驗/單科型高中',
+            '國民中學': '國中：獨立國民中學',
+            '高級中等學校附設國中部': '國中：完全中學附設國中部'
+          };
+
+          const pubData = typeLabels.map(t => {
+            const list = filtered.filter(s => s.type === t && s.own === '公立');
+            return rightChartMode === 'stu' ? list.reduce((a, b) => a + getYearStudentCount(b, f.year), 0) : list.length;
+          });
+          const privData = typeLabels.map(t => {
+            const list = filtered.filter(s => s.type === t && s.own === '私立');
+            return rightChartMode === 'stu' ? list.reduce((a, b) => a + getYearStudentCount(b, f.year), 0) : list.length;
+          });
+
+          typeChartInstance = new Chart(ctxRight.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: typeLabels.map(t => shortLabel[t] || t),
+              datasets: [
+                {
+                  label: rightChartMode === 'stu' ? '公立入學人數(人)' : '公立校數(所)',
+                  data: pubData,
+                  backgroundColor: '#1d4ed8',
+                  borderRadius: 4
+                },
+                {
+                  label: rightChartMode === 'stu' ? '私立入學人數(人)' : '私立校數(所)',
+                  data: privData,
+                  backgroundColor: '#f59e0b',
+                  borderRadius: 4
+                }
+              ]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+              scales: {
+                x: { stacked: true, beginAtZero: true },
+                y: { stacked: true, ticks: { font: { size: 11 } } }
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // 3. Table 1: County Overview Table (11 columns matching HTML thead)
+    function renderCountyTable() {
+      const f = getActiveFilters();
+      const filtered = getFilteredSchools(true);
+      const counties = f.county === 'ALL' ? RAW_DB.counties : [f.county];
+      const tbody = document.getElementById('table-county-body');
+      const tfoot = document.getElementById('table-county-foot');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const zoneBadge = {
+        '高雄市': '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">核心A區(主場)</span>',
+        '屏東縣': '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">核心A區(主場)</span>',
+        '臺南市': '<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold">近程B區(通勤圈)</span>',
+        '嘉義市': '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">中程C區(高鐵軸)</span>',
+        '嘉義縣': '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">中程C區(高鐵軸)</span>',
+        '雲林縣': '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">中程C區(高鐵軸)</span>',
+        '臺中市': '<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[11px] font-bold">中部都會票倉</span>',
+        '臺東縣': '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">東岸離島D區</span>',
+        '澎湖縣': '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">東岸離島D區</span>'
+      };
+
+      let totHsCount = 0, totHsPub = 0, totHsPriv = 0, totHsPureGen = 0, totHsPureVoc = 0, totHsMix = 0, totHsComp = 0;
+      let totHs113 = 0, totHs114 = 0, totHs115 = 0, totHsPubStu = 0, totHsPrivStu = 0;
+      let totJhCount = 0, totJhIndep = 0, totJhAttach = 0, totJhPub = 0, totJhPriv = 0, totJh114 = 0, totJhPubStu = 0, totJhPrivStu = 0;
+
+      counties.forEach(c => {
+        const hs = filtered.filter(s => s.county === c && s.stage === 'HS');
+        const jh = filtered.filter(s => s.county === c && s.stage === 'JH');
+        const hsPub = hs.filter(s => s.own === '公立');
+        const hsPriv = hs.filter(s => s.own === '私立');
+
+        const pureGen = hs.filter(s => s.type === '普通型高級中等學校').length;
+        const pureVoc = hs.filter(s => s.type === '技術型高級中等學校(高職)').length;
+        const mix = hs.filter(s => s.type === '普通型高中(設專業群科)' || s.type === '技術型高中(設普通科)').length;
+        const comp = hs.length - pureGen - pureVoc - mix;
+
+        const hs113 = hs.reduce((a, b) => a + b.s113, 0);
+        const hs114 = hs.reduce((a, b) => a + b.s114, 0);
+        const hs115 = hs.reduce((a, b) => a + b.s115, 0);
+        const hsPubStu = hsPub.reduce((a, b) => a + b.s114, 0);
+        const hsPrivStu = hsPriv.reduce((a, b) => a + b.s114, 0);
+        const diff = hs114 - hs113;
+        const pct = hs113 > 0 ? ((diff / hs113) * 100).toFixed(1) : '0.0';
+
+        const jhPub = jh.filter(s => s.own === '公立');
+        const jhPriv = jh.filter(s => s.own === '私立');
+        const jhIndep = jh.filter(s => s.type === '國民中學');
+        const jhAttach = jh.filter(s => s.type === '高級中等學校附設國中部');
+        const jh114 = jh.reduce((a, b) => a + b.s114, 0);
+        const jhPubStu = jhPub.reduce((a, b) => a + b.s114, 0);
+        const jhPrivStu = jhPriv.reduce((a, b) => a + b.s114, 0);
+
+        totHsCount += hs.length; totHsPub += hsPub.length; totHsPriv += hsPriv.length;
+        totHsPureGen += pureGen; totHsPureVoc += pureVoc; totHsMix += mix; totHsComp += comp;
+        totHs113 += hs113; totHs114 += hs114; totHs115 += hs115; totHsPubStu += hsPubStu; totHsPrivStu += hsPrivStu;
+        totJhCount += jh.length; totJhIndep += jhIndep.length; totJhAttach += jhAttach.length;
+        totJhPub += jhPub.length; totJhPriv += jhPriv.length; totJh114 += jh114;
+        totJhPubStu += jhPubStu; totJhPrivStu += jhPrivStu;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-blue-50/50 transition cursor-pointer';
+        tr.addEventListener('click', () => {
+          const sel = document.getElementById('filter-county');
+          if (sel) {
+            sel.value = sel.value === c ? 'ALL' : c;
+            refreshAllViews();
+          }
+        });
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${c}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold">${hs.length} <span class="text-xs font-normal text-slate-500">(公${hsPub.length}/私${hsPriv.length})</span></td>
+          <td class="py-2.5 px-2.5 font-mono text-xs text-slate-600">純普${pureGen} / 純職${pureVoc} / 兼設${mix} / 綜實${comp}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-600">${hs113.toLocaleString()}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold text-blue-800">${hs114.toLocaleString()} <div class="text-[10px] font-normal text-slate-500">公${hsPubStu.toLocaleString()} / 私${hsPrivStu.toLocaleString()}</div></td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-700">${hs115.toLocaleString()}</td>
+          <td class="py-2.5 px-2 text-right font-mono text-xs ${diff <= 0 ? 'text-rose-600' : 'text-emerald-600'}">${diff > 0 ? '+' : ''}${diff.toLocaleString()} (${pct}%)</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold text-emerald-800 bg-emerald-50/30">${jh.length} <span class="text-xs font-normal text-slate-500">(公${jhPub.length}/私${jhPriv.length})</span></td>
+          <td class="py-2.5 px-2.5 font-mono text-xs text-emerald-900 bg-emerald-50/30">獨立國中 ${jhIndep.length} / 附設國中部 ${jhAttach.length}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold text-emerald-700 bg-emerald-50/30">${jh114.toLocaleString()} <div class="text-[10px] font-normal text-slate-500">公${jhPubStu.toLocaleString()} / 私${jhPrivStu.toLocaleString()}</div></td>
+          <td class="py-2.5 px-3">${zoneBadge[c] || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (tfoot) {
+        const totDiff = totHs114 - totHs113;
+        const totPct = totHs113 > 0 ? ((totDiff / totHs113) * 100).toFixed(1) : '0.0';
+        tfoot.innerHTML = `
+          <tr>
+            <td class="py-3 px-3">篩選合計 (${counties.length} 縣市)</td>
+            <td class="py-3 px-2.5 text-right font-mono">${totHsCount} (公${totHsPub}/私${totHsPriv})</td>
+            <td class="py-3 px-2.5 font-mono text-xs">純普${totHsPureGen} / 純職${totHsPureVoc} / 兼設${totHsMix} / 綜實${totHsComp}</td>
+            <td class="py-3 px-2.5 text-right font-mono">${totHs113.toLocaleString()}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-blue-800">${totHs114.toLocaleString()} <div class="text-[10px] font-normal text-slate-600">公${totHsPubStu.toLocaleString()} / 私${totHsPrivStu.toLocaleString()}</div></td>
+            <td class="py-3 px-2.5 text-right font-mono">${totHs115.toLocaleString()}</td>
+            <td class="py-3 px-2 text-right font-mono text-xs text-rose-600">${totDiff > 0 ? '+' : ''}${totDiff.toLocaleString()} (${totPct}%)</td>
+            <td class="py-3 px-2.5 text-right font-mono text-emerald-800">${totJhCount} (公${totJhPub}/私${totJhPriv})</td>
+            <td class="py-3 px-2.5 font-mono text-xs text-emerald-900">獨立 ${totJhIndep} / 附設 ${totJhAttach}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-emerald-700">${totJh114.toLocaleString()} <div class="text-[10px] font-normal text-slate-600">公${totJhPubStu.toLocaleString()} / 私${totJhPrivStu.toLocaleString()}</div></td>
+            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-white text-[11px]">總計基準</span></td>
+          </tr>
+        `;
+      }
+    }
+
+    // 4. Table 2: Cluster / Department Public vs Private Difference Pivot Table (10 columns matching HTML thead)
+    function renderClusterDiffTable() {
+      const f = getActiveFilters();
+      const domFilter = (document.getElementById('t2-dom-select') || {}).value || 'ALL';
+      const tbody = document.getElementById('table-cluster-diff-body');
+      const tfoot = document.getElementById('table-cluster-diff-foot');
+      const badgeEl = document.getElementById('cluster-table-scope-badge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (badgeEl) {
+        badgeEl.textContent = f.county === 'ALL' ? '目前範圍：全部八縣市' : `目前範圍：${f.county}`;
+      }
+
+      // Aggregate CLUSTER_DB.clList: r = [countyStr, clusterStr, pubSch, privSch, pub113, priv113, pub114, priv114, pub112, priv112]
+      const clAgg = {};
+      CLUSTER_DB.clList.forEach(r => {
+        const cName = r[0];
+        let clName = r[1];
+        if (f.county !== 'ALL' && cName !== f.county) return;
+        if (f.stage === 'JH') return;
+        if (f.cluster !== 'ALL') {
+          if (f.cluster === '海事水產群' && clName !== '海事群' && clName !== '水產群') return;
+          else if (f.cluster !== '海事水產群' && clName !== f.cluster) return;
+        }
+
+        if (!clAgg[clName]) clAgg[clName] = { pubSch: 0, privSch: 0, pub113: 0, priv113: 0, pub114: 0, priv114: 0 };
+        clAgg[clName].pubSch += f.own === '私立' ? 0 : r[2];
+        clAgg[clName].privSch += f.own === '公立' ? 0 : r[3];
+        clAgg[clName].pub113 += f.own === '私立' ? 0 : r[4];
+        clAgg[clName].priv113 += f.own === '公立' ? 0 : r[5];
+        clAgg[clName].pub114 += f.own === '私立' ? 0 : r[6];
+        clAgg[clName].priv114 += f.own === '公立' ? 0 : r[7];
+      });
+
+      // Also include Junior High row if stage !== 'HS' and (cluster === 'ALL' || cluster === '國中部')
+      if (f.stage !== 'HS' && (f.cluster === 'ALL' || f.cluster === '國中部')) {
+        const jhFiltered = ALL_SCHOOLS.filter(s => s.stage === 'JH' && (f.county === 'ALL' || s.county === f.county) && matchOwnFilter(s, f.own));
+        const jhPub = jhFiltered.filter(s => s.own === '公立');
+        const jhPriv = jhFiltered.filter(s => s.own === '私立');
+        clAgg['國中部'] = {
+          pubSch: jhPub.length,
+          privSch: jhPriv.length,
+          pub113: jhPub.reduce((a, b) => a + b.s113, 0),
+          priv113: jhPriv.reduce((a, b) => a + b.s113, 0),
+          pub114: jhPub.reduce((a, b) => a + b.s114, 0),
+          priv114: jhPriv.reduce((a, b) => a + b.s114, 0)
+        };
+      }
+
+      const sortedKeys = Object.keys(clAgg).sort((a, b) => {
+        if (a === '國中部') return 1;
+        if (b === '國中部') return -1;
+        return (clAgg[b].pub114 + clAgg[b].priv114) - (clAgg[a].pub114 + clAgg[a].priv114);
+      });
+
+      let sumPubSch = 0, sumPrivSch = 0, sum113 = 0, sumPub114 = 0, sumPriv114 = 0, displayedCount = 0;
+
+      sortedKeys.forEach(clName => {
+        const item = clAgg[clName];
+        const tot113 = item.pub113 + item.priv113;
+        const tot114 = item.pub114 + item.priv114;
+        if (tot114 === 0 && item.pubSch === 0 && item.privSch === 0) return;
+
+        const pubPctNum = tot114 > 0 ? (item.pub114 / tot114) * 100 : 0;
+        const privPctNum = tot114 > 0 ? (item.priv114 / tot114) * 100 : 0;
+
+        // Filter by t2-dom-select
+        if (domFilter === 'PUB' && pubPctNum < 65) return;
+        if (domFilter === 'PRIV' && privPctNum < 60) return;
+        if (domFilter === 'BAL' && (pubPctNum >= 65 || privPctNum >= 60)) return;
+
+        displayedCount++;
+        sumPubSch += item.pubSch;
+        sumPrivSch += item.privSch;
+        sum113 += tot113;
+        sumPub114 += item.pub114;
+        sumPriv114 += item.priv114;
+
+        const pubPct = pubPctNum.toFixed(1);
+        const privPct = privPctNum.toFixed(1);
+        const yoy = tot113 > 0 ? (((tot114 - tot113) / tot113) * 100).toFixed(1) : '0.0';
+        const avgPerSch = (item.pubSch + item.privSch) > 0 ? Math.round(tot114 / (item.pubSch + item.privSch)) : 0;
+
+        let domBadge = '';
+        if (pubPctNum >= 65) {
+          domBadge = `<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">公立主導 (${pubPct}%)</span>`;
+        } else if (privPctNum >= 60) {
+          domBadge = `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold">私立主導 (${privPct}%)</span>`;
+        } else {
+          domBadge = `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">公私均衡 (公${pubPct}%/私${privPct}%)</span>`;
+        }
+
+        const topDeptsText = CLUSTER_DB.topDepts[clName] || '';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-blue-50/50 transition cursor-pointer';
+        tr.addEventListener('click', () => {
+          const sel = document.getElementById('filter-cluster');
+          if (sel) {
+            const val = (clName === '海事群' || clName === '水產群') ? clName : clName;
+            sel.value = sel.value === val ? 'ALL' : val;
+            refreshAllViews();
+          }
+        });
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${clName}</td>
+          <td class="py-2.5 px-3 text-xs text-slate-600">${topDeptsText}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-semibold">${item.pubSch + item.privSch} <span class="text-xs font-normal text-slate-500">(公${item.pubSch}/私${item.privSch})</span></td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-600">${tot113.toLocaleString()}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold text-slate-900">${tot114.toLocaleString()}</td>
+          <td class="py-2.5 px-3">
+            <div class="w-full bg-amber-200 rounded-full h-2.5 overflow-hidden flex">
+              <div class="bg-blue-600 h-2.5" style="width:${pubPct}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] font-mono mt-0.5">
+              <span class="text-blue-700 font-semibold">公 ${item.pub114.toLocaleString()} (${pubPct}%)</span>
+              <span class="text-amber-700 font-semibold">私 ${item.priv114.toLocaleString()} (${privPct}%)</span>
+            </div>
+          </td>
+          <td class="py-2.5 px-2.5 text-center">${domBadge}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-600">${avgPerSch.toLocaleString()} 人/校</td>
+          <td class="py-2.5 px-2 text-right font-mono text-xs ${parseFloat(yoy) <= 0 ? 'text-rose-600' : 'text-emerald-600'}">${yoy > 0 ? '+' : ''}${yoy}%</td>
+          <td class="py-2.5 px-3 text-xs font-semibold text-blue-950">${clusterStrategyMap[clName] || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (tfoot) {
+        const grandTot = sumPub114 + sumPriv114;
+        const gPubPct = grandTot > 0 ? ((sumPub114 / grandTot) * 100).toFixed(1) : '0.0';
+        const gPrivPct = grandTot > 0 ? ((sumPriv114 / grandTot) * 100).toFixed(1) : '0.0';
+        const gYoy = sum113 > 0 ? (((grandTot - sum113) / sum113) * 100).toFixed(1) : '0.0';
+        tfoot.innerHTML = `
+          <tr>
+            <td class="py-3 px-3">篩選群別總計 (${displayedCount} 群類)</td>
+            <td class="py-3 px-3 text-xs text-slate-500">涵蓋 18 大專業/學術群別與國中部生源</td>
+            <td class="py-3 px-2.5 text-right font-mono">${sumPubSch + sumPrivSch} 校次 (公${sumPubSch}/私${sumPrivSch})</td>
+            <td class="py-3 px-2.5 text-right font-mono">${sum113.toLocaleString()}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-blue-900">${grandTot.toLocaleString()}</td>
+            <td class="py-3 px-3 text-xs font-mono">公 ${sumPub114.toLocaleString()} (${gPubPct}%) / 私 ${sumPriv114.toLocaleString()} (${gPrivPct}%)</td>
+            <td class="py-3 px-2.5 text-center"><span class="px-2 py-0.5 rounded bg-slate-800 text-white text-[11px]">公私比 ${gPubPct}% : ${gPrivPct}%</span></td>
+            <td class="py-3 px-2.5 text-right font-mono">-</td>
+            <td class="py-3 px-2 text-right font-mono text-xs text-rose-600">${gYoy > 0 ? '+' : ''}${gYoy}%</td>
+            <td class="py-3 px-3 text-xs text-slate-500">點擊任一群別列可連動篩選全頁圖表與學校名冊</td>
+          </tr>
+        `;
+      }
+    }
+
+    // 5. Table 3: School Attribute Type × Public/Private × Gov Pivot Table (13 columns matching HTML thead)
+    function renderAttrTypePivotTable() {
+      const f = getActiveFilters();
+      const filtered = getFilteredSchools(true);
+      const tbody = document.getElementById('table-attr-type-body');
+      const tfoot = document.getElementById('table-attr-type-foot');
+      const badgeEl = document.getElementById('attr-table-scope-badge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (badgeEl) {
+        badgeEl.textContent = f.county === 'ALL' ? '目前範圍：全部八縣市' : `目前範圍：${f.county}`;
+      }
+
+      const attrTypesOrder = [
+        { stage: '高中職', type: '普通型高級中等學校', desc: '純設普通科及學術資優班，主攻大學申請與四技申請(護理/物治/生科)' },
+        { stage: '高中職', type: '技術型高級中等學校(高職)', desc: '純專業群科高職(如雄工、中工、樹德家商、三信家商)，為四技甄選與技優保送核心主力' },
+        { stage: '高中職', type: '普通型高中(設專業群科)', desc: '普通高中兼設專業群科(如明道、僑泰、新民、家齊、東石、屏榮)，兼具普高與高職雙重客群' },
+        { stage: '高中職', type: '技術型高中(設普通科)', desc: '高職兼設普通科(如中山工商、中正高工、高雄高商、嘉義高工)，跨群科規模龐大' },
+        { stage: '高中職', type: '綜合型/技術型高級中等學校', desc: '高二學術/專門學程分流(如青年高中、西螺農工、屏北高中、臺東女中)' },
+        { stage: '高中職', type: '實驗/單科型高級中等學校', desc: '科學園區實驗中學(中科/南科/嘉科/屏科/高科實中)、華德福及體育單科高中' },
+        { stage: '高中職', type: '綜合型高級中等學校', desc: '純綜合型學程(如成功商水、巨人高中、立仁高中、蘭嶼高中)' },
+        { stage: '國中', type: '國民中學', desc: '105 所公立獨立設置國民中學，無高中部直升限制，為輔英五專部【護理科、醫技科、環境工程與衛生科(環工科)、應外科】完全免試與優先免試最大生源池' },
+        { stage: '國中', type: '高級中等學校附設國中部', desc: '103 所完全中學附設國中部(公59/私44)，部分直升本校高中部，其餘外流報考五專(護理/醫技/環工/應外)或高職' }
+      ];
+
+      const hsTot114 = filtered.filter(s => s.stage === 'HS').reduce((a, b) => a + b.s114, 0);
+      const jhTot114 = filtered.filter(s => s.stage === 'JH').reduce((a, b) => a + b.s114, 0);
+
+      let totSch = 0, totPub = 0, totPriv = 0, totNat = 0, totMun = 0, totCty = 0, totPubOther = 0;
+      let tot113 = 0, totPub114 = 0, totPriv114 = 0, tot115 = 0;
+
+      attrTypesOrder.forEach(cfg => {
+        const list = filtered.filter(s => s.type === cfg.type);
+        if (list.length === 0) return;
+
+        const pub = list.filter(s => s.own === '公立');
+        const priv = list.filter(s => s.own === '私立');
+        const nat = list.filter(s => s.gov === '國立');
+        const mun = list.filter(s => s.gov === '市立');
+        const cty = list.filter(s => s.gov === '縣立');
+        const pubO = list.filter(s => s.gov === '公立');
+
+        const s113 = list.reduce((a, b) => a + b.s113, 0);
+        const pub114 = pub.reduce((a, b) => a + b.s114, 0);
+        const priv114 = priv.reduce((a, b) => a + b.s114, 0);
+        const s114 = pub114 + priv114;
+        const s115 = list.reduce((a, b) => a + b.s115, 0);
+
+        const pubPct = s114 > 0 ? ((pub114 / s114) * 100).toFixed(1) : '0.0';
+        const privPct = s114 > 0 ? ((priv114 / s114) * 100).toFixed(1) : '0.0';
+        const yoy = s113 > 0 ? (((s114 - s113) / s113) * 100).toFixed(1) : '0.0';
+        const stageDenom = cfg.stage === '高中職' ? hsTot114 : jhTot114;
+        const stageShare = stageDenom > 0 ? ((s114 / stageDenom) * 100).toFixed(1) + '%' : '-';
+
+        totSch += list.length; totPub += pub.length; totPriv += priv.length;
+        totNat += nat.length; totMun += mun.length; totCty += cty.length; totPubOther += pubO.length;
+        tot113 += s113; totPub114 += pub114; totPriv114 += priv114; tot115 += s115;
+
+        const stageBadge = cfg.stage === '高中職'
+          ? '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">高中職</span>'
+          : '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">國中</span>';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-indigo-50/40 transition cursor-pointer';
+        tr.addEventListener('click', () => {
+          const sel = document.getElementById('filter-attr-type');
+          if (sel) {
+            sel.value = sel.value === cfg.type ? 'ALL' : cfg.type;
+            refreshAllViews();
+          }
+        });
+        tr.innerHTML = `
+          <td class="py-2.5 px-3">${stageBadge}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900">${cfg.type}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold">${list.length}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-blue-700 font-bold">${pub.length}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-amber-700 font-bold">${priv.length}</td>
+          <td class="py-2.5 px-3 font-mono text-xs text-slate-600">國${nat.length} / 市${mun.length} / 縣${cty.length} / 公${pubO.length} / 私${priv.length}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-600">${s113.toLocaleString()}</td>
+          <td class="py-2.5 px-2.5 text-right font-mono font-bold text-slate-900">${s114.toLocaleString()}</td>
+          <td class="py-2.5 px-3 font-mono text-xs"><span class="text-blue-700 font-semibold">公${pub114.toLocaleString()}(${pubPct}%)</span> / <span class="text-amber-700 font-semibold">私${priv114.toLocaleString()}(${privPct}%)</span></td>
+          <td class="py-2.5 px-2.5 text-right font-mono text-slate-700">${s115.toLocaleString()}</td>
+          <td class="py-2.5 px-2 text-right font-mono text-xs ${parseFloat(yoy) <= 0 ? 'text-rose-600' : 'text-emerald-600'}">${yoy > 0 ? '+' : ''}${yoy}%</td>
+          <td class="py-2.5 px-2 text-right font-mono text-xs font-semibold text-indigo-800">${stageShare}</td>
+          <td class="py-2.5 px-3 text-xs text-slate-600">${cfg.desc}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (tfoot) {
+        const tot114 = totPub114 + totPriv114;
+        const gPubPct = tot114 > 0 ? ((totPub114 / tot114) * 100).toFixed(1) : '0.0';
+        const gPrivPct = tot114 > 0 ? ((totPriv114 / tot114) * 100).toFixed(1) : '0.0';
+        const gYoy = tot113 > 0 ? (((tot114 - tot113) / tot113) * 100).toFixed(1) : '0.0';
+        tfoot.innerHTML = `
+          <tr>
+            <td class="py-3 px-3" colspan="2">篩選範圍總計 (9 大學校屬性類型)</td>
+            <td class="py-3 px-2.5 text-right font-mono">${totSch}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-blue-800">${totPub}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-amber-800">${totPriv}</td>
+            <td class="py-3 px-3 font-mono text-xs">國${totNat} / 市${totMun} / 縣${totCty} / 公${totPubOther} / 私${totPriv}</td>
+            <td class="py-3 px-2.5 text-right font-mono">${tot113.toLocaleString()}</td>
+            <td class="py-3 px-2.5 text-right font-mono text-slate-900">${tot114.toLocaleString()}</td>
+            <td class="py-3 px-3 font-mono text-xs">公${totPub114.toLocaleString()}(${gPubPct}%) / 私${totPriv114.toLocaleString()}(${gPrivPct}%)</td>
+            <td class="py-3 px-2.5 text-right font-mono">${tot115.toLocaleString()}</td>
+            <td class="py-3 px-2 text-right font-mono text-xs text-rose-600">${gYoy > 0 ? '+' : ''}${gYoy}%</td>
+            <td class="py-3 px-2 text-right font-mono text-xs">100%</td>
+            <td class="py-3 px-3 text-xs text-slate-500">涵蓋高中職 231 校與國中 208 校(部)</td>
+          </tr>
+        `;
+      }
+    }
+
+    // 6. Table 4: County × Attribute Type × Public/Private Cross Matrix (12 columns matching HTML thead)
+    function renderCountyTypeMatrix() {
+      const f = getActiveFilters();
+      const cellMode = (document.getElementById('matrix-cell-mode') || {}).value || 'both';
+      const filtered = getFilteredSchools(true);
+      const counties = f.county === 'ALL' ? RAW_DB.counties : [f.county];
+      const tbody = document.getElementById('table-county-type-matrix-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      function cellFmt(list) {
+        if (list.length === 0) return '<span class="text-slate-300">-</span>';
+        const pub = list.filter(s => s.own === '公立');
+        const priv = list.filter(s => s.own === '私立');
+        const pubStu = pub.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+        const privStu = priv.reduce((a, b) => a + getYearStudentCount(b, f.year), 0);
+        const stu = pubStu + privStu;
+        if (cellMode === 'schools') {
+          return `<div class="font-bold text-slate-800">${list.length}校</div><div class="text-[10px] text-slate-500">公${pub.length} / 私${priv.length}</div>`;
+        }
+        if (cellMode === 'students') {
+          return `<div class="font-bold text-blue-800">${stu.toLocaleString()}人</div><div class="text-[10px] text-slate-500">公${pubStu.toLocaleString()}/私${privStu.toLocaleString()}</div>`;
+        }
+        return `<div class="font-bold text-slate-800">${list.length}校 <span class="text-[10px] font-normal text-slate-500">(公${pub.length}/私${priv.length})</span></div><div class="text-[11px] text-blue-800 font-semibold">${stu.toLocaleString()}人</div>`;
+      }
+
+      counties.forEach(c => {
+        const cList = filtered.filter(s => s.county === c);
+        const g1 = cList.filter(s => s.type === '普通型高級中等學校');
+        const g2 = cList.filter(s => s.type === '技術型高級中等學校(高職)');
+        const g3 = cList.filter(s => s.type === '普通型高中(設專業群科)');
+        const g4 = cList.filter(s => s.type === '技術型高中(設普通科)');
+        const g5 = cList.filter(s => s.type === '綜合型/技術型高級中等學校');
+        const g6 = cList.filter(s => s.type === '實驗/單科型高級中等學校');
+        const g7 = cList.filter(s => s.type === '綜合型高級中等學校');
+        const hsSub = cList.filter(s => s.stage === 'HS');
+        const j1 = cList.filter(s => s.type === '國民中學');
+        const j2 = cList.filter(s => s.type === '高級中等學校附設國中部');
+        const jhSub = cList.filter(s => s.stage === 'JH');
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900 sticky left-0 bg-white">${c}</td>
+          <td class="py-2.5 px-2 text-center font-mono border-l border-slate-200">${cellFmt(g1)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g2)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g3)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g4)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g5)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g6)}</td>
+          <td class="py-2.5 px-2 text-center font-mono">${cellFmt(g7)}</td>
+          <td class="py-2.5 px-2 text-center font-mono border-l border-slate-200 bg-blue-50/40">${cellFmt(hsSub)}</td>
+          <td class="py-2.5 px-2 text-center font-mono border-l border-slate-200 bg-emerald-50/30">${cellFmt(j1)}</td>
+          <td class="py-2.5 px-2 text-center font-mono bg-emerald-50/30">${cellFmt(j2)}</td>
+          <td class="py-2.5 px-2 text-center font-mono bg-emerald-100/40">${cellFmt(jhSub)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 7. Table 5: Full 439 School Roster Explorer (13 columns matching HTML thead)
+    function renderSchoolRoster() {
+      const f = getActiveFilters();
+      const filtered = getFilteredSchools(false);
+      const tbody = document.getElementById('table-school-roster-body');
+      const countBadge = document.getElementById('roster-count-badge');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      // Sort by 114 enrollment descending
+      const sorted = [...filtered].sort((a, b) => getYearStudentCount(b, f.year) - getYearStudentCount(a, f.year));
+      const limit = f.rosterLimit === 'ALL' ? sorted.length : parseInt(f.rosterLimit, 10);
+      const displayList = sorted.slice(0, limit);
+
+      if (countBadge) {
+        countBadge.textContent = filtered.length;
+      }
+
+      displayList.forEach(s => {
+        const stageBadge = s.stage === 'HS'
+          ? '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-bold">高中職</span>'
+          : '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">國中</span>';
+        const ownBadge = s.own === '公立'
+          ? `<span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold">${s.own}</span>`
+          : `<span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold">${s.own}</span>`;
+        const yoy = s.s113 > 0 ? (((s.s114 - s.s113) / s.s113) * 100).toFixed(1) + '%' : '-';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition';
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-semibold text-slate-800">${s.county}</td>
+          <td class="py-2 px-2.5">${stageBadge}</td>
+          <td class="py-2 px-2.5 font-mono text-slate-500">${s.code}</td>
+          <td class="py-2 px-3 font-bold text-slate-900">${s.name}</td>
+          <td class="py-2 px-2.5 text-center font-semibold text-slate-700">${s.gov}</td>
+          <td class="py-2 px-2.5 text-center">${ownBadge}</td>
+          <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-semibold">${s.type}</span></td>
+          <td class="py-2 px-3 text-xs text-slate-600 max-w-md truncate" title="${s.depts}">${s.depts}</td>
+          <td class="py-2 px-2.5 text-right font-mono text-slate-600">${s.s113.toLocaleString()}</td>
+          <td class="py-2 px-2.5 text-right font-mono font-bold text-blue-800">${s.s114.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">(${s.male114}/${s.female114})</span></td>
+          <td class="py-2 px-2.5 text-right font-mono font-semibold text-emerald-700">${s.s115.toLocaleString()}</td>
+          <td class="py-2 px-2.5 text-right font-mono text-xs ${s.s114 < s.s113 ? 'text-rose-600' : 'text-emerald-600'}">${yoy}</td>
+          <td class="py-2 px-3 text-xs text-slate-500">${s.note}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function syncSectionSelects() {
+      const f = getActiveFilters();
+      const t1County = document.getElementById('t1-county-select');
+      if (t1County && t1County.value !== f.county) t1County.value = f.county;
+      const t1Own = document.getElementById('t1-own-select');
+      if (t1Own && t1Own.value !== f.own) t1Own.value = f.own;
+      const t2Cluster = document.getElementById('t2-cluster-select');
+      if (t2Cluster && t2Cluster.value !== f.cluster) t2Cluster.value = f.cluster;
+      const t3Attr = document.getElementById('t3-attr-select');
+      if (t3Attr && t3Attr.value !== f.attrType) t3Attr.value = f.attrType;
+    }
+
+    function refreshAllViews() {
+      syncSectionSelects();
+      updateSummaryKPIs();
+      renderCharts();
+      renderCountyTable();
+      renderClusterDiffTable();
+      renderAttrTypePivotTable();
+      renderCountyTypeMatrix();
+      renderSchoolRoster();
+    }
+
+    function showToast(title, msg) {
+      const box = document.getElementById('toast-box');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.add('hidden');
+      }, 4000);
+    }
+
+    function renderAdmissionFunnel(mode) {
+      const cfg = funnelData[mode];
+      document.getElementById('funnel-chart-title').textContent = cfg.title;
+      document.getElementById('funnel-chart-sub').textContent = cfg.sub;
+
+      // Update buttons
+      const btnZx = document.getElementById('btn-funnel-zx');
+      const btnSq = document.getElementById('btn-funnel-sq');
+      if (mode === 'zx') {
+        btnZx.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+        btnSq.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      } else {
+        btnSq.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+        btnZx.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      }
+
+      // Render Table
+      const thead = document.getElementById('funnel-table-head');
+      thead.innerHTML = cfg.headers.map((h, i) => `<th class="py-2.5 px-3 ${i > 0 ? 'text-right' : ''}">${h}</th>`).join('');
+
+      const tbody = document.getElementById('funnel-table-body');
+      tbody.innerHTML = '';
+      cfg.rows.forEach(r => {
+        const rate1 = ((r.s2 / r.s1) * 100).toFixed(1) + '%';
+        const rate2 = ((r.s4 / r.s2) * 100).toFixed(1) + '%';
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${r.year}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s1.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s2.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s3.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">${r.s4.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono text-slate-600">${rate1}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-semibold text-blue-800">${rate2}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Render Chart
+      const ctxFunnel = document.getElementById('chart-admission-funnel').getContext('2d');
+      if (funnelChartInstance) funnelChartInstance.destroy();
+      funnelChartInstance = new Chart(ctxFunnel, {
+        type: 'bar',
+        data: {
+          labels: cfg.rows.map(r => r.year),
+          datasets: [
+            {
+              label: cfg.headers[1],
+              data: cfg.rows.map(r => r.s1),
+              backgroundColor: '#94a3b8',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[2],
+              data: cfg.rows.map(r => r.s2),
+              backgroundColor: '#3b82f6',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[3],
+              data: cfg.rows.map(r => r.s3),
+              backgroundColor: '#f59e0b',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[4],
+              data: cfg.rows.map(r => r.s4),
+              backgroundColor: '#10b981',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { size: 11 } } }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // 3. EVENT LISTENERS & INITIALIZATION
+    // ==========================================
+    
+    const domainMappingData = [
+      {
+        domain: 'HEALTH',
+        tag: '① 醫護與家政幼保美群',
+        badgeClass: 'bg-rose-100 text-rose-800 border-rose-200',
+        moeClusters: '衛生與護理類、家政群(2,589人)、美容造型群(458人)、普通科自然/生醫班群',
+        poolCount: 15847,
+        fooyinDepts: '【四技】護理系、物理治療系、高齡及長期照護事業系、健康美容系、幼兒保育暨產業系',
+        targetSchools: '圈層A/B：樹德家商、三信家商、中山工商、育英醫專/崇仁護專(二技/轉銜)、屏榮高中、華洲工家、東港海事(家政)',
+        strategy: '結合輔英附設醫院臨床實習、大型醫學中心帶薪公費名額、國考高通過率與證照輔導班'
+      },
+      {
+        domain: 'ENG',
+        tag: '② 工科與電資環安化工群',
+        badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
+        moeClusters: '電機與電子群(6,112人)、機械群(2,898人)、動力機械群(2,066人)、化工群(651人)、土木建築群(1,025人) ＋ 國中技藝教育化工/環安職群',
+        poolCount: 12752,
+        fooyinDepts: '【四技/進四技】環境工程與科學系、應用化學及材料科學系、職業安全衛生系、資訊科技與管理系<br>【五專】環境工程與衛生科(環工科：114年13人→115年23人，成長+76.9%)',
+        targetSchools: '高職圈層A/B/C：中正高工、高雄高工、鳳山商工、岡山農工、屏東高工、臺南高工、嘉義高工｜五專環工科主力國中：鳳山國中、大寮國中、中芸國中、潮寮國中、忠孝國中、前鎮國中',
+        strategy: '四技主推半導體廠務環安衛、ESG碳盤查實務、甲乙級職安/化丙證照加分；五專環工科鎖定大寮/鳳山/林園/前鎮在地國中「完全免試(50%)＋優先免試(36%)」及5+2直升四技/二技環工與職安'
+      },
+      {
+        domain: 'MGMT',
+        tag: '③ 商管與餐旅服務外語群',
+        badgeClass: 'bg-amber-100 text-amber-800 border-amber-200',
+        moeClusters: '餐旅群(5,898人)、商業與管理群(4,980人)、外語群(965人)、服務群(461人)',
+        poolCount: 12304,
+        fooyinDepts: '【四技】健康事業管理系、休閒與遊憩事業管理系、資訊科技與管理系<br>【五專】應用外語科 (113–115年累計99人)',
+        targetSchools: '圈層A/B/C：高雄高商、鳳山商工、高餐大附中、立志中學、復華中學、屏東日新工商、民生家商、臺南高商',
+        strategy: '聚焦「智慧醫療大數據管理」、「高齡康養俱樂部經營」與「AI數位商務」，將傳統商管餐旅生源導向高薪大健康產業'
+      },
+      {
+        domain: 'AGRI',
+        tag: '④ 農業與食品生技水產群',
+        badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+        moeClusters: '食品群(1,613人)、農業群(1,030人)、水產群(51人)、普通科生物特色班',
+        poolCount: 2694,
+        fooyinDepts: '【四技】保健營養系、生物科技與綠色產業系',
+        targetSchools: '圈層A/B/C：佳冬高農、內埔農工、旗山農工、岡山農工、曾文農工、北門農工、民雄農工、西螺農工、虎尾農工',
+        strategy: '強打營養師國考證照、保健食品研發、精準農業生技、食品安全檢驗以及綠色循環經濟產學專題'
+      },
+      {
+        domain: 'JUNIOR',
+        tag: '⑤ 國民中學五專生源池',
+        badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
+        moeClusters: '8縣市公私立國民中學(208校部，含105所公立獨立國中39,750人＋103所附設國中部21,801人)',
+        poolCount: 61551,
+        fooyinDepts: '【五專部 4 科實績】護理科(996人)、醫學檢驗生物技術科(282人)、應用外語科(99人)、環境工程與衛生科/環工科(36人：114年13人→115年23人)（含五專畢業直升輔英二技/四技管道）',
+        targetSchools: '圈層A/B核心國中：鳳山國中、大寮國中、中芸國中、潮寮國中、鳳西國中、青年國中、鳳甲國中、忠孝國中、前鎮國中、林園高中(國中部)、中正高中(國中部)、屏東中正/明正國中',
+        strategy: '針對國中技藝教育班(醫護/化工環衛/家政職群)與國中輔導室深度結盟，主打「五專前三年免學費＋醫院公費/環工科技廠帶薪實習＋五專畢業直升輔英二技/四技」一條龍進路'
+      }
+    ];
+
+    let domainChartInstance = null;
+
+    function renderDomainMatrix(selectedDomain) {
+      const tbody = document.getElementById('table-domain-mapping-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const filtered = selectedDomain === 'ALL'
+        ? domainMappingData
+        : domainMappingData.filter(d => d.domain === selectedDomain);
+
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition align-top';
+        tr.innerHTML = `
+          <td class="py-3.5 px-3"><span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold border ${item.badgeClass}">${item.tag}</span></td>
+          <td class="py-3.5 px-3 text-slate-700">${item.moeClusters}</td>
+          <td class="py-3.5 px-3 text-right font-mono font-bold text-slate-900">${item.poolCount.toLocaleString()} 人</td>
+          <td class="py-3.5 px-3 font-semibold text-blue-950">${item.fooyinDepts}</td>
+          <td class="py-3.5 px-3 text-slate-600">${item.targetSchools}</td>
+          <td class="py-3.5 px-3 text-slate-700">${item.strategy}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const ctx = document.getElementById('chart-domain-cluster');
+      if (!ctx) return;
+      if (domainChartInstance) domainChartInstance.destroy();
+      domainChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: filtered.map(d => d.tag.replace(/^[①②③④⑤]\s*/, '')),
+          datasets: [{
+            label: '8縣市對應高一/國一目標生源池 (人)',
+            data: filtered.map(d => d.poolCount),
+            backgroundColor: ['#e11d48', '#1d4ed8', '#d97706', '#059669', '#7c3aed'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initial Render
+      refreshAllViews();
+      renderAdmissionFunnel('zx');
+      renderDomainMatrix('ALL');
+      const domainFilter = document.getElementById('matrix-domain-filter');
+      if (domainFilter) {
+        domainFilter.addEventListener('change', () => renderDomainMatrix(domainFilter.value));
+      }
+
+      // Tab Switching
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+          btn.classList.add('active');
+          const targetId = btn.getAttribute('data-tab');
+          document.getElementById(targetId).classList.remove('hidden');
+        });
+      });
+
+      // 6-Dimensional Filters & Roster Controls on Tab 1
+      ['filter-county', 'filter-stage', 'filter-ownership', 'filter-attr-type', 'filter-cluster', 'filter-year'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', refreshAllViews);
+      });
+
+      // Section-level Dropdowns (Table 1, Table 2, Table 3, Matrix)
+      const t1CountySel = document.getElementById('t1-county-select');
+      if (t1CountySel) {
+        t1CountySel.addEventListener('change', () => {
+          document.getElementById('filter-county').value = t1CountySel.value;
+          refreshAllViews();
+        });
+      }
+
+      const t1OwnSel = document.getElementById('t1-own-select');
+      if (t1OwnSel) {
+        t1OwnSel.addEventListener('change', () => {
+          document.getElementById('filter-ownership').value = t1OwnSel.value;
+          refreshAllViews();
+        });
+      }
+
+      const t2DomSel = document.getElementById('t2-dom-select');
+      if (t2DomSel) {
+        t2DomSel.addEventListener('change', renderClusterDiffTable);
+      }
+
+      const t2ClusterSel = document.getElementById('t2-cluster-select');
+      if (t2ClusterSel) {
+        t2ClusterSel.addEventListener('change', () => {
+          document.getElementById('filter-cluster').value = t2ClusterSel.value;
+          refreshAllViews();
+        });
+      }
+
+      const t3AttrSel = document.getElementById('t3-attr-select');
+      if (t3AttrSel) {
+        t3AttrSel.addEventListener('change', () => {
+          document.getElementById('filter-attr-type').value = t3AttrSel.value;
+          refreshAllViews();
+        });
+      }
+
+      const matrixCellMode = document.getElementById('matrix-cell-mode');
+      if (matrixCellMode) {
+        matrixCellMode.addEventListener('change', renderCountyTypeMatrix);
+      }
+
+      // Sub-tab Switching between Table 4 (Matrix) and Table 5 (439 School Roster)
+      const btnMatrix = document.getElementById('subtab-btn-matrix');
+      const btnRoster = document.getElementById('subtab-btn-roster');
+      const panelMatrix = document.getElementById('subpanel-matrix');
+      const panelRoster = document.getElementById('subpanel-roster');
+      const ctrlMatrix = document.getElementById('matrix-controls');
+      const ctrlRoster = document.getElementById('roster-controls');
+
+      if (btnMatrix && btnRoster) {
+        btnMatrix.addEventListener('click', () => {
+          btnMatrix.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+          btnRoster.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+          panelMatrix.classList.remove('hidden');
+          panelRoster.classList.add('hidden');
+          ctrlMatrix.classList.remove('hidden');
+          ctrlRoster.classList.add('hidden');
+        });
+        btnRoster.addEventListener('click', () => {
+          btnRoster.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+          btnMatrix.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+          panelRoster.classList.remove('hidden');
+          panelMatrix.classList.add('hidden');
+          ctrlRoster.classList.remove('hidden');
+          ctrlMatrix.classList.add('hidden');
+        });
+      }
+
+      const rosterSearch = document.getElementById('roster-search');
+      if (rosterSearch) rosterSearch.addEventListener('input', renderSchoolRoster);
+
+      const rosterLimit = document.getElementById('roster-limit');
+      if (rosterLimit) rosterLimit.addEventListener('change', renderSchoolRoster);
+
+      const btnReset = document.getElementById('btn-reset-filters');
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          document.getElementById('filter-county').value = 'ALL';
+          document.getElementById('filter-stage').value = 'ALL';
+          document.getElementById('filter-ownership').value = 'ALL';
+          document.getElementById('filter-attr-type').value = 'ALL';
+          document.getElementById('filter-cluster').value = 'ALL';
+          document.getElementById('filter-year').value = '114';
+          if (t2DomSel) t2DomSel.value = 'ALL';
+          if (rosterSearch) rosterSearch.value = '';
+          if (rosterLimit) rosterLimit.value = '50';
+          refreshAllViews();
+        });
+      }
+
+      // Left Chart Dropdown & Mode Buttons
+      const leftChartSel = document.getElementById('left-chart-select');
+      if (leftChartSel) {
+        leftChartSel.addEventListener('change', () => {
+          leftChartMode = leftChartSel.value;
+          document.querySelectorAll('.left-chart-btn').forEach(b => {
+            b.className = b.getAttribute('data-left-mode') === leftChartMode
+              ? 'left-chart-btn px-2 py-1 rounded text-xs font-bold bg-blue-800 text-white'
+              : 'left-chart-btn px-2 py-1 rounded text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+          });
+          renderCharts();
+        });
+      }
+
+      document.querySelectorAll('.left-chart-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          leftChartMode = btn.getAttribute('data-left-mode');
+          if (leftChartSel) leftChartSel.value = leftChartMode;
+          document.querySelectorAll('.left-chart-btn').forEach(b => {
+            b.className = b === btn
+              ? 'left-chart-btn px-2 py-1 rounded text-xs font-bold bg-blue-800 text-white'
+              : 'left-chart-btn px-2 py-1 rounded text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+          });
+          renderCharts();
+        });
+      });
+
+      // Right Chart Dropdown & Mode Buttons
+      const rightChartSel = document.getElementById('right-chart-select');
+      if (rightChartSel) {
+        rightChartSel.addEventListener('change', () => {
+          rightChartMode = rightChartSel.value;
+          document.querySelectorAll('.right-chart-btn').forEach(b => {
+            b.className = b.getAttribute('data-right-mode') === rightChartMode
+              ? 'right-chart-btn px-2 py-1 rounded text-xs font-bold bg-blue-800 text-white'
+              : 'right-chart-btn px-2 py-1 rounded text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+          });
+          renderCharts();
+        });
+      }
+
+      document.querySelectorAll('.right-chart-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          rightChartMode = btn.getAttribute('data-right-mode');
+          if (rightChartSel) rightChartSel.value = rightChartMode;
+          document.querySelectorAll('.right-chart-btn').forEach(b => {
+            b.className = b === btn
+              ? 'right-chart-btn px-2 py-1 rounded text-xs font-bold bg-blue-800 text-white'
+              : 'right-chart-btn px-2 py-1 rounded text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+          });
+          renderCharts();
+        });
+      });
+
+      // Funnel Mode Switch
+      document.getElementById('btn-funnel-zx').addEventListener('click', () => renderAdmissionFunnel('zx'));
+      document.getElementById('btn-funnel-sq').addEventListener('click', () => renderAdmissionFunnel('sq'));
+
+      // ETL Simulation Buttons
+      function runEtlLog(cycleName, logs) {
+        const out = document.getElementById('etl-log-output');
+        const badge = document.getElementById('console-badge');
+        badge.textContent = `STATUS: RUNNING (${cycleName})`;
+        badge.className = 'text-xs font-mono text-amber-400 animate-pulse';
+        out.innerHTML = '';
+
+        logs.forEach((line, idx) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.textContent = line;
+            if (line.includes('[SUCCESS]')) div.className = 'text-emerald-400 font-bold';
+            out.appendChild(div);
+            out.scrollTop = out.scrollHeight;
+            if (idx === logs.length - 1) {
+              badge.textContent = `STATUS: COMPLETED (${cycleName})`;
+              badge.className = 'text-xs font-mono text-emerald-400';
+              showToast(`${cycleName} 執行完成`, '生源結構摘要表與輔英招生系統已完成跨表連動更新！');
+            }
+          }, idx * 350);
+        });
+      }
+
+      document.getElementById('btn-sim-oct').addEventListener('click', () => {
+        runEtlLog('10月第一學期排程', [
+          '[10/15 02:00:01] 啟動 October-Sync-Pipeline (第一學期學校名錄與學籍定錨)...',
+          '[10/15 02:00:04] 連線教育部統計處 (depart.moe.edu.tw/ed4500) 檢查最新學年各級學校名錄...',
+          '[10/15 02:00:09] 解析 8 縣市 231 所高級中等學校 & 208 所國中代碼異動表，無新增斷鏈學校。',
+          '[10/15 02:00:15] 串接輔英科技大學教務處【10月15日新生註冊定錨檔】...',
+          '[10/15 02:00:21] 寫入各系「四技甄選(報到78人)」與「四技申請(報到155人)」最終註冊在籍狀態。',
+          '[10/15 02:00:26] 執行 ForecastEngine：推估當學年度 8 縣市高一入學總池為 72,481 人。',
+          '[SUCCESS] 10月第一學期自動更新完畢！已同步更新 IR 決策儀表板。'
+        ]);
+      });
+
+      document.getElementById('btn-sim-feb').addEventListener('click', () => {
+        runEtlLog('2月第二學期排程', [
+          '[02/01 03:00:01] 啟動 February-Sync-Pipeline (第二學期教育部 base2 普查實績覆寫)...',
+          '[02/01 03:00:05] 偵測到教育部統計處已於 1 月底發布最新「高級中等學校科別資料 (base2.xlsx)」！',
+          '[02/01 03:00:12] 自動下載並篩選縣市代碼：06/19, 09, 10, 20, 11/21, 12/50, 13, 14, 16 (共 1,500 筆科系紀錄)。',
+          '[02/01 03:00:18] 將 10 月預估數覆寫為官方普查實績：高一新生合計 72,992 人 (公立 153 所 / 私立 78 所)。',
+          '[02/01 03:00:24] 重新計算「本案核心統計數據與生源結構摘要」4 大維度指標與年增減率 (-4.0%)。',
+          '[02/01 03:00:30] 比對輔英各系歷史報到率，產出春季招生認養紅黃綠燈預警清單並推送至招生中心。',
+          '[SUCCESS] 2月第二學期自動更新完畢！所有科系群別明細已同步至最新官方普查基準。'
+        ]);
+      });
+
+      document.getElementById('btn-trigger-sync').addEventListener('click', () => {
+        // Switch to scheduler tab and trigger Feb simulation
+        document.querySelector('[data-tab="tab-scheduler"]').click();
+        document.getElementById('btn-sim-feb').click();
+      });
+
+      // Copy Antigravity Prompt
+      document.getElementById('btn-copy-prompt').addEventListener('click', () => {
+        const textEl = document.getElementById('antigravity-prompt-text');
+        textEl.select();
+        try {
+          document.execCommand('copy');
+          showToast('已複製到剪貼簿', '您現在可以直接在 Antigravity IDE 的 Agent 視窗貼上此系統建置指令！');
+        } catch (err) {
+          showToast('複製提示', '請手動全選文字框進行複製。');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

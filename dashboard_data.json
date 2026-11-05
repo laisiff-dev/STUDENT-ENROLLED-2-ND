@@ -201,13 +201,15 @@
       "p1_pass_people": 1228,
       "p2_apply_cnt": 656,
       "p2_apply_people": 606,
-      "confirmed": 193,
+      "confirmed": 632,
       "joint_enrolled": null,
       "final_enrolled": 193,
       "p2_to_enrolled_rate": "31.8%",
       "p1_to_p2_rate_people": "49.3%",
       "p1_to_p2_rate_cnt": "48.6%",
-      "p2_to_enrolled_rate_cnt": "29.4%"
+      "p2_to_enrolled_rate_cnt": "29.4%",
+      "admitted": 632,
+      "admitted_to_enrolled_rate": "30.5%"
     },
     {
       "year": "112",
@@ -215,13 +217,15 @@
       "p1_pass_people": 1129,
       "p2_apply_cnt": 505,
       "p2_apply_people": 463,
-      "confirmed": 148,
+      "confirmed": 481,
       "joint_enrolled": 148,
       "final_enrolled": 148,
       "p2_to_enrolled_rate": "32.0%",
       "p1_to_p2_rate_people": "41.0%",
       "p1_to_p2_rate_cnt": "39.4%",
-      "p2_to_enrolled_rate_cnt": "29.3%"
+      "p2_to_enrolled_rate_cnt": "29.3%",
+      "admitted": 481,
+      "admitted_to_enrolled_rate": "30.8%"
     },
     {
       "year": "113",
@@ -229,13 +233,15 @@
       "p1_pass_people": 960,
       "p2_apply_cnt": 382,
       "p2_apply_people": 352,
-      "confirmed": 126,
+      "confirmed": 358,
       "joint_enrolled": 126,
       "final_enrolled": 126,
       "p2_to_enrolled_rate": "35.8%",
       "p1_to_p2_rate_people": "36.7%",
       "p1_to_p2_rate_cnt": "35.2%",
-      "p2_to_enrolled_rate_cnt": "33.0%"
+      "p2_to_enrolled_rate_cnt": "33.0%",
+      "admitted": 358,
+      "admitted_to_enrolled_rate": "35.2%"
     },
     {
       "year": "114",
@@ -243,13 +249,15 @@
       "p1_pass_people": 957,
       "p2_apply_cnt": 395,
       "p2_apply_people": 360,
-      "confirmed": 135,
+      "confirmed": 366,
       "joint_enrolled": 135,
       "final_enrolled": 135,
       "p2_to_enrolled_rate": "37.5%",
       "p1_to_p2_rate_people": "37.6%",
       "p1_to_p2_rate_cnt": "36.5%",
-      "p2_to_enrolled_rate_cnt": "34.2%"
+      "p2_to_enrolled_rate_cnt": "34.2%",
+      "admitted": 366,
+      "admitted_to_enrolled_rate": "36.9%"
     },
     {
       "year": "115",
@@ -257,13 +265,15 @@
       "p1_pass_people": 929,
       "p2_apply_cnt": 401,
       "p2_apply_people": 345,
-      "confirmed": 155,
+      "confirmed": 372,
       "joint_enrolled": 155,
       "final_enrolled": 155,
       "p2_to_enrolled_rate": "44.9%",
       "p1_to_p2_rate_people": "37.1%",
       "p1_to_p2_rate_cnt": "37.8%",
-      "p2_to_enrolled_rate_cnt": "38.7%"
+      "p2_to_enrolled_rate_cnt": "38.7%",
+      "admitted": 372,
+      "admitted_to_enrolled_rate": "41.7%"
     }
   ],
   "shenqing_depts": [
@@ -1545,7 +1555,7 @@
           "apply_5yr": 131,
           "enroll_5yr": 18,
           "conv_rate": "13.7%",
-          "drop_node": "甄選分發志願序排後段 (流失 62%)",
+          "drop_node": "甄選錄取志願序排後段 (流失 62%)",
           "top_tags": [
             "TAG-1 國北護/中科/長庚優先分發 (46%)",
             "TAG-2 雲林北港南下距離考量 (32%)",
@@ -1842,7 +1852,7 @@
             {
               "school": "巨人高中 (中部醫護技高)",
               "stats": "5年報名 131人次 ➔ 物治就讀 18人 (115甄選報到率降至 25%)",
-              "profile": "統測衛護類高分群，同時錄取多校物治/護理系，甄選分發志願序易排在長庚/弘光之後",
+              "profile": "統測衛護類高分群，同時錄取多校物治/護理系，甄選錄取志願序易排在長庚/弘光之後",
               "tag": "TAG-1 競校分發排序 / TAG-2 中部南下距離",
               "script": "統測放榜後立即赴巨人高中舉辦「一對一模擬面試與選填輔導」，承諾中部新生保障優等宿舍與首年交通津貼。"
             },

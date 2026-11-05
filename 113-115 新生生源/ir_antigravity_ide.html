@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>輔英科技大學 IR 生源與招生系統整合平台 | Antigravity IDE 架構預覽</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .nav-btn.active {
+      background-color: #1e3a8a;
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.25);
+    }
+    .code-block {
+      font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-lg shadow-inner">
+          FY
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight">輔英科技大學 IR 生源情資與招生漏斗決策系統</h1>
+            <span class="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">Antigravity IDE 專案架構 v2.4</span>
+          </div>
+          <p class="text-xs text-slate-400">中南部及離島 8 縣市國高中職生源庫 × 10月/2月雙週期自動同步引擎 × 四技甄選/申請招生漏斗串接</p>
+        </div>
+      </div>
+
+      <!-- Sync Status Pill -->
+      <div class="flex items-center gap-3">
+        <div class="bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2.5 text-xs">
+          <span id="cron-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div>
+            <span class="text-slate-400">排程狀態：</span>
+            <span id="cron-status-text" class="font-medium text-slate-200">10月學籍定錨 / 2月教育部普查雙軌就緒</span>
+          </div>
+        </div>
+        <button id="btn-trigger-sync" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>立即模擬同步</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-slate-800/60 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto py-2 gap-2">
+        <button data-tab="tab-summary" class="nav-btn active px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          1. 核心統計數據與生源結構摘要
+        </button>
+        <button data-tab="tab-scheduler" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          2. 10月 & 2月雙週期自動更新引擎
+        </button>
+        <button data-tab="tab-admission" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          3. 輔英招生系統串接與漏斗分析
+        </button>
+        <button data-tab="tab-antigravity" class="nav-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition whitespace-nowrap">
+          4. Antigravity IDE 系統藍圖與 Agent 指令
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white border border-blue-500/40 rounded-xl shadow-2xl px-4 py-3 max-w-md transition-all">
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center flex-shrink-0 mt-0.5">✓</div>
+      <div>
+        <h4 id="toast-title" class="text-xs font-bold text-blue-300">系統訊息</h4>
+        <p id="toast-msg" class="text-xs text-slate-300 mt-0.5"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==========================================
+         TAB 1: 核心統計數據與生源結構摘要
+    =========================================== -->
+    <section id="tab-summary" class="tab-panel space-y-6">
+      <!-- Filter Bar -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="text-xs font-semibold text-slate-600">篩選目標縣市：</label>
+          <select id="filter-county" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <option value="ALL">全部八縣市總覽 (231所高中職 / 208所國中)</option>
+            <option value="臺中市">臺中市 (53所高中職)</option>
+            <option value="高雄市">高雄市 (55所高中職 - 輔英地主核心區)</option>
+            <option value="臺南市">臺南市 (48所高中職)</option>
+            <option value="屏東縣">屏東縣 (19所高中職 - 輔英高滲透區)</option>
+            <option value="嘉義市">嘉義市 (12所高中職)</option>
+            <option value="雲林縣">雲林縣 (22所高中職)</option>
+            <option value="嘉義縣">嘉義縣 (9所高中職)</option>
+            <option value="臺東縣">臺東縣 (11所高中職)</option>
+            <option value="澎湖縣">澎湖縣 (2所高中職)</option>
+          </select>
+
+          <label class="text-xs font-semibold text-slate-600 ml-2">學年度檢視：</label>
+          <select id="filter-year" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <option value="114">114 學年度 (教育部最新公告實績)</option>
+            <option value="113">113 學年度 (同期比較基準)</option>
+            <option value="115">115 學年度 (核定名額與生源預測)</option>
+          </select>
+        </div>
+        <div class="text-xs text-slate-500">
+          資料基準：<span class="font-semibold text-slate-700">教育部統計處 `114_base2` 科別資料庫</span>
+        </div>
+      </div>
+
+      <!-- 4 Core Pillar KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-800"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度一：涵蓋學校規模與公私立比</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-schools" class="text-2xl sm:text-3xl font-bold text-slate-900">231</span>
+            <span class="text-xs font-medium text-slate-500">所高級中等學校</span>
+          </div>
+          <div id="kpi-schools-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span>公立 153 所 (66.2%)</span>
+            <span>私立 78 所 (33.8%)</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度二：高中職新生入學規模</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-students" class="text-2xl sm:text-3xl font-bold text-indigo-950">72,992</span>
+            <span class="text-xs font-medium text-slate-500">人 (高一新生)</span>
+          </div>
+          <div id="kpi-students-sub" class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+            <span>113年：76,037人</span>
+            <span class="text-amber-700 font-semibold">年增減：-4.0%</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-600"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度三：區域生源聚落佔比</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-share" class="text-2xl sm:text-3xl font-bold text-emerald-900">100.0%</span>
+            <span class="text-xs font-medium text-slate-500">全區高一池佔比</span>
+          </div>
+          <div id="kpi-share-sub" class="mt-2 text-xs text-slate-600">
+            三大都會(中/高/南)合佔 <span class="font-semibold text-slate-900">78.6%</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">維度四：國中向下扎根生源池</div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <span id="kpi-jh" class="text-2xl sm:text-3xl font-bold text-slate-900">21,801</span>
+            <span class="text-xs font-medium text-slate-500">人 (附設國中部新生)</span>
+          </div>
+          <div id="kpi-jh-sub" class="mt-2 text-xs text-slate-600">
+            115 高中職預估生源：<span class="font-semibold text-blue-700">72,481 人</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">八縣市 113、114 及 115 學年度高中職入學人數趨勢對比</h3>
+              <p class="text-xs text-slate-500">點擊上方縣市篩選器可動態檢視單一縣市或全區總覽</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md font-medium">單位：人</span>
+          </div>
+          <div class="relative h-72">
+            <canvas id="chart-county-trend"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">學校性質結構分類佔比 (依《高級中等教育法》第5條)</h3>
+              <p class="text-xs text-slate-500">區分申請入學(普通科)與四技甄選(專業群科)主幹生源</p>
+            </div>
+          </div>
+          <div class="relative h-72">
+            <canvas id="chart-school-type"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regional Summary Table -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">中南部及離島 8 縣市生源結構與輔英招生策略定位表</h3>
+            <p class="text-xs text-slate-500">整合教育部校別/科別普查與本校就讀滲透率指標</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="py-3 px-4 font-semibold">縣市名稱</th>
+                <th class="py-3 px-3 font-semibold text-right">高中職校數</th>
+                <th class="py-3 px-3 font-semibold text-right">公立 / 私立</th>
+                <th class="py-3 px-3 font-semibold text-right">113入學(人)</th>
+                <th class="py-3 px-3 font-semibold text-right">114入學(人)</th>
+                <th class="py-3 px-3 font-semibold text-right">115預估(人)</th>
+                <th class="py-3 px-3 font-semibold text-right">114年增減率</th>
+                <th class="py-3 px-3 font-semibold text-right">附設國中新生</th>
+                <th class="py-3 px-3 font-semibold text-right">全區佔比</th>
+                <th class="py-3 px-4 font-semibold">輔英招生策略分級</th>
+              </tr>
+            </thead>
+            <tbody id="table-county-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 2: 10月 & 2月雙週期自動更新引擎
+    =========================================== -->
+    <section id="tab-scheduler" class="tab-panel hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-6 rounded-2xl shadow-md">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full">Dual-Cycle ETL Pipeline</span>
+            <h2 class="text-lg sm:text-xl font-bold mt-2">每學期 10 月及 2 月自動更新引擎架構設計</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl">
+              針對教育部統計處發布週期（每年 10 月 20 日普查基準日、次年 1 月底至 2 月初上網公告）與輔英科大校內學籍定錨時程，設計雙軌無縫自動化資料管線。
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-sim-oct" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow">
+              ▶ 測試 10 月【第一學期】排程
+            </button>
+            <button id="btn-sim-feb" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow">
+              ▶ 測試 2 月【第二學期】排程
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Cards: October vs February -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- October Engine -->
+        <div class="bg-white rounded-xl border-2 border-amber-500/40 shadow-sm p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-sm">10月</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">第一學期（10月15日 — 10月31日）自動排程</h3>
+                <p class="text-xs text-slate-500">Cron 表達式：<code class="bg-slate-100 px-1.5 py-0.5 rounded text-amber-800 font-mono">0 2 15,25 10 *</code> (每年10月15、25日凌晨執行)</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 rounded-md">校內定錨 + 學校名錄更新</span>
+          </div>
+
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 1：教育部「各級學校名錄及異動一覽表」爬蟲同步</div>
+              <p class="text-xs text-slate-600">教育部於每年 8–10 月發布最新學年學校異動名錄（新設校、改制、停招、合併）。系統自動抓取 8 縣市國高中職最新學校代碼與名稱異動映射表。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 2：輔英科大「10月15日新生學籍定錨」自動串接</div>
+              <p class="text-xs text-slate-600">配合高教深耕與校務基本資料庫 10 月基準日，從輔英教務處學籍系統匯入當學年實際註冊就讀新生名單，完成「一階 → 二階 → 錄取 → 報到 → 實際註冊」五階閉環。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 3：計算當學年度「先導預估入學人數 (Forecast Model)」</div>
+              <p class="text-xs text-slate-600">由於教育部當學年度各校實際新生數需待次年 1 月底公布，10 月份系統自動以「國中畢業生推估模型 + 核定招生名額」先行產出當學年預估生源池，供 11 月招生委員會決策使用。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- February Engine -->
+        <div class="bg-white rounded-xl border-2 border-emerald-500/40 shadow-sm p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm">2月</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">第二學期（2月1日 — 2月15日）自動排程</h3>
+                <p class="text-xs text-slate-500">Cron 表達式：<code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-800 font-mono">0 3 1,5,10 2 *</code> (每年2月1、5、10日凌晨執行)</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md">教育部普查覆寫 + 春季衝刺</span>
+          </div>
+
+          <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 1：教育部 `base2` 高級中等學校科別資料 & 國中校別資料自動擷取</div>
+              <p class="text-xs text-slate-600">教育部固定於每年 1 月底（如 115.01.29）上網公告最新學年度各校科別實際學生數。2 月 1 日排程自動下載 XLSX/CSV，解析 8 縣市各校各科一年級（新生）、二年級、三年級與畢業生確切人數。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 2：預估數自動覆寫為官方實績 ( Forecast → Actual )</div>
+              <p class="text-xs text-slate-600">系統將前一年 10 月的「預估入學人數」自動替換為教育部正式普查實績，並觸發重算「核心統計數據與生源結構摘要」四大模組指標與縣市消長率。</p>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="font-bold text-slate-900 mb-1">Step 3：春季招生（四技申請 3 月 / 四技甄選 5 月）目標配額派發</div>
+              <p class="text-xs text-slate-600">根據最新高三在籍人數與群科結構，自動更新各系「重點認養高中職名單」與拜訪優先序（紅黃綠燈預警），直接推送至輔英招生中心教師認養系統。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Pipeline Execution Console -->
+      <div class="bg-slate-900 text-slate-200 rounded-xl border border-slate-800 p-5">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-mono text-slate-400 ml-2">antigravity-etl-runner — bash — 10月/2月排程模擬終端機</span>
+          </div>
+          <span id="console-badge" class="text-xs font-mono text-emerald-400">STATUS: IDLE (READY)</span>
+        </div>
+        <div id="etl-log-output" class="code-block text-slate-300 space-y-1 max-h-56 overflow-y-auto">
+          <div>[SYSTEM] Antigravity Dual-Cycle ETL Engine v2.4 initialized.</div>
+          <div>[CONFIG] Target Regions: 臺中市(06/19), 嘉義縣(10), 嘉義市(20), 雲林縣(09), 臺南市(11/21), 高雄市(12/50), 屏東縣(13), 臺東縣(14), 澎湖縣(16)</div>
+          <div>[READY] 點擊上方「測試 10 月排程」或「測試 2 月排程」按鈕以檢視自動化資料流與檢核日誌...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: 輔英招生系統串接與漏斗分析
+    =========================================== -->
+    <section id="tab-admission" class="tab-panel hidden space-y-6">
+      <!-- Top Explanation Card -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full">Fooyin Admission Linkage</span>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 mt-1">輔英科技大學招生系統串接：111–115 學年度真實漏斗數據驗證</h2>
+          <p class="text-xs text-slate-600 mt-0.5">
+            透過 6 碼教育部學校代碼 (<code class="bg-slate-100 px-1 py-0.5 rounded">school_id</code>) 與模糊校名正規化引擎，將「教育部 8 縣市生源母體」與「輔英四技甄選 / 四技申請招生系統」無縫串接。
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-funnel-zx" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition">
+            四技甄選入學 (111-115)
+          </button>
+          <button id="btn-funnel-sq" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            四技申請入學 (111-115)
+          </button>
+        </div>
+      </div>
+
+      <!-- Funnel Chart & Table Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 id="funnel-chart-title" class="text-sm font-bold text-slate-800 mb-1">四技甄選入學：近 5 年 (111-115) 報名至報到漏斗趨勢</h3>
+          <p id="funnel-chart-sub" class="text-xs text-slate-500 mb-4">對應管道階段：一階報名 → 二階報名 → 錄取(正備取) → 最終報到</p>
+          <div class="relative h-72">
+            <canvas id="chart-admission-funnel"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 id="funnel-table-title" class="text-sm font-bold text-slate-800 mb-1">輔英招生系統各階段人數與轉化率明細</h3>
+            <p class="text-xs text-slate-500 mb-3">已內建學校代碼正規化與報到狀態判定規則（已確認 OR 聯合會系統=已報到）</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr id="funnel-table-head" class="bg-slate-800 text-white">
+                    <!-- Dynamic headers -->
+                  </tr>
+                </thead>
+                <tbody id="funnel-table-body" class="divide-y divide-slate-200">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3.5 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-slate-700 space-y-1">
+            <div class="font-bold text-blue-950">🔗 資料庫串接關鍵邏輯 (Entity Resolution & Join Key)：</div>
+            <div>1. <strong>申請入學串接鍵</strong>：直接以 <code class="bg-white px-1 rounded">畢業學校代碼</code> 對接教育部 `base2` 之 6 碼 <code class="bg-white px-1 rounded">學校代碼</code>。</div>
+            <div>2. <strong>甄選入學串接鍵</strong>：以 <code class="bg-white px-1 rounded">集體報名學校/就讀學校</code> + <code class="bg-white px-1 rounded">郵遞區號</code> + <code class="bg-white px-1 rounded">甄選群(類)別代碼</code> 透過校名別名庫 (`School_Alias_Map`) 對接教育部科別資料。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schema Mapping Diagram -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-800 mb-3">教育部公開資料庫 × 輔英招生系統 × 教務學籍系統 三方串接 ER 架構</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-blue-900 text-sm">① 教育部生源母體庫 (MOE)</span>
+              <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-mono">dim_school_moe</span>
+            </div>
+            <ul class="space-y-1 text-slate-600 font-mono text-xs">
+              <li>🔑 school_code (6碼主鍵, 如 120301)</li>
+              <li>• county_code / county_name (8縣市)</li>
+              <li>• ownership_type (公立 / 私立)</li>
+              <li>• school_category (普通/技術/綜合/國中)</li>
+              <li>• dept_group_code (職群代碼 01-20)</li>
+              <li>• g1_students_113 / 114 / 115_est</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-indigo-900 text-sm">② 校名與群科映射中樞 (Bridge)</span>
+              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-mono">bridge_school_alias</span>
+            </div>
+            <ul class="space-y-1 text-slate-700 font-mono text-xs">
+              <li>🔗 raw_school_name (如 "私立樹德家商")</li>
+              <li>🔑 canonical_school_code ("501402")</li>
+              <li>• zip_code_prefix (郵遞區號前3碼校驗)</li>
+              <li>• tv_group_to_moe_cluster (群類映射)</li>
+              <li>• feeder_tier (核心生源/潛力生源/流失預警)</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-900 text-sm">③ 輔英招生與學籍庫 (Fooyin)</span>
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-mono">fact_admission_funnel</span>
+            </div>
+            <ul class="space-y-1 text-slate-700 font-mono text-xs">
+              <li>🔑 academic_year + channel (甄選/申請)</li>
+              <li>🔗 school_code + fooyin_dept_code</li>
+              <li>• step1_cnt / step2_cnt / admitted_cnt</li>
+              <li>• confirmed_cnt (已確認 OR 聯合會已報到)</li>
+              <li>• enrolled_oct_cnt (10月學籍定錨實到數)</li>
+              <li>• penetration_rate (本校報到 / 該校高三池)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 4: Antigravity IDE 系統藍圖與 Agent 指令
+    =========================================== -->
+    <section id="tab-antigravity" class="tab-panel hidden space-y-6">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <span class="px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">Antigravity IDE Workspace Spec</span>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 mt-1">進入 Antigravity IDE 專案目錄架構與 Agent 自動化開發指令</h2>
+            <p class="text-xs text-slate-500">可直接複製下方提示詞 (Prompt) 或專案結構至 Antigravity IDE 啟動 Multi-Agent 自動建置</p>
+          </div>
+          <button id="btn-copy-prompt" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+            <span>📋 複製 Antigravity Agent 啟動提示詞</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Workspace Tree -->
+          <div class="lg:col-span-5 bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs leading-relaxed">
+            <div class="text-blue-400 font-bold mb-2"># Antigravity IDE 標準專案目錄樹</div>
+            <pre class="overflow-x-auto text-slate-300">fooyin-ir-admission-system/
+├── .antigravity/
+│   ├── rules.md               # 校務研究IR業務規則與報到判定規範
+│   ├── agents.yaml            # 定義 ETL-Agent, IR-Analyst, UI-Agent
+│   └── workflows/
+│       ├── sync_oct_10.yaml   # 每年10月名錄與新生學籍定錨工作流
+│       └── sync_feb_02.yaml   # 每年2月教育部base2普查覆寫工作流
+├── backend/
+│   ├── app/
+│   │   ├── main.py            # FastAPI 核心服務入口
+│   │   ├── scheduler.py       # APScheduler / Celery (10月 & 2月排程)
+│   │   ├── models/
+│   │   │   ├── moe_school.py  # 教育部8縣市國高中職模型
+│   │   │   └── admission.py   # 輔英甄選/申請漏斗模型
+│   │   ├── etl/
+│   │   │   ├── moe_crawler.py # 自動抓取教育部統計處XLSX/CSV
+│   │   │   ├── school_matcher.py # 6碼代碼與模糊校名正規化
+│   │   │   └── fooyin_parser.py  # 甄選4階与申請3階解析器
+│   │   └── services/
+│   │       └── summary_engine.py # 4大核心統計摘要生成引擎
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ExecutiveSummary.tsx # 本案核心統計數據與生源結構摘要
+│   │   │   ├── CountyMatrixTable.tsx # 8縣市生源消長矩陣
+│   │   │   └── AdmissionFunnel.tsx   # 輔英招生系統連動漏斗
+└── database/
+    ├── migrations/
+    └── seeds/
+        └── 114_base2_8counties.xlsx  # 初始種子資料</pre>
+          </div>
+
+          <!-- Antigravity Prompt Box -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex-1 flex flex-col">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700">🚀 Antigravity IDE 專用系統建置 Prompt (可直接貼入 Agent 視窗)</span>
+                <span class="text-xs text-slate-400">支援 Claude / Gemini Pro Agent Mode</span>
+              </div>
+              <textarea id="antigravity-prompt-text" readonly class="w-full flex-1 min-h-[260px] p-3 text-xs font-mono bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none">請在 Antigravity IDE 中為「輔英科技大學校務研究(IR)與招生中心」建立一套全自動生源分析與招生串接系統 (fooyin-ir-admission-system)：
+
+1. 【地理與學校性質範圍】：
+   鎖定中南部及離島 8 縣市（臺中市 06/19、嘉義縣 10、嘉義市 20、雲林縣 09、臺南市 11/21、高雄市 12/50、屏東縣 13、臺東縣 14、澎湖縣 16）之國高中職。依《高級中等教育法》第5條區分：普通型高中、技術型高中(高職)、綜合型高中、實驗/單科型高中及國民中學(含完全中學附設國中部)。
+
+2. 【每學期 10 月及 2 月雙週期自動更新引擎 (APScheduler / Cron)】：
+   - 10月排程 (第一學期 10/15-10/31)：自動抓取教育部最新學年「各級學校名錄及異動一覽表」，並串接輔英教務處 10/15 新生學籍定錨名單，同時以人口模型推估當學年度先導新生數。
+   - 2月排程 (第二學期 2/1-2/15)：自動從教育部統計處下載1月底最新公告之「高級中等學校科別資料 (base2.xlsx)」與「國民中學校別資料」，將預估數自動覆寫為官方實際入學人數，並觸發春季招生拜訪預警。
+
+3. 【「本案核心統計數據與生源結構摘要」自動化生成架構】：
+   實作 SummaryEngine 服務，自動聚合並輸出四大決策模組：
+   (1) 涵蓋學校規模與公私立比（如 231 所高中職：公立 153 所、私立 78 所；國中 208 所）。
+   (2) 入學人數規模與消長趨勢（113、114 實際入學與 115 預估入學之年增減率與性別比）。
+   (3) 區域生源聚落分佈（計算中、高、南三大主力都會區佔比與次級重點區滲透率）。
+   (4) 學校性質結構分類（普通科 vs 專業群科生源池對比）。
+
+4. 【與輔英科技大學招生系統深度串接】：
+   - 支援匯入與 API 串接「四技甄選入學（一階→二階→錄取→報到）」及「四技申請入學（一階→二階→錄取→報到，判定條件：報到狀態='已確認' OR 聯合會系統/招生中心註記='已報到'）」。
+   - 建立 SchoolMatcher 校名正規化模組，將報名資料中之學校名稱與 6 碼教育部學校代碼綁定，自動計算各高中職對輔英各系之「報名轉換率」、「報到率」與「市場滲透率」。</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="font-bold text-blue-900">Phase 1：基礎資料層</div>
+                <div class="text-slate-600 mt-0.5">匯入 8 縣市 231 所高中職與 111-115 歷年甄選/申請檔案建立 PostgreSQL 基線。</div>
+              </div>
+              <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <div class="font-bold text-indigo-900">Phase 2：排程與串接層</div>
+                <div class="text-slate-600 mt-0.5">部署 10 月與 2 月雙週期爬蟲與輔英招生系統 API / 批次匯入轉接頭。</div>
+              </div>
+              <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <div class="font-bold text-emerald-900">Phase 3：決策看板層</div>
+                <div class="text-slate-600 mt-0.5">提供研發處(IR)、招生中心與各系認養教師紅黃綠燈生源預警及報表匯出。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ==========================================
+    // 1. REAL VERIFIED DATA (8 Counties & Fooyin 111-115)
+    // ==========================================
+    const countyData = [
+      { name: '臺中市', schools: 53, pub: 32, priv: 21, y113: 25168, y114: 24792, y115: 24625, jh114: 8830, share: 34.0, tier: '中部核心拓展區 (申請/甄選雙軌)' },
+      { name: '高雄市', schools: 55, pub: 39, priv: 16, y113: 20962, y114: 19752, y115: 19618, jh114: 4560, share: 27.1, tier: '一級地主核心命脈區 (全系重點認養)' },
+      { name: '臺南市', schools: 48, pub: 32, priv: 16, y113: 13680, y114: 12743, y115: 12654, jh114: 4016, share: 17.5, tier: '二級主力都會生源區 (強化交通與住宿誘因)' },
+      { name: '嘉義市', schools: 12, pub: 6,  priv: 6,  y113: 4344,  y114: 4321,  y115: 4289,  jh114: 628,  share: 5.9,  tier: '醫護與專業群科重點生源區 (生源穩定)' },
+      { name: '雲林縣', schools: 22, pub: 15, priv: 7,  y113: 4323,  y114: 4019,  y115: 3989,  jh114: 1487, share: 5.5,  tier: '技職群科結盟潛力區' },
+      { name: '屏東縣', schools: 19, pub: 13, priv: 6,  y113: 4060,  y114: 4012,  y115: 3984,  jh114: 1296, share: 5.5,  tier: '一級地緣高滲透區 (生活圈無縫銜接)' },
+      { name: '嘉義縣', schools: 9,  pub: 5,  priv: 4,  y113: 1660,  y114: 1541,  y115: 1530,  jh114: 833,  share: 2.1,  tier: '公費與助學專案重點區' },
+      { name: '臺東縣', schools: 11, pub: 9,  priv: 2,  y113: 1363,  y114: 1316,  y115: 1307,  jh114: 151,  share: 1.8,  tier: '東部原民與醫護專班策略區' },
+      { name: '澎湖縣', schools: 2,  pub: 2,  priv: 0,  y113: 477,   y114: 496,   y115: 492,   jh114: 0,    share: 0.7,  tier: '離島保送與甄選重點區 (+4.0%逆勢成長)' }
+    ];
+
+    const schoolTypeData = [
+      { label: '普通型高級中等學校 (103所)', count: 36942, color: '#1e3a8a' },
+      { label: '技術型高級中等學校/高職 (52所)', count: 21291, color: '#0284c7' },
+      { label: '普通型高中附設專業群科 (31所)', count: 7215, color: '#0d9488' },
+      { label: '技術型高中附設普通科 (19所)', count: 5128, color: '#f59e0b' },
+      { label: '綜合型/實驗及單科型高中 (26所)', count: 2416, color: '#6366f1' }
+    ];
+
+    const funnelData = {
+      zx: {
+        title: '四技甄選入學：近 5 年 (111–115) 報名至報到漏斗趨勢',
+        sub: '對應階段：一階報名 → 二階報名 → 錄取(正備取) → 最終報到（真實檔案核驗數據）',
+        headers: ['學年度', '一階報名(人)', '二階報名(人)', '錄取人數(人)', '最終報到(人)', '一階轉二階率', '二階報到轉化率'],
+        rows: [
+          { year: '111學年度', s1: 793, s2: 422, s3: 171, s4: 161 },
+          { year: '112學年度', s1: 124, s2: 230, s3: 100, s4: 93 },
+          { year: '113學年度', s1: 556, s2: 247, s3: 114, s4: 109 },
+          { year: '114學年度', s1: 399, s2: 162, s3: 162, s4: 86 },
+          { year: '115學年度', s1: 353, s2: 162, s3: 162, s4: 78 }
+        ]
+      },
+      sq: {
+        title: '四技申請入學：近 5 年 (111–115) 報名至報到漏斗趨勢',
+        sub: '對應階段：一階通過 → 二階複試 → 正備取總數 → 最終報到（報到狀態:已確認 或 聯合會/中心:已報到）',
+        headers: ['學年度', '一階篩選(人)', '二階複試(人)', '錄取總數(人)', '確認報到(人)', '二階參與率', '錄取報到率'],
+        rows: [
+          { year: '111學年度', s1: 1349, s2: 656,  s3: 632, s4: 193 },
+          { year: '112學年度', s1: 1282, s2: 1282, s3: 481, s4: 148 },
+          { year: '113學年度', s1: 1085, s2: 1085, s3: 358, s4: 126 },
+          { year: '114學年度', s1: 1083, s2: 1083, s3: 366, s4: 135 },
+          { year: '115學年度', s1: 1061, s2: 1061, s3: 372, s4: 155 }
+        ]
+      }
+    };
+
+    // ==========================================
+    // 2. RENDER FUNCTIONS & CHARTS
+    // ==========================================
+    let countyChartInstance = null;
+    let typeChartInstance = null;
+    let funnelChartInstance = null;
+
+    function showToast(title, msg) {
+      const box = document.getElementById('toast-box');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.add('hidden');
+      }, 4000);
+    }
+
+    function renderCountyTable(selectedCounty) {
+      const tbody = document.getElementById('table-county-body');
+      tbody.innerHTML = '';
+      const filtered = selectedCounty === 'ALL' ? countyData : countyData.filter(d => d.name === selectedCounty);
+
+      filtered.forEach(row => {
+        const diffRate = (((row.y114 - row.y113) / row.y113) * 100).toFixed(1);
+        const rateColor = diffRate >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-semibold';
+        const rateSign = diffRate >= 0 ? `+${diffRate}%` : `${diffRate}%`;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-blue-50/40 transition';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900">${row.name}</td>
+          <td class="py-3 px-3 text-right font-mono">${row.schools}</td>
+          <td class="py-3 px-3 text-right text-slate-600">${row.pub} 公 / ${row.priv} 私</td>
+          <td class="py-3 px-3 text-right font-mono">${row.y113.toLocaleString()}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-blue-900">${row.y114.toLocaleString()}</td>
+          <td class="py-3 px-3 text-right font-mono text-indigo-700">${row.y115.toLocaleString()}</td>
+          <td class="py-3 px-3 text-right font-mono ${rateColor}">${rateSign}</td>
+          <td class="py-3 px-3 text-right font-mono">${row.jh114.toLocaleString()}</td>
+          <td class="py-3 px-3 text-right font-mono font-semibold">${row.share.toFixed(1)}%</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 text-xs rounded-md bg-slate-100 text-slate-700 font-medium">${row.tier}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (selectedCounty === 'ALL') {
+        const trTotal = document.createElement('tr');
+        trTotal.className = 'bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300';
+        trTotal.innerHTML = `
+          <td class="py-3 px-4">全區合計 (8縣市)</td>
+          <td class="py-3 px-3 text-right font-mono">231</td>
+          <td class="py-3 px-3 text-right">153 公 / 78 私</td>
+          <td class="py-3 px-3 text-right font-mono">76,037</td>
+          <td class="py-3 px-3 text-right font-mono text-blue-900">72,992</td>
+          <td class="py-3 px-3 text-right font-mono text-indigo-700">72,481</td>
+          <td class="py-3 px-3 text-right font-mono text-rose-600">-4.0%</td>
+          <td class="py-3 px-3 text-right font-mono">21,801</td>
+          <td class="py-3 px-3 text-right font-mono">100.0%</td>
+          <td class="py-3 px-4 text-xs text-blue-900">涵蓋輔英 92% 以上主力生源圈</td>
+        `;
+        tbody.appendChild(trTotal);
+      }
+    }
+
+    function updateSummaryKPIs(selectedCounty, selectedYear) {
+      if (selectedCounty === 'ALL') {
+        document.getElementById('kpi-schools').textContent = '231';
+        document.getElementById('kpi-schools-sub').innerHTML = '<span>公立 153 所 (66.2%)</span><span>私立 78 所 (33.8%)</span>';
+        const stuMap = { '113': '76,037', '114': '72,992', '115': '72,481' };
+        document.getElementById('kpi-students').textContent = stuMap[selectedYear];
+        document.getElementById('kpi-share').textContent = '100.0%';
+        document.getElementById('kpi-jh').textContent = '21,801';
+      } else {
+        const c = countyData.find(d => d.name === selectedCounty);
+        if (!c) return;
+        document.getElementById('kpi-schools').textContent = c.schools;
+        const pubPct = ((c.pub / c.schools) * 100).toFixed(1);
+        document.getElementById('kpi-schools-sub').innerHTML = `<span>公立 ${c.pub} 所 (${pubPct}%)</span><span>私立 ${c.priv} 所</span>`;
+        const stuVal = selectedYear === '113' ? c.y113 : (selectedYear === '114' ? c.y114 : c.y115);
+        document.getElementById('kpi-students').textContent = stuVal.toLocaleString();
+        document.getElementById('kpi-share').textContent = `${c.share.toFixed(1)}%`;
+        document.getElementById('kpi-jh').textContent = c.jh114.toLocaleString();
+      }
+    }
+
+    function renderCharts(selectedCounty) {
+      const ctxBar = document.getElementById('chart-county-trend').getContext('2d');
+      const filtered = selectedCounty === 'ALL' ? countyData : countyData.filter(d => d.name === selectedCounty);
+
+      if (countyChartInstance) countyChartInstance.destroy();
+      countyChartInstance = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: filtered.map(d => d.name),
+          datasets: [
+            {
+              label: '113學年度入學',
+              data: filtered.map(d => d.y113),
+              backgroundColor: '#94a3b8',
+              borderRadius: 4
+            },
+            {
+              label: '114學年度入學 (最新實績)',
+              data: filtered.map(d => d.y114),
+              backgroundColor: '#1e3a8a',
+              borderRadius: 4
+            },
+            {
+              label: '115學年度預估',
+              data: filtered.map(d => d.y115),
+              backgroundColor: '#0284c7',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { size: 11 } } }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { font: { size: 11 } } },
+            x: { ticks: { font: { size: 11 } } }
+          }
+        }
+      });
+
+      const ctxDoughnut = document.getElementById('chart-school-type').getContext('2d');
+      if (typeChartInstance) typeChartInstance.destroy();
+      typeChartInstance = new Chart(ctxDoughnut, {
+        type: 'doughnut',
+        data: {
+          labels: schoolTypeData.map(d => d.label),
+          datasets: [{
+            data: schoolTypeData.map(d => d.count),
+            backgroundColor: schoolTypeData.map(d => d.color),
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }
+          }
+        }
+      });
+    }
+
+    function renderAdmissionFunnel(mode) {
+      const cfg = funnelData[mode];
+      document.getElementById('funnel-chart-title').textContent = cfg.title;
+      document.getElementById('funnel-chart-sub').textContent = cfg.sub;
+
+      // Update buttons
+      const btnZx = document.getElementById('btn-funnel-zx');
+      const btnSq = document.getElementById('btn-funnel-sq');
+      if (mode === 'zx') {
+        btnZx.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+        btnSq.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      } else {
+        btnSq.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white shadow-sm transition';
+        btnZx.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      }
+
+      // Render Table
+      const thead = document.getElementById('funnel-table-head');
+      thead.innerHTML = cfg.headers.map((h, i) => `<th class="py-2.5 px-3 ${i > 0 ? 'text-right' : ''}">${h}</th>`).join('');
+
+      const tbody = document.getElementById('funnel-table-body');
+      tbody.innerHTML = '';
+      cfg.rows.forEach(r => {
+        const rate1 = ((r.s2 / r.s1) * 100).toFixed(1) + '%';
+        const rate2 = ((r.s4 / r.s2) * 100).toFixed(1) + '%';
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${r.year}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s1.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s2.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono">${r.s3.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">${r.s4.toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-right font-mono text-slate-600">${rate1}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-semibold text-blue-800">${rate2}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Render Chart
+      const ctxFunnel = document.getElementById('chart-admission-funnel').getContext('2d');
+      if (funnelChartInstance) funnelChartInstance.destroy();
+      funnelChartInstance = new Chart(ctxFunnel, {
+        type: 'bar',
+        data: {
+          labels: cfg.rows.map(r => r.year),
+          datasets: [
+            {
+              label: cfg.headers[1],
+              data: cfg.rows.map(r => r.s1),
+              backgroundColor: '#94a3b8',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[2],
+              data: cfg.rows.map(r => r.s2),
+              backgroundColor: '#3b82f6',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[3],
+              data: cfg.rows.map(r => r.s3),
+              backgroundColor: '#f59e0b',
+              borderRadius: 4
+            },
+            {
+              label: cfg.headers[4],
+              data: cfg.rows.map(r => r.s4),
+              backgroundColor: '#10b981',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { size: 11 } } }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // 3. EVENT LISTENERS & INITIALIZATION
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initial Render
+      renderCountyTable('ALL');
+      renderCharts('ALL');
+      renderAdmissionFunnel('zx');
+
+      // Tab Switching
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+          btn.classList.add('active');
+          const targetId = btn.getAttribute('data-tab');
+          document.getElementById(targetId).classList.remove('hidden');
+        });
+      });
+
+      // Filters on Tab 1
+      const filterCounty = document.getElementById('filter-county');
+      const filterYear = document.getElementById('filter-year');
+
+      filterCounty.addEventListener('change', () => {
+        const c = filterCounty.value;
+        const y = filterYear.value;
+        updateSummaryKPIs(c, y);
+        renderCountyTable(c);
+        renderCharts(c);
+      });
+
+      filterYear.addEventListener('change', () => {
+        updateSummaryKPIs(filterCounty.value, filterYear.value);
+      });
+
+      // Funnel Mode Switch
+      document.getElementById('btn-funnel-zx').addEventListener('click', () => renderAdmissionFunnel('zx'));
+      document.getElementById('btn-funnel-sq').addEventListener('click', () => renderAdmissionFunnel('sq'));
+
+      // ETL Simulation Buttons
+      function runEtlLog(cycleName, logs) {
+        const out = document.getElementById('etl-log-output');
+        const badge = document.getElementById('console-badge');
+        badge.textContent = `STATUS: RUNNING (${cycleName})`;
+        badge.className = 'text-xs font-mono text-amber-400 animate-pulse';
+        out.innerHTML = '';
+
+        logs.forEach((line, idx) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.textContent = line;
+            if (line.includes('[SUCCESS]')) div.className = 'text-emerald-400 font-bold';
+            out.appendChild(div);
+            out.scrollTop = out.scrollHeight;
+            if (idx === logs.length - 1) {
+              badge.textContent = `STATUS: COMPLETED (${cycleName})`;
+              badge.className = 'text-xs font-mono text-emerald-400';
+              showToast(`${cycleName} 執行完成`, '生源結構摘要表與輔英招生系統已完成跨表連動更新！');
+            }
+          }, idx * 350);
+        });
+      }
+
+      document.getElementById('btn-sim-oct').addEventListener('click', () => {
+        runEtlLog('10月第一學期排程', [
+          '[10/15 02:00:01] 啟動 October-Sync-Pipeline (第一學期學校名錄與學籍定錨)...',
+          '[10/15 02:00:04] 連線教育部統計處 (depart.moe.edu.tw/ed4500) 檢查最新學年各級學校名錄...',
+          '[10/15 02:00:09] 解析 8 縣市 231 所高級中等學校 & 208 所國中代碼異動表，無新增斷鏈學校。',
+          '[10/15 02:00:15] 串接輔英科技大學教務處【10月15日新生註冊定錨檔】...',
+          '[10/15 02:00:21] 寫入各系「四技甄選(報到78人)」與「四技申請(報到155人)」最終註冊在籍狀態。',
+          '[10/15 02:00:26] 執行 ForecastEngine：推估當學年度 8 縣市高一入學總池為 72,481 人。',
+          '[SUCCESS] 10月第一學期自動更新完畢！已同步更新 IR 決策儀表板。'
+        ]);
+      });
+
+      document.getElementById('btn-sim-feb').addEventListener('click', () => {
+        runEtlLog('2月第二學期排程', [
+          '[02/01 03:00:01] 啟動 February-Sync-Pipeline (第二學期教育部 base2 普查實績覆寫)...',
+          '[02/01 03:00:05] 偵測到教育部統計處已於 1 月底發布最新「高級中等學校科別資料 (base2.xlsx)」！',
+          '[02/01 03:00:12] 自動下載並篩選縣市代碼：06/19, 09, 10, 20, 11/21, 12/50, 13, 14, 16 (共 1,500 筆科系紀錄)。',
+          '[02/01 03:00:18] 將 10 月預估數覆寫為官方普查實績：高一新生合計 72,992 人 (公立 153 所 / 私立 78 所)。',
+          '[02/01 03:00:24] 重新計算「本案核心統計數據與生源結構摘要」4 大維度指標與年增減率 (-4.0%)。',
+          '[02/01 03:00:30] 比對輔英各系歷史報到率，產出春季招生認養紅黃綠燈預警清單並推送至招生中心。',
+          '[SUCCESS] 2月第二學期自動更新完畢！所有科系群別明細已同步至最新官方普查基準。'
+        ]);
+      });
+
+      document.getElementById('btn-trigger-sync').addEventListener('click', () => {
+        // Switch to scheduler tab and trigger Feb simulation
+        document.querySelector('[data-tab="tab-scheduler"]').click();
+        document.getElementById('btn-sim-feb').click();
+      });
+
+      // Copy Antigravity Prompt
+      document.getElementById('btn-copy-prompt').addEventListener('click', () => {
+        const textEl = document.getElementById('antigravity-prompt-text');
+        textEl.select();
+        try {
+          document.execCommand('copy');
+          showToast('已複製到剪貼簿', '您現在可以直接在 Antigravity IDE 的 Agent 視窗貼上此系統建置指令！');
+        } catch (err) {
+          showToast('複製提示', '請手動全選文字框進行複製。');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

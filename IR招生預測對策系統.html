@@ -154,6 +154,7 @@
   <button class="nav-btn" id="tab-p8" onclick="switchPage('p8')" style="border-color:#fbbf24;color:#fde047"><i class="fa-solid fa-bell"></i> 2.招生期動態預警</button>
   <button class="nav-btn" id="tab-p9" onclick="switchPage('p9')" style="border-color:#c084fc;color:#d8b4fe"><i class="fa-solid fa-tags"></i> 3.流失節點質化歸因</button>
   <button class="nav-btn" id="tab-p10" onclick="switchPage('p10')" style="border-color:#34d399;color:#6ee7b7"><i class="fa-solid fa-user-check"></i> 4.分眾決策與系主任清單</button>
+  <button class="nav-btn" id="tab-p11" onclick="switchPage('p11')" style="border-color:#f472b6;color:#fbcfe8"><i class="fa-solid fa-compass-drafting"></i> ★ 5.全學制10月定錨×8縣市母體</button>
   <select class="sel-dark" id="globalPageSelect" onchange="switchPage(this.value)" style="margin-left:auto;padding:6px 12px;font-size:12px;">
     <option value="p0">🔽 下拉切換：0. 全院系報到率總表</option>
     <option value="p1">🔽 下拉切換：1. 報到率趨勢圖表</option>
@@ -166,6 +167,7 @@
     <option value="p8">🔽 ★新功能 2：建立招生期間動態預警機制(事中監控與紅燈預警)</option>
     <option value="p9">🔽 ★新功能 3：流失節點質化歸因分析(放棄理由標籤×生源校痛點)</option>
     <option value="p10">🔽 ★新功能 4：依決策角色的分眾行動清單(系主任專屬待辦儀表板)</option>
+    <option value="p11">🔽 ★新功能 5：113-115全學制10月學籍定錨 × 8縣市國高中職母體(114_base2)融合診斷</option>
   </select>
 </nav>
 
@@ -1088,6 +1090,103 @@
 
   <!-- 院長 / 校長 / 第一線視角總覽容器 -->
   <div id="p10OtherRoleContainer" style="display:none"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 11 — 新功能 5：113-115 全學制 10 月學籍定錨 × 中南部 8 縣市國高中職母體融合診斷
+═══════════════════════════════════════════════════════ -->
+<section id="p11" class="page">
+  <div class="notice" style="background:rgba(244,114,182,.09);border-color:rgba(244,114,182,.35);color:#fbcfe8">
+    <i class="fa-solid fa-compass-drafting" style="font-size:16px;margin-top:2px"></i>
+    <div>
+      <b>模組五：113–115 10月全學制（五專 / 四技全管道 / 二技 / 碩士班，共 6,602 人）學籍定錨 × 教育部 `114_base2` 中南部及離島 8 縣市（231所高中職 / 208所國中）母體融合診斷</b><br>
+      突破單看 6 月申請/甄選報到的盲點！完整串接 <b>① 第5階 10月實質留存與暑期二次流失 (Summer Melt)</b>、<b>② 8月聯合登記分發逆勢回流 (+51.6%)</b>、<b>③ 十年一貫 (五專➔二技32%直升➔碩士60.7%直升) LTV</b>、<b>④ 8縣市國高中職母體消長與完全中學雙軌滲透率</b>，以及 <b>⑤ 每年 10月/2月雙週期自動更新引擎</b>。
+    </div>
+  </div>
+
+  <div class="g4">
+    <div class="kpi kb">
+      <div class="kpi-l">113–115 10月全校實際在學</div>
+      <div class="kpi-v">6,602<span style="font-size:14px"> 人</span></div>
+      <div class="kpi-s">二技3,010 ‧ 四技1,633 ‧ 五專1,413 ‧ 碩士/後462</div>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-l">6月報到 ➔ 10月實質留存率</div>
+      <div class="kpi-v">98.2%<span style="font-size:13px"> 甄選｜90.6% 申請</span></div>
+      <div class="kpi-s">申請暑期二次流失 9.4% (39人轉考分科)</div>
+    </div>
+    <div class="kpi kp">
+      <div class="kpi-l">8月四技聯合登記分發回流</div>
+      <div class="kpi-v">97<span style="font-size:13px"> 人 (115年逆勢+51.6%)</span></div>
+      <div class="kpi-s">3年累計234人 ‧ 強力填補甄選流失缺額</div>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-l">8縣市國高中職母體 (114_base2)</div>
+      <div class="kpi-v">72,992<span style="font-size:13px"> 高職｜61,551 國中</span></div>
+      <div class="kpi-s">231所高中職(-4.0%) ＋ 208所國中母體校正</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-Layer-group" style="color:#38bdf8"></i> 日四技 14 系「10月實際在學全管道結構」（申請/甄選/聯登/獨招/運績/國際）</div>
+      <div class="ch-md"><canvas id="chartP11SijiChannels"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-t"><i class="fa-solid fa-bullseye" style="color:#f472b6"></i> 核心高中職「114母體年變動率 (%)」vs「輔英四技年均滲透率 (%)」</div>
+      <div class="ch-md"><canvas id="chartP11Penetration"></canvas></div>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-b"><i class="fa-solid fa-table"></i></span>日四技 14 學系「113–115 10月實際在學全管道組合矩陣」與全管道資源重分配對策</div>
+  <div class="card fw" style="margin-bottom:18px">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th class="tl">學系名稱</th>
+            <th>所屬學院</th>
+            <th>申請(普高)</th>
+            <th>甄選(技高)</th>
+            <th>聯合登記分發</th>
+            <th>獨立招生</th>
+            <th>運動績優</th>
+            <th>國際/海青/僑外</th>
+            <th>3年10月在學合計</th>
+            <th class="tl">主力管道結構定位</th>
+            <th class="tl">全管道 IR 診斷修正與對策</th>
+          </tr>
+        </thead>
+        <tbody id="tbP11SijiDepts"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="st"><span class="ico ico-p"><i class="fa-solid fa-school-flag"></i></span>核心生源高中職「教育部 `114_base2` 母體消長 × 輔英四技滲透率 × 完全中學附中五專雙軌」交叉診斷表</div>
+  <div class="card fw">
+    <div class="tw">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>縣市</th>
+            <th class="tl">生源學校名稱</th>
+            <th>屬性/類型</th>
+            <th>附設國中</th>
+            <th>113母體</th>
+            <th>114母體</th>
+            <th>母體變動率</th>
+            <th>四技在學(3年)</th>
+            <th>附中五專(3年)</th>
+            <th>3年總貢獻</th>
+            <th>四技年均滲透率</th>
+            <th>IR 母體校正診斷分類</th>
+            <th class="tl">修正後之精準招生對策</th>
+          </tr>
+        </thead>
+        <tbody id="tbP11Penetration"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
 
 <footer style="text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid var(--border2);margin-top:8px">
@@ -2479,7 +2578,98 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderP8Monitoring();
   renderP9Churn();
   renderP10RoleDashboard();
+  renderP11Integration();
 });
+
+const P11_DATA = {"overview_kpis": {"total_oct_3yr": 6602, "y113_oct": 2478, "y114_oct": 2216, "y115_oct": 1908, "z_june_3yr": 273, "z_oct_3yr": 268, "z_retention_rate": "98.2%", "z_summer_melt_rate": "1.8%", "s_june_3yr": 416, "s_oct_3yr": 377, "s_retention_rate": "90.6%", "s_summer_melt_rate": "9.4%", "union_dist_113": 73, "union_dist_114": 64, "union_dist_115": 97, "union_dist_3yr": 234, "union_dist_yoy": "+51.6%", "moe_8counties_hs_count": 231, "moe_8counties_hs_public": 153, "moe_8counties_hs_private": 78, "moe_8counties_hs_113": 76037, "moe_8counties_hs_114": 72992, "moe_8counties_hs_115_est": 72491, "moe_8counties_jh_count": 208, "moe_8counties_jh_114": 61551}, "programs_by_year": [{"prog": "日二技", "group": "二技學制", "y113": 617, "y114": 607, "y115": 544, "total": 1768, "share": "26.8%", "trend": "-10.4%", "note": "全校最大日間學制，母校五專直升與高屏七大醫專為主力"}, {"prog": "日四技", "group": "四技學制", "y113": 581, "y114": 503, "y115": 338, "total": 1422, "share": "21.5%", "trend": "-32.8%", "note": "涵蓋申請(26.5%)、甄選(18.8%)、聯登(16.5%逆勢+51.6%)、獨招(14.1%)、運績与國際生"}, {"prog": "日五專", "group": "五專學制", "y113": 510, "y114": 440, "y115": 463, "total": 1413, "share": "21.4%", "trend": "+5.2% (115逆勢正成長!)", "note": "國中生源扎根基石！護理科佔70.5%、醫技20.0%，32%畢業後直升本校二技"}, {"prog": "進二技", "group": "二技學制", "y113": 529, "y114": 410, "y115": 303, "total": 1242, "share": "18.8%", "trend": "-26.1%", "note": "在職醫護專科畢業生進修主力，與日二技合計佔全校45.6%"}, {"prog": "日碩士班", "group": "碩士與學士後", "y113": 89, "y114": 91, "y115": 81, "total": 261, "share": "4.0%", "trend": "-11.0%", "note": "母校大學部直升佔60.7%，展現高忠誠度縱向升學鏈"}, {"prog": "進四技", "group": "四技學制", "y113": 81, "y114": 68, "y115": 62, "total": 211, "share": "3.2%", "trend": "-8.8%", "note": "休遊、健管、幼保、高長在職進修穩定生源"}, {"prog": "學士後", "group": "碩士與學士後", "y113": 42, "y114": 44, "y115": 43, "total": 129, "share": "2.0%", "trend": "-2.3% (高度穩定)", "note": "學士後護理系，跨領域大學畢業生轉職護理師穩定滿招"}, {"prog": "日二專", "group": "五專學制", "y113": 4, "y114": 40, "y115": 40, "total": 84, "share": "1.3%", "trend": "持平穩定", "note": "外國學生專班為主"}, {"prog": "碩士在職專班", "group": "碩士與學士後", "y113": 25, "y114": 13, "y115": 34, "total": 72, "share": "1.1%", "trend": "+161.5% (115倍增!)", "note": "高屏醫療院所護理長與中高階主管回流進修爆發"}], "summer_melt_comparison": [{"channel": "四技甄選 (技高)", "year": "113", "admitted": 114, "june_enrolled": 109, "oct_enrolled": 106, "melt_cnt": 3, "retention_pct": 97.2, "melt_pct": 2.8, "union_backfill": 73, "note": "技高生實作導向明確，暑期幾乎無流失"}, {"channel": "四技甄選 (技高)", "year": "114", "admitted": 152, "june_enrolled": 86, "oct_enrolled": 86, "melt_cnt": 0, "retention_pct": 100.0, "melt_pct": 0.0, "union_backfill": 64, "note": "6月報到86人全數於10月註冊在學 (100%留存)"}, {"channel": "四技甄選 (技高)", "year": "115", "admitted": 148, "june_enrolled": 78, "oct_enrolled": 76, "melt_cnt": 2, "retention_pct": 97.4, "melt_pct": 2.6, "union_backfill": 97, "note": "甄選留存高達97.4%，且8月聯登回流暴增至97人(+51.6%)"}, {"channel": "四技申請 (普高)", "year": "113", "admitted": 358, "june_enrolled": 126, "oct_enrolled": 114, "melt_cnt": 12, "retention_pct": 90.5, "melt_pct": 9.5, "union_backfill": null, "note": "普高生6月報到後，有12人於7月分科測驗(原指考)考取國立/一般大學而放棄"}, {"channel": "四技申請 (普高)", "year": "114", "admitted": 366, "june_enrolled": 135, "oct_enrolled": 122, "melt_cnt": 13, "retention_pct": 90.4, "melt_pct": 9.6, "union_backfill": null, "note": "暑期二次流失13人(9.6%)，集中於護理系與物治系跨考分科測驗考生"}, {"channel": "四技申請 (普高)", "year": "115", "admitted": 372, "june_enrolled": 155, "oct_enrolled": 141, "melt_cnt": 14, "retention_pct": 91.0, "melt_pct": 9.0, "union_backfill": null, "note": "暑期二次流失14人(9.0%)，需啟動6~8月「準大一先修微學分與暑期伴讀」鎖定學籍"}], "siji_all_channels_by_dept": [{"dept": "護理系", "college": "護理學院", "shenqing": 212, "zhenxuan": 11, "union_dist": 13, "solo": 9, "sports": 22, "intl": 7, "total": 274, "dominant": "申請入學主力 (77.4%)", "strategy": "申請佔絕對大宗，但暑期流失約9%，需強化6~8月準新生臨床體驗與住宿綁定"}, {"dept": "休閒與遊憩事業管理系", "college": "人文與管理學院", "shenqing": 0, "zhenxuan": 24, "union_dist": 24, "solo": 12, "sports": 27, "intl": 87, "total": 174, "dominant": "海青/國際(50%)＋運績/聯登/甄選", "strategy": "只看甄選(24人)會嚴重低估！實際靠海青班(70人)、運績(27人)與聯登(24人)支撐174人大系"}, {"dept": "物理治療系", "college": "醫學與健康學院", "shenqing": 39, "zhenxuan": 20, "union_dist": 41, "solo": 12, "sports": 23, "intl": 3, "total": 138, "dominant": "聯登(29.7%)＋申請(28.3%)＋運績(16.7%)", "strategy": "115甄選報到僅3人看似紅燈，但8月聯合登記分發強勢湧入41人超越申請！具極強剛性需求"}, {"dept": "高齡及長期照護事業系", "college": "護理學院", "shenqing": 0, "zhenxuan": 15, "union_dist": 12, "solo": 11, "sports": 9, "intl": 58, "total": 105, "dominant": "國際專修部(55.2%)＋甄選/聯登/獨招", "strategy": "國際專修部58人成為最大支柱，國內生則由甄選(15)、聯登(12)、獨招(11)三足鼎立"}, {"dept": "環境工程與科學系", "college": "環境與生命學院", "shenqing": 20, "zhenxuan": 18, "union_dist": 20, "solo": 25, "sports": 12, "intl": 6, "total": 101, "dominant": "五大管道均衡發展 (各佔18~25%)", "strategy": "獨招(25)、申請(20)、聯登(20)、甄選(18)、運績(12)極度均衡，抗單一管道波動能力最強"}, {"dept": "職業安全衛生系", "college": "環境與生命學院", "shenqing": 0, "zhenxuan": 49, "union_dist": 25, "solo": 19, "sports": 6, "intl": 1, "total": 100, "dominant": "甄選(49%)＋聯登(25%)＋獨招(19%)", "strategy": "工業類技高生為主，甄選與8月聯登合計佔74%，加上進四技與碩士班形成完整工安鏈"}, {"dept": "健康美容系", "college": "醫學與健康學院", "shenqing": 10, "zhenxuan": 28, "union_dist": 20, "solo": 15, "sports": 2, "intl": 23, "total": 98, "dominant": "甄選(28.6%)＋僑外生(23.5%)＋聯登(20.4%)", "strategy": "家商美容群技高生於甄選與聯登合計貢獻48人，搭配僑生專班(15人)維持百人規模"}, {"dept": "健康事業管理系", "college": "護理學院", "shenqing": 48, "zhenxuan": 9, "union_dist": 3, "solo": 21, "sports": 0, "intl": 3, "total": 84, "dominant": "申請(57.1%)＋獨招(25.0%)", "strategy": "普高申請與8月獨招為雙核心，另有進二技与日二技龐大升學池支撐"}, {"dept": "保健營養系", "college": "醫學與健康學院", "shenqing": 0, "zhenxuan": 36, "union_dist": 20, "solo": 17, "sports": 10, "intl": 0, "total": 83, "dominant": "甄選(43.4%)＋聯登(24.1%)＋獨招(20.5%)", "strategy": "餐旅/家政/食品群技高生為主，甄選未報到之缺額逾5成會在8月聯登與獨招回流補齊"}, {"dept": "資訊科技與管理系", "college": "人文與管理學院", "shenqing": 0, "zhenxuan": 12, "union_dist": 19, "solo": 12, "sports": 7, "intl": 19, "total": 69, "dominant": "聯登(27.5%)＋國際新南向(27.5%)＋甄選/獨招", "strategy": "8月聯合登記分發(19人)高於甄選(12人)，商管/資處科考生常於統測後分發回流"}, {"dept": "應用化學及材料科學系", "college": "環境與生命學院", "shenqing": 19, "zhenxuan": 16, "union_dist": 18, "solo": 12, "sports": 0, "intl": 3, "total": 68, "dominant": "申請(27.9%)＋聯登(26.5%)＋甄選(23.5%)", "strategy": "普高申請、技高甄選與8月聯登三強鼎立，半導體材料實習對聯登考生具高度吸引力"}, {"dept": "幼兒保育暨產業系", "college": "人文與管理學院", "shenqing": 15, "zhenxuan": 25, "union_dist": 9, "solo": 13, "sports": 6, "intl": 0, "total": 68, "dominant": "甄選(36.8%)＋申請(22.1%)＋獨招(19.1%)", "strategy": "113年起開放普高申請穩定貢獻15人，結合技高幼保科甄選與進修部二技體系"}, {"dept": "生物科技與綠色產業系", "college": "環境與生命學院", "shenqing": 14, "zhenxuan": 3, "union_dist": 10, "solo": 19, "sports": 5, "intl": 0, "total": 51, "dominant": "獨招(37.3%)＋申請(27.5%)＋聯登(19.6%)", "strategy": "甄選人數雖少(3人)，但8月獨招(19人)與聯登(10人)承接超過57%生源，應將行銷重心延伸至7~8月"}, {"dept": "應用外語系", "college": "人文與管理學院", "shenqing": 0, "zhenxuan": 2, "union_dist": 0, "solo": 3, "sports": 3, "intl": 1, "total": 9, "dominant": "主力轉型為五專應外科(99人)與日二技(62人)", "strategy": "四技端已策略性縮編，全系資源集中於日五專應用外語科(3年99人)與日二技直升體系"}], "wuzhuan_top15_jh": [{"rank": 1, "school": "高雄市立鳳山國中", "city": "高雄市鳳山區", "y113": 25, "y114": 18, "y115": 20, "total": 63, "main_dept": "護理科(46)、醫技科(11)"}, {"rank": 2, "school": "高雄市立大寮國中", "city": "高雄市大寮區", "y113": 19, "y114": 12, "y115": 15, "total": 46, "main_dept": "護理科(30)、醫技科(10)"}, {"rank": 3, "school": "高雄市立鳳西國中", "city": "高雄市鳳山區", "y113": 16, "y114": 14, "y115": 15, "total": 45, "main_dept": "護理科(32)、應外科(7)"}, {"rank": 4, "school": "高雄市立福誠高中附設國中部", "city": "高雄市鳳山區 (完全中學)", "y113": 14, "y114": 11, "y115": 13, "total": 38, "main_dept": "護理科(28)、醫技科(7) ★雙軌標竿"}, {"rank": 5, "school": "高雄市立青年國中", "city": "高雄市鳳山區", "y113": 13, "y114": 11, "y115": 12, "total": 36, "main_dept": "護理科(26)、醫技科(7)"}, {"rank": 6, "school": "高雄市立福山國中", "city": "高雄市左營區", "y113": 12, "y114": 11, "y115": 11, "total": 34, "main_dept": "護理科(25)、醫技科(6)"}, {"rank": 7, "school": "高雄市立陽明國中", "city": "高雄市三民區", "y113": 12, "y114": 10, "y115": 11, "total": 33, "main_dept": "護理科(24)、醫技科(6)"}, {"rank": 8, "school": "高雄市立林園高中附設國中部", "city": "高雄市林園區 (完全中學)", "y113": 12, "y114": 9, "y115": 11, "total": 32, "main_dept": "護理科(22)、醫技科(6) ★雙軌標竿"}, {"rank": 9, "school": "高雄市立中山國中", "city": "高雄市小港區", "y113": 11, "y114": 10, "y115": 10, "total": 31, "main_dept": "護理科(23)、醫技科(5)"}, {"rank": 10, "school": "高雄市立鳳甲國中", "city": "高雄市鳳山區", "y113": 11, "y114": 9, "y115": 10, "total": 30, "main_dept": "護理科(21)、醫技科(6)"}, {"rank": 11, "school": "高雄市立中庄國中", "city": "高雄市大寮區", "y113": 10, "y114": 9, "y115": 10, "total": 29, "main_dept": "護理科(20)、醫技科(5)"}, {"rank": 12, "school": "高雄市立明義國中", "city": "高雄市小港區", "y113": 10, "y114": 8, "y115": 9, "total": 27, "main_dept": "護理科(19)、應外科(4)"}, {"rank": 13, "school": "高雄市立瑞祥高中附設國中部", "city": "高雄市前鎮區 (完全中學)", "y113": 9, "y114": 8, "y115": 8, "total": 25, "main_dept": "護理科(18)、醫技科(5) ★雙軌標竿"}, {"rank": 14, "school": "屏東縣立明正國中", "city": "屏東縣屏東市", "y113": 9, "y114": 8, "y115": 8, "total": 25, "main_dept": "護理科(19)、醫技科(4)"}, {"rank": 15, "school": "高雄市立五福國中", "city": "高雄市新興區", "y113": 9, "y114": 8, "y115": 8, "total": 25, "main_dept": "護理科(18)、醫技科(5)"}], "erji_top10_colleges": [{"rank": 1, "school": "輔英科技大學 (母校五專部直升)", "region": "高雄市 (校內直升)", "day_erji": 685, "night_erji": 278, "total": 963, "share": "32.0%", "note": "每3位二技生就有1位來自母校五專直升！五專招進1人＝鎖定未來7年(5+2)學籍"}, {"rank": 2, "school": "育英醫護管理專科學校", "region": "高雄市三民區", "day_erji": 198, "night_erji": 140, "total": 338, "share": "11.2%", "note": "無二技部之純五專，為本校護理系與高長系二技第一大外部生源"}, {"rank": 3, "school": "樹人醫護管理專科學校", "region": "高雄市路竹區", "day_erji": 210, "night_erji": 125, "total": 335, "share": "11.1%", "note": "物治、醫技、視光、幼保、健美五專畢業生跨考本校二技主力"}, {"rank": 4, "school": "慈惠醫護管理專科學校", "region": "屏東縣南州鄉", "day_erji": 112, "night_erji": 81, "total": 193, "share": "6.4%", "note": "屏東在地醫專主力，護理、物治、幼保、餐旅生源穩定"}, {"rank": 5, "school": "仁德醫護管理專科學校", "region": "苗栗縣後龍鎮", "day_erji": 95, "night_erji": 84, "total": 179, "share": "5.9%", "note": "高屏子弟北上就讀仁德五專後，二技大舉「返鄉回流」就讀輔英"}, {"rank": 6, "school": "敏惠醫護管理專科學校", "region": "臺南市柳營區", "day_erji": 64, "night_erji": 35, "total": 99, "share": "3.3%", "note": "台南地區護理科、幼保科與健美科五專畢業生南下升學首選"}, {"rank": 7, "school": "美和科技大學 (五專部)", "region": "屏東縣內埔鄉", "day_erji": 38, "night_erji": 24, "total": 62, "share": "2.1%", "note": "屏東五專畢業生轉戰本校二技護理與健管"}, {"rank": 8, "school": "崇仁醫護管理專科學校", "region": "嘉義市/大林鎮", "day_erji": 42, "night_erji": 19, "total": 61, "share": "2.0%", "note": "雲嘉地區護理科、餐旅與健美五專生南下就讀"}, {"rank": 9, "school": "新生醫護管理專科學校", "region": "桃園市龍潭區", "day_erji": 21, "night_erji": 13, "total": 34, "share": "1.1%", "note": "南部戶籍學生五專畢業後返鄉就讀二技"}, {"rank": 10, "school": "國立臺南護理專科學校", "region": "臺南市中西區", "day_erji": 22, "night_erji": 11, "total": 33, "share": "1.1%", "note": "國立護專優質畢業生選擇本校二技護理、健美與高長系"}], "moe_8counties_summary": [{"city": "高雄市", "hs_cnt": 55, "pub_cnt": 40, "priv_cnt": 15, "hs_113": 20962, "hs_114": 19752, "hs_115_est": 19608, "hs_diff": -1210, "hs_pct": "-5.8%", "jh_114": 12885, "fy_oct_3yr": 4148, "fy_share": "62.8%", "ir_diag": "核心本命區：高中職母體1年驟減1,210人(-5.8%)，且高英工商停招；但附設國中部與國中池達12,885人，支撐本校五專逆勢+5.2%"}, {"city": "屏東縣", "hs_cnt": 19, "pub_cnt": 15, "priv_cnt": 4, "hs_113": 4060, "hs_114": 4012, "hs_115_est": 3987, "hs_diff": -48, "hs_pct": "-1.2%", "jh_114": 4946, "fy_oct_3yr": 647, "fy_share": "9.8%", "ir_diag": "高穩定鐵票區：屏東高中職母體僅微減-1.2%（屏東高工逆勢+4.5%），且國中母體4,946人大於高中職，五專與四技皆具高轉換率"}, {"city": "臺南市", "hs_cnt": 48, "pub_cnt": 30, "priv_cnt": 18, "hs_113": 13680, "hs_114": 12743, "hs_115_est": 12654, "hs_diff": -937, "hs_pct": "-6.8%", "jh_114": 11531, "fy_oct_3yr": 236, "fy_share": "3.6%", "ir_diag": "跨區第一拓源帶：母體縮減-6.8%，應聚焦北台南醫專(敏惠)二技銜接與南台南社區普高(大灣/南寧/家齊)申請入學"}, {"city": "臺中市", "hs_cnt": 53, "pub_cnt": 31, "priv_cnt": 22, "hs_113": 25168, "hs_114": 24792, "hs_115_est": 24638, "hs_diff": -376, "hs_pct": "-1.5%", "jh_114": 18875, "fy_oct_3yr": 86, "fy_share": "1.3%", "ir_diag": "中南部最大生源池(2.48萬人，僅微減-1.5%)：應鎖定設專業群科之綜合/私高與運動績優管道，搭配首年住宿全免破除距離痛點"}, {"city": "雲林縣", "hs_cnt": 22, "pub_cnt": 14, "priv_cnt": 8, "hs_113": 4323, "hs_114": 4019, "hs_115_est": 3990, "hs_diff": -304, "hs_pct": "-7.0%", "jh_114": 4372, "fy_oct_3yr": 68, "fy_share": "1.0%", "ir_diag": "衛護技高特區：巨人高中為傳統醫護技高大校，惟母體受少子化衝擊-7.0%，需強化甄選與8月聯登雙重攔截"}, {"city": "嘉義市", "hs_cnt": 12, "pub_cnt": 6, "priv_cnt": 6, "hs_113": 4344, "hs_114": 4321, "hs_115_est": 4287, "hs_diff": -23, "hs_pct": "-0.5%", "jh_114": 3078, "fy_oct_3yr": 92, "fy_share": "1.4%", "ir_diag": "跨區教育中心：嘉義市吸納雲嘉學子，母體極度抗跌(-0.5%)，嘉義家職、東吳高職與崇仁護專為重點對口"}, {"city": "嘉義縣", "hs_cnt": 9, "pub_cnt": 6, "priv_cnt": 3, "hs_113": 1660, "hs_114": 1541, "hs_115_est": 1531, "hs_diff": -119, "hs_pct": "-7.2%", "jh_114": 3038, "fy_oct_3yr": 32, "fy_share": "0.5%", "ir_diag": "國中母體(3,038)為高中職(1,541)近2倍，多外流至嘉義市或南下就讀五專"}, {"city": "臺東縣", "hs_cnt": 11, "pub_cnt": 9, "priv_cnt": 2, "hs_113": 1363, "hs_114": 1316, "hs_115_est": 1304, "hs_diff": -47, "hs_pct": "-3.4%", "jh_114": 1591, "fy_oct_3yr": 48, "fy_share": "0.7%", "ir_diag": "南迴鐵路生活圈：台東缺乏醫護科大，台東女中、台東高中、公東高工與關山工商具高度跨區南下就讀意願"}, {"city": "澎湖縣", "hs_cnt": 2, "pub_cnt": 2, "priv_cnt": 0, "hs_113": 477, "hs_114": 496, "hs_115_est": 492, "hs_diff": 19, "hs_pct": "+4.0%", "jh_114": 1235, "fy_oct_3yr": 45, "fy_share": "0.7%", "ir_diag": "唯一母體正成長縣市(+4.0%)！馬公高中、澎湖海事水產及五專離島保送班(3年18人)為極高轉換藍海"}], "hs_penetration_matrix": [{"city": "高雄市", "name": "私立中山工商", "pub": "私立", "stype": "技術型高中", "attached_jh": "有", "y113": 2080, "y114": 1769, "pct": -15.0, "fy_siji_3yr": 205, "fy_wuzhuan_3yr": 8, "fy_total_3yr": 218, "pen_rate": "3.86%", "diag_type": "母體萎縮型假性流失", "ir_action": "修正誤判！本校滲透率仍高達3.86%，人數減少主因該校1年減招311人(-15%)；應同步深耕其國中部五專與8月聯登"}, {"city": "高雄市", "name": "市立林園高中", "pub": "公立", "stype": "普通型(完全中學)", "attached_jh": "有", "y113": 171, "y114": 134, "pct": -21.6, "fy_siji_3yr": 42, "fy_wuzhuan_3yr": 32, "fy_total_3yr": 75, "pen_rate": "10.45%", "diag_type": "完全中學雙軌王牌校", "ir_action": "高中部四技滲透率破10.45%(全校最高)，且附設國中部貢獻32名五專生！為『一校雙軌(國中部五專+高中部四技)』最高標竿"}, {"city": "高雄市", "name": "市立中正高工", "pub": "公立", "stype": "技術型高中", "attached_jh": "無", "y113": 641, "y114": 669, "pct": 4.4, "fy_siji_3yr": 58, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 62, "pen_rate": "2.88%", "diag_type": "母體逆勢擴張藍海校", "ir_action": "114新生逆勢成長+4.4%(669人)！3年實際在學58人(多透過8月聯登、獨招、運績入學職安/環工/化材)，應列為環境學院頭號擴張目標"}, {"city": "高雄市", "name": "私立樹德家商", "pub": "私立", "stype": "技術型高中", "attached_jh": "無", "y113": 1667, "y114": 1502, "pct": -9.9, "fy_siji_3yr": 35, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 59, "pen_rate": "0.78%", "diag_type": "高基數待提升滲透校", "ir_action": "雖母體縮減-9.9%但年招仍達1,502人(全國第2大私職)，目前四技滲透率僅0.78%，健美、幼保、保營、休遊仍有翻倍開發空間"}, {"city": "高雄市", "name": "私立三信家商", "pub": "私立", "stype": "技術型高中", "attached_jh": "無", "y113": 603, "y114": 725, "pct": 20.2, "fy_siji_3yr": 40, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 58, "pen_rate": "1.83%", "diag_type": "母體逆勢暴增藍海校", "ir_action": "重大發現！114新生逆勢暴增+20.2%(603➔725人)，吸收大量原高英/樹德生源，應立即將三信家商升格為A+級核心簽約校"}, {"city": "高雄市", "name": "市立瑞祥高中", "pub": "公立", "stype": "普通型(完全中學)", "attached_jh": "有", "y113": 295, "y114": 289, "pct": -2.0, "fy_siji_3yr": 24, "fy_wuzhuan_3yr": 25, "fy_total_3yr": 49, "pen_rate": "2.77%", "diag_type": "完全中學雙軌王牌校", "ir_action": "高中部四技在學24人＋附設國中部五專在學25人＝合計49人！過去只看四技忽略其國中部五專驚人貢獻，應派駐護理+醫技雙軌宣講團"}, {"city": "高雄市", "name": "私立立志高中", "pub": "私立", "stype": "普通型(設專業群科)", "attached_jh": "有", "y113": 419, "y114": 380, "pct": -9.3, "fy_siji_3yr": 30, "fy_wuzhuan_3yr": 8, "fy_total_3yr": 47, "pen_rate": "2.63%", "diag_type": "普職雙棲＋國中部雙軌", "ir_action": "同時具備普通科(申請)、專業群科(甄選/聯登)與附設國中部(五專)，3年貢獻47人，適合四大學院聯合入校博覽會"}, {"city": "高雄市", "name": "市立福誠高中", "pub": "公立", "stype": "普通型(完全中學)", "attached_jh": "有", "y113": 220, "y114": 219, "pct": -0.5, "fy_siji_3yr": 8, "fy_wuzhuan_3yr": 38, "fy_total_3yr": 46, "pen_rate": "1.23%", "diag_type": "國中部五專超強‧高中部待開發", "ir_action": "附設國中部3年就讀本校五專高達38人(全校完全中學第1)，但高中部四技僅8人(1.23%)；應善用校友口碑向高中部延伸開發申請入學"}, {"city": "高雄市", "name": "國立鳳山商工", "pub": "公立", "stype": "技術型高中", "attached_jh": "無", "y113": 684, "y114": 659, "pct": -3.7, "fy_siji_3yr": 39, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 45, "pen_rate": "1.97%", "diag_type": "公立技高聯登回流主力", "ir_action": "距離本校最近之國立大職校(659人)，甄選階段多觀望國立科大，但8月聯合登記分發與進修部大量回流本校(3年45人)"}, {"city": "高雄市", "name": "私立高英工商", "pub": "私立", "stype": "技術型高中", "attached_jh": "無", "y113": 169, "y114": 0, "pct": -100.0, "fy_siji_3yr": 39, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 45, "pen_rate": "0.00%", "diag_type": "結構性停招斷崖預警", "ir_action": "關鍵預警！114學年新生已歸零(-100%)，過去3年貢獻本校45名學生之生源將於116學年完全斷炊，配額須立即轉移至三信家商與中正高工"}, {"city": "高雄市", "name": "市立小港高中", "pub": "公立", "stype": "普通型高中", "attached_jh": "無", "y113": 468, "y114": 452, "pct": -3.4, "fy_siji_3yr": 37, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 37, "pen_rate": "2.72%", "diag_type": "公立普高申請核心鐵票", "ir_action": "母體穩定維持452人，3年10月實際在學37人(年均滲透率2.72%)，暑期二次流失極低，為護理、物治、健管最穩定公立普高"}, {"city": "高雄市", "name": "私立復華高中", "pub": "私立", "stype": "普通型(設專業群科)", "attached_jh": "有", "y113": 101, "y114": 80, "pct": -20.8, "fy_siji_3yr": 25, "fy_wuzhuan_3yr": 1, "fy_total_3yr": 31, "pen_rate": "10.38%", "diag_type": "母體萎縮型假性流失", "ir_action": "修正誤判！過去認為復華報名減少是關係弱化，對照base2發現該校母體僅80人(-20.8%)，本校四技滲透率高達10.38%(每10人有1人讀輔英)！"}, {"city": "高雄市", "name": "市立中正高中", "pub": "公立", "stype": "普通型(完全中學)", "attached_jh": "有", "y113": 360, "y114": 356, "pct": -1.1, "fy_siji_3yr": 15, "fy_wuzhuan_3yr": 15, "fy_total_3yr": 30, "pen_rate": "1.40%", "diag_type": "完全中學雙軌均衡校", "ir_action": "高中部四技15人＋附設國中部五專15人＝30人，母體356人極穩定(-1.1%)，可進一步將高中部滲透率拉升至2.5%"}, {"city": "高雄市", "name": "市立文山高中", "pub": "公立", "stype": "普通型(完全中學)", "attached_jh": "有", "y113": 267, "y114": 249, "pct": -6.7, "fy_siji_3yr": 12, "fy_wuzhuan_3yr": 17, "fy_total_3yr": 29, "pen_rate": "1.61%", "diag_type": "完全中學雙軌均衡校", "ir_action": "高中部四技12人＋附設國中部五專17人＝29人，鳳山/鳥松生活圈重點完全中學"}, {"city": "屏東縣", "name": "私立屏榮高中", "pub": "私立", "stype": "普通型(設專業群科)", "attached_jh": "有", "y113": 553, "y114": 496, "pct": -10.3, "fy_siji_3yr": 23, "fy_wuzhuan_3yr": 1, "fy_total_3yr": 26, "pen_rate": "1.55%", "diag_type": "屏東最大私高職主力", "ir_action": "屏東市規模最大私校(496人)，兼具普高與專業群科，為幼保、健美、保營、護理屏東核心基地"}, {"city": "屏東縣", "name": "國立潮州高中", "pub": "公立", "stype": "普通型高中", "attached_jh": "無", "y113": 462, "y114": 455, "pct": -1.5, "fy_siji_3yr": 24, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 24, "pen_rate": "1.76%", "diag_type": "屏中南公立普高標竿", "ir_action": "緊鄰88快速道路直達本校，母體455人極穩定(-1.5%)，申請入學報到留存率逾93%"}, {"city": "屏東縣", "name": "國立屏東高工", "pub": "公立", "stype": "技術型高中", "attached_jh": "無", "y113": 514, "y114": 537, "pct": 4.5, "fy_siji_3yr": 19, "fy_wuzhuan_3yr": 0, "fy_total_3yr": 20, "pen_rate": "1.17%", "diag_type": "母體逆勢擴張藍海校", "ir_action": "114新生逆勢成長+4.5%(537人)，化工科、土木與電子科畢業生於甄選及8月聯登進入環工、職安、化材潛力極大"}], "spatial_cross_matrix": [{"category": "🏠 在地就學 (畢業學校與戶籍皆高屏)", "count_3yr": 4360, "share": "66.0%", "main_progs": "日五專(1,285)、日二技(1,120)、日四技(890)、進二技(760)", "ir_insight": "高屏地利基本盤佔全校66%，通勤便利與高屏醫療院所實習就業生態圈為最大護城河"}, {"category": "🚄 純跨區吸引 (畢業學校與戶籍皆外縣市)", "count_3yr": 1220, "share": "18.5%", "main_progs": "日二技(468)、日四技(342)、進二技(245)、日五專(98)", "ir_insight": "台南、雲嘉、台中、台東、澎湖學子慕名南下，集中於護理、物治、醫技與二技醫專升學"}, {"category": "🌱 在地外溢吸引 (高屏學校畢業 ‧ 戶籍外縣市)", "count_3yr": 403, "share": "6.1%", "main_progs": "日二技(115)、進二技(142)、日四技(78)、碩士/學士後(48)", "ir_insight": "外縣市學生先來高屏讀五專(如本校五專、育英、樹人、慈惠)或高職，畢業後直接留在本校升讀二技/四技！"}, {"category": "🪃 返鄉回流 (外縣市學校畢業 ‧ 戶籍高屏)", "count_3yr": 294, "share": "4.5%", "main_progs": "日二技(165)、進二技(95)、日四技(26)、碩士(8)", "ir_insight": "關鍵發現！高屏子弟國中畢業先去外縣市讀醫專(如苗栗仁德、台南敏惠、嘉義崇仁)，二技時高達294人『返鄉回流』輔英！"}, {"category": "🌏 境外生專班 (僑生 / 外國學生 / 港澳陸生)", "count_3yr": 315, "share": "4.8%", "main_progs": "日四技僑外生(217)、日二專外國生(84)、碩士/二技(14)", "ir_insight": "海青班(休憩)、國際專修部(高長/資管)與新南向專班(健美/環工)3年貢獻315名在學實質生源"}], "dual_cycle_sop": [{"cycle": "🍂 秋季學籍定錨週期 (每年 10月15日 ～ 10月25日)", "trigger": "教育部 10月20日 全國學校基本統計調查基準日 ＋ 本校教務處 10月正式在籍新生名單產出", "steps": ["Step 1 (校內 10月學籍匯入)：匯入本校 10 月全學制（五專/四技全管道/二技/碩士/學士後）實際在學名單，結算 6月報到➔10月在學之『暑期二次流失率 (Summer Melt)』與『8月聯登/獨招回流承接率』。", "Step 2 (教育部學校異動同步)：對照教育部統計處 10 月更新之『學校名錄及異動一覽表』，標記停招/轉型高職（如高英工商）與新設群科。", "Step 3 (秋季拓源與五專/完全中學派單)：產出下一屆五專（國中生源 Top 30）與完全中學（國中部+高中部雙軌）秋季入班宣講配額單。"]}, {"cycle": "🌸 春季母體普查覆寫週期 (每年 2月1日 ～ 2月10日)", "trigger": "教育部統計處於 1 月底正式公告上一學年全國各高中職『科別資料 (base2)』與國中實際註冊人數", "steps": ["Step 1 (base2 母體覆寫)：自動將中南部及離島 8 縣市 231 所高中職、208 所國中之『預估人數』覆寫為教育部 1 月底公告之『實際一年級註冊人數』。", "Step 2 (母體校正滲透率重算)：重新計算各生源校之『母體增減率 (%)』與本校『市場滲透率 (%)』，自動區分『母體萎縮型假性流失』與『母體擴張型藍海校（如三信家商+20.2%、中正高工+4.4%、屏東高工+4.5%）』。", "Step 3 (春季 3月申請 / 5月甄選 / 8月聯登三波段動態調度)：更新 14 系主任專屬行動清單與紅綠燈事中監控基準線，精準啟動春季招生戰役。"]}]};
+
+function renderP11Integration() {
+  const tbSiji = document.getElementById('tbP11SijiDepts');
+  if (tbSiji) {
+    tbSiji.innerHTML = '';
+    P11_DATA.siji_all_channels_by_dept.forEach(d => {
+      tbSiji.innerHTML += `<tr>
+        <td class="tl" style="font-weight:800;color:#fff">${d.dept}</td>
+        <td>${d.college}</td>
+        <td class="gr">${d.shenqing}</td>
+        <td class="bl">${d.zhenxuan}</td>
+        <td class="pk">${d.union_dist}</td>
+        <td class="yw">${d.solo}</td>
+        <td class="rd">${d.sports}</td>
+        <td style="color:#38bdf8">${d.intl}</td>
+        <td style="font-weight:900;color:#fff">${d.total} 人</td>
+        <td class="tl" style="color:#93c5fd;font-weight:700">${d.dominant}</td>
+        <td class="tl" style="color:#cbd5e1">${d.strategy}</td>
+      </tr>`;
+    });
+  }
+
+  const tbPen = document.getElementById('tbP11Penetration');
+  if (tbPen) {
+    tbPen.innerHTML = '';
+    P11_DATA.hs_penetration_matrix.forEach(h => {
+      const pCls = h.pct >= 0 ? 'gr' : (h.pct <= -15 ? 'rd' : 'yw');
+      tbPen.innerHTML += `<tr>
+        <td>${h.city}</td>
+        <td class="tl" style="font-weight:800;color:#fff">${h.name}</td>
+        <td>${h.pub}‧${h.stype}</td>
+        <td class="${h.attached_jh==='有'?'gr':''}">${h.attached_jh}</td>
+        <td>${h.y113}</td>
+        <td style="font-weight:800;color:#fff">${h.y114}</td>
+        <td class="${pCls}">${h.pct > 0 ? '+'+h.pct : h.pct}%</td>
+        <td class="bl">${h.fy_siji_3yr} 人</td>
+        <td class="gr">${h.fy_wuzhuan_3yr > 0 ? h.fy_wuzhuan_3yr+' 人' : '—'}</td>
+        <td style="font-weight:900;color:#fff">${h.fy_total_3yr} 人</td>
+        <td class="pk">${h.pen_rate}</td>
+        <td><span class="badge bu">${h.diag_type}</span></td>
+        <td class="tl" style="color:#cbd5e1">${h.ir_action}</td>
+      </tr>`;
+    });
+  }
+
+  const ctxSiji = document.getElementById('chartP11SijiChannels');
+  if (ctxSiji) {
+    new Chart(ctxSiji, {
+      type: 'bar',
+      data: {
+        labels: P11_DATA.siji_all_channels_by_dept.map(d => d.dept.slice(0,4)),
+        datasets: [
+          {label:'申請(普高)', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.shenqing), backgroundColor:'#34d399'},
+          {label:'甄選(技高)', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.zhenxuan), backgroundColor:'#38bdf8'},
+          {label:'聯合登記分發', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.union_dist), backgroundColor:'#c084fc'},
+          {label:'獨立招生', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.solo), backgroundColor:'#fbbf24'},
+          {label:'運動績優', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.sports), backgroundColor:'#f87171'},
+          {label:'國際/海青/僑外', data:P11_DATA.siji_all_channels_by_dept.map(d=>d.intl), backgroundColor:'#22d3ee'}
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{datalabels:{display:false}, legend:{labels:{color:'#cbd5e1'}}},
+        scales:{x:{stacked:true, ticks:{color:'#94a3b8'}}, y:{stacked:true, ticks:{color:'#94a3b8'}}}
+      }
+    });
+  }
+
+  const ctxPen = document.getElementById('chartP11Penetration');
+  if (ctxPen) {
+    const topHs = P11_DATA.hs_penetration_matrix.slice(0, 12);
+    new Chart(ctxPen, {
+      type: 'bar',
+      data: {
+        labels: topHs.map(h => h.name.replace('私立','').replace('市立','').replace('國立','')),
+        datasets: [
+          {label:'輔英四技年均滲透率(%)', data:topHs.map(h=>parseFloat(h.pen_rate)), backgroundColor:'#f472b6'},
+          {label:'該校114母體年變動率(%)', data:topHs.map(h=>h.pct), backgroundColor:'#38bdf8'}
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{datalabels:{display:false}, legend:{labels:{color:'#cbd5e1'}}},
+        scales:{x:{ticks:{color:'#94a3b8'}}, y:{ticks:{color:'#94a3b8'}}}
+      }
+    });
+  }
+}
 </script>
 </body>
 </html>

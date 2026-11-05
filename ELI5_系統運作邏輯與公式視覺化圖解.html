@@ -759,6 +759,57 @@ tr.highlight-red td { background: #f8fafc; }
       </div>
     </div>
   </section>
+
+  <!-- SECTION 7: 全學制 10 月學籍定錨 × 8 縣市國高中職母體庫融合診斷公式 (F17-F20) -->
+  <section id="sec7" class="section-card eli5-sec" style="border:2px solid #10b981;">
+    <div class="sec-header">
+      <div class="sec-title">
+        <span>🧭 模組七：全學制 10 月學籍定錨 × 8 縣市國高中職母體庫 (114_base2) 融合診斷公式</span>
+      </div>
+      <span class="sec-tag" style="background:#d1fae5;color:#065f46;">Formulas F17 – F20</span>
+    </div>
+    <div class="grid-2">
+      <div class="fix-box" style="border-color:#a7f3d0;">
+        <h3 style="color:#065f46;">① 第 5 階 10月學籍實質留存率與暑期二次流失率 (Formula F17)</h3>
+        <p style="font-size:12.5px;color:#475569;">衡量 6 月完成報到考生經歷 7~8 月分科測驗與統測分發後，於 10 月 20 日教育部統計基準日仍實際在籍之比例：</p>
+        <div class="formula-block" style="border-left-color:#059669;">
+          Retention_Oct = Enrolled_Oct ÷ Enrolled_June × 100%<br>
+          Summer_Melt = (Enrolled_June - Enrolled_Oct) ÷ Enrolled_June × 100%<br>
+          ● 甄選(技高) 113–115：268 ÷ 273 = 98.2% (暑期流失僅 1.8%)<br>
+          ● 申請(普高) 113–115：377 ÷ 416 = 90.6% (暑期二次流失 9.4% / 39人)
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#ddd6fe;">
+        <h3 style="color:#5b21b6;">② 8月聯合登記分發回流承接率与四技全管道覆蓋率 (Formula F18)</h3>
+        <p style="font-size:12.5px;color:#475569;">衡量甄選未報到流用名額於 8 月統測聯合登記分發之回流強度，以及全管道（申請/甄選/聯登/獨招/運績/國際）總和：</p>
+        <div class="formula-block" style="border-left-color:#7c3aed;">
+          Union_Growth_115 = (97 - 64) ÷ 64 × 100% = +51.6%<br>
+          Total_Siji_Oct = Σ(申請 377 + 甄選 268 + 聯登 234 + 獨招 200 + 運績 132 + 國際海青 211) = 1,422 人
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#c7d2fe;">
+        <h3 style="color:#312e81;">③ 教育部 base2 母體校正之生源校市場滲透率 (Formula F19)</h3>
+        <p style="font-size:12.5px;color:#475569;">將本校在該生源校之實際就讀人數除以教育部 `114_base2` 該校一年級實際新生母體，區分「假性流失」與「真流失」：</p>
+        <div class="formula-block" style="border-left-color:#4f46e5;">
+          Penetration_Rate(s) = (FY_Siji_3yr(s) ÷ 3) ÷ MOE_Base114(s) × 100%<br>
+          ● 林園高中：年均 14.0人 ÷ 母體 134人 = 10.45% (另附中五專 3年 32人)<br>
+          ● 復華高中：年均 8.3人 ÷ 母體 80人(-20.8%) = 10.38% (證實為母體萎縮假性流失)
+        </div>
+      </div>
+
+      <div class="fix-box" style="border-color:#fde68a;">
+        <h3 style="color:#92400e;">④ 十年一貫 (5+2+2) 全學制縱向直升率與生源 LTV 乘數 (Formula F20)</h3>
+        <p style="font-size:12.5px;color:#475569;">衡量母校五專畢業生直升二技、大學部畢業生直升碩士班之內循環乘數效應：</p>
+        <div class="formula-block" style="border-left-color:#d97706;">
+          R_Erji_Internal = 963 (母校五專直升) ÷ 3,010 (二技總數) = 32.0%<br>
+          R_Master_Internal = 202 (母校大學直升) ÷ 333 (碩士總數) = 60.7%<br>
+          LTV_Multiplier = 1 + 0.32 + (0.32 × 0.607) = 1.51 倍
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script>
